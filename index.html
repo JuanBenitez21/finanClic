@@ -803,48 +803,56 @@ var INTERACCIONES_IA = [
 
   /* ---------------------- TARJETA 1 ---------------------- */
   {
-    titulo: '',
-    promptOriginal: '',
-    primeraRespuesta: '',
-    problemaDetectado: '',
-    correccionRealizada: '',
-    promptCorreccion: '',
-    resultadoFinal: '',
-    parteVisible: '',
-    enlaceConversacion: '',
+    titulo: 'Promp en base al contexto para la aplicacion',
+    promptOriginal: 'tengo un proyecto de matematimas financieras, tengo que crear una aplicación, con la app se ira trabajando a lo largo del semestre, e incluyendo mas aspectos conceptos y demas apartados dentro de ella, tengo esta lista de apps para crear paginas, necesito que me ayudas a elegir la mejor, el problema es que hay poco tiempo asi que si los tokens de uso pueden llegar a ser muy limitados y con mucho tiempo de espera posiblemente no me sirva. te pasare la lista de las paginas que tengo pre seleccionadas, las instrucciones concretas del proyecto y las presentaciones donde se encuentra todo el contenido de la materia, necesito que me des el prompt para darle a la app elegida en donde hacer el proyecto; que quede lo mas claro y especifico posible. apps: Lovable, Emergent, Bolt.new, Replit AI, V0.dev, Glide, Figma AI. en el pdf que dice caso aplicado estan las instrucciones muy bien definidas, es importante que lo que vayamos a crear las cumpla, esta es una descripcion general de todo el proyecto, para que complementes toda la informacion y entiendas bien el contexto: Los estudiantes, organizados en grupos de 4, asumen el rol de un equipo de analistas financieros contratado por un banco colombiano para resolver un problema real: sus clientes toman decisiones de crédito e inversión sin entender cómo funcionan el dinero en el tiempo, las tasas y los plazos. Su tarea es construir, con herramientas de prototipado asistidas por IA, una herramienta digital de educación financiera que enseñe los conceptos en lenguaje simple y permita simular operaciones reales. El proyecto es acumulativo: la herramienta crece corte a corte junto con el contenido del curso —interés simple, compuesto y continuo en el primero; conversión de tasas y anualidades en el segundo; gradientes, perpetuidades y amortización en el tercero— hasta convertirse en un producto único e integrado.',
+    primeraRespuesta: 'Sí. Ya revisé el Caso Aplicado completo y las tres presentaciones del primer corte. Y hay algo importante: no conviene escoger la plataforma solamente por cuál “hace páginas más bonitas”. En este proyecto la parte crítica es que la aplicación realmente resuelva ejercicios financieros que el profesor puede cambiar, incluyendo varios flujos, distintas incógnitas y diferentes periodicidades.... Mi recomendación: Bolt.new',
+    problemaDetectado: 'Al Usar este primer promp como guia, ns sirvio para poder tener una idea de como queriamos hacer la aplicacion, sin embargo al usar Bolt.new Postarior mente nos dimos cuenta de que su edicion era mediante promps, lo cual nos dificultaba mantener un control de exactamente que se estaaba haciendo',
+    resultadoFinal: 'Un promp listo para usar en bol',
+    enlaceConversacion: 'https://chatgpt.com/share/6a921ca1-ed5c-83e9-9223-cb5ecea31464',
     documentaError: false
   },
 
   /* ---------------------- TARJETA 2 ---------------------- */
   {
-    titulo: '',
-    promptOriginal: '',
-    primeraRespuesta: '',
-    problemaDetectado: '',
-    correccionRealizada: '',
-    promptCorreccion: '',
-    resultadoFinal: '',
-    parteVisible: '',
-    enlaceConversacion: '',
+    titulo: 'Utilizacion del promp en Bold',
+    promptOriginal: 'el mismo que salio de la conversacion anterior de chatgpt (es muy largo por eso no se pone el promp completo) Quiero que construyas una aplicación web funcional, pública, responsive y preparada para crecer durante todo un semestre académico. El proyecto es una herramienta digital de educación financiera para un curso universitario de Matemáticas Financieras de una universidad colombiana.....',
+    problemaDetectado: 'Falta de facilidad para ver y editar el codigo',
+    resultadoFinal: 'https://bolt.new/~/sb1-jauvbbmv',
+    parteVisible: 'https://bolt.new/~/sb1-jauvbbmv',
+    enlaceConversacion: 'https://bolt.new/~/sb1-jauvbbmv',
     documentaError: false
   },
 
   /* ------- TARJETA 3: la que documenta un error de la IA ------- */
   {
-    titulo: '',
-    promptOriginal: '',
-    primeraRespuesta: '',
-    problemaDetectado: '',
-    correccionRealizada: '',
-    promptCorreccion: '',
-    resultadoFinal: '',
-    parteVisible: '',
-    enlaceConversacion: '',
+    titulo: 'Paso a Claude y realizacion de la aplicacion',
+    promptOriginal: ' FASE 1 — Motor de cálculo y verificación Vas a construir una herramienta digital de educación financiera llamada FinanClic ("Aprende, simula y decide"), para un trabajo del primer corte de Matemáticas Financieras de una universidad colombiana. Toda la interfaz será en español..... ',
+    primeraRespuesta: 'Encontré diez ejercicios resueltos a mano en dos cuadernos. Los transcribo con el resultado del profesor tal cual quedó escrito...',
+    problemaDetectado: 'Algunas falla en la identificacion de numeros y alto consumo de tokens al realizar la lectura de los manuscrtios, ademas de no complir con la creacion del archivo motor.js',
+    resultadoFinal: 'Texto de confirmacion para seguir',
+    enlaceConversacion: 'https://claude.ai/share/439e1aed-83b6-46ba-8fcb-037392a0a5ec ',
 
     documentaError: true,
-    valorEquivocado: '',
-    valorCorrecto: '',
-    razonDelError: ''
+    razonDelError: 'Al hacer una busqueda completa en los pdf (contexto de los ejercicios que se quieren lograr) espera a la confirmacion an lugar de terminar de cumplir lo que se le pidio'
+  },
+
+  {
+    titulo: 'Valodacion (pruebas)',
+    promptOriginal: ' Excelente claudio, ahora vamos con la fase 2 FASE 2 — Ecuación de valor, coeficientes e incógnitas avanzadas Continúa sobre el motor de la fase 1. Sigue sin construir interfaz. Ecuación de valor con varios flujos... ',
+    resumenRespuesta: ' Validacion de los ejercicios vistos en clase, de acuerdo a la logica de programacion usada para resolverlos',
+    resultadoFinal: 'Archivos Motro.js, Pruebas.js, Informe de pruebas.txt ',
+    enlaceConversacion: 'https://claude.ai/share/439e1aed-83b6-46ba-8fcb-037392a0a5ec ',
+
+    documentaError: false,
+  },
+  {
+    titulo: 'Parte visual con sus respectivas pruebas',
+    promptOriginal: ' Excelente Claudio, ahora es momento del todo o nada. Terminemos la pagina FASE 4 — Educación financiera, interacciones y revisión final ....',
+    resumenRespuesta: ' Archivos necesarios para el funcionamiento adecuado de la pagina, pruebas ui y de logica',
+    resultadoFinal: 'Archivos Necesarios ',
+    enlaceConversacion: 'https://claude.ai/share/439e1aed-83b6-46ba-8fcb-037392a0a5ec ',
+
+    documentaError: false,
   }
 ];
 
@@ -3776,9 +3784,6 @@ var IA = {
   vacio: function (v) { return !v || String(v).trim() === ''; },
 
   valor: function (v, clase) {
-    if (IA.vacio(v)) {
-      return '<div class="campo-ia vacio">Pendiente de completar</div>';
-    }
     return '<div class="campo-ia ' + (clase === 'prompt' ? 'es-prompt' : '') + '">' +
       Linea.escapar(v).replace(/\n/g, '<br>') + '</div>';
   },
@@ -3800,36 +3805,47 @@ var IA = {
 
       h += '<header class="cab-ia">' +
         '<span class="num-ia">Interacción ' + (idx + 1) + '</span>' +
-        (x.documentaError
-          ? '<span class="marca-error">Documenta un error de la IA</span>' : '') +
-        '<h3>' + (IA.vacio(x.titulo) ? 'Sin título todavía' : Linea.escapar(x.titulo)) + '</h3>' +
+        (x.documentaError ? '<span class="marca-error">Documenta un error de la IA</span>' : '') +
+        '<h3>' + (IA.vacio(x.titulo) ? 'Sin título' : Linea.escapar(x.titulo)) + '</h3>' +
         '</header>';
 
+      // Solo dibuja el campo si no está vacío
       IA.CAMPOS.forEach(function (c) {
-        h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' +
-             IA.valor(x[c[0]], c[2]) + '</div>';
+        if (!IA.vacio(x[c[0]])) {
+          h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' +
+               IA.valor(x[c[0]], c[2]) + '</div>';
+        }
       });
 
       if (x.documentaError) {
         h += '<div class="caja-error-ia">' +
           '<h4>Detalle del error</h4>' +
-          '<div class="rejilla-2">' +
-          '<div class="fila-ia"><span class="rotulo">Valor equivocado que dio la IA</span>' +
-            IA.valor(x.valorEquivocado) + '</div>' +
-          '<div class="fila-ia"><span class="rotulo">Valor correcto</span>' +
-            IA.valor(x.valorCorrecto) + '</div>' +
-          '</div>' +
-          '<div class="fila-ia"><span class="rotulo">Razón del error</span>' +
-            IA.valor(x.razonDelError) + '</div>' +
-          '</div>';
+          '<div class="rejilla-2">';
+        
+        if (!IA.vacio(x.valorEquivocado)) {
+          h += '<div class="fila-ia"><span class="rotulo">Valor equivocado que dio la IA</span>' +
+            IA.valor(x.valorEquivocado) + '</div>';
+        }
+        if (!IA.vacio(x.valorCorrecto)) {
+          h += '<div class="fila-ia"><span class="rotulo">Valor correcto</span>' +
+            IA.valor(x.valorCorrecto) + '</div>';
+        }
+        h += '</div>';
+
+        if (!IA.vacio(x.razonDelError)) {
+          h += '<div class="fila-ia"><span class="rotulo">Razón del error</span>' +
+            IA.valor(x.razonDelError) + '</div>';
+        }
+        h += '</div>';
       }
 
-      h += '<footer class="pie-ia"><span class="rotulo">Conversación original</span>' +
-        (IA.vacio(x.enlaceConversacion)
-          ? '<span class="campo-ia vacio" style="margin:0">Pendiente de completar</span>'
-          : '<a href="' + Linea.escapar(x.enlaceConversacion) + '" target="_blank" ' +
-            'rel="noopener noreferrer" class="enlace-ia">Abrir la conversación →</a>') +
-        '</footer>';
+      // Solo muestra el pie de página si hay un enlace
+      if (!IA.vacio(x.enlaceConversacion)) {
+        h += '<footer class="pie-ia"><span class="rotulo">Conversación original</span>' +
+          '<a href="' + Linea.escapar(x.enlaceConversacion) + '" target="_blank" ' +
+          'rel="noopener noreferrer" class="enlace-ia">Abrir la conversación →</a>' +
+          '</footer>';
+      }
 
       t.innerHTML = h;
       cont.appendChild(t);
@@ -3838,7 +3854,6 @@ var IA = {
 
   iniciar: function () { IA.pintar(); }
 };
-
 /* ==================================================================
    ARRANQUE
    Tolera que el script se evalúe antes o después de DOMContentLoaded,
