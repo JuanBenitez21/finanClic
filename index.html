@@ -1,0 +1,3863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FinanClic — Entiende tu dinero. Simula tus decisiones.</title>
+<style>
+/* ==================================================================
+   FinanClic — hoja de estilos
+   Sin fuentes externas: solo familias del sistema.
+   ================================================================== */
+
+:root{
+  --tinta:#131C33;
+  --tinta-2:#48546F;
+  --tinta-3:#7A849B;
+  --papel:#FFFFFF;
+  --fondo:#F2F5FA;
+  --fondo-2:#E8EDF6;
+  --borde:#D9DFEC;
+  --borde-fuerte:#BFC8DC;
+
+  --credito:#B3341F;
+  --credito-tenue:#FBEDEA;
+  --credito-borde:#E8BCB2;
+
+  --inversion:#0B7A6B;
+  --inversion-tenue:#E4F2EF;
+  --inversion-borde:#A9D5CD;
+
+  --oro:#B27C10;
+  --oro-tenue:#FCF3DF;
+
+  --acento:#2B4C8C;
+  --alerta:#8A5A00;
+  --alerta-fondo:#FDF6E5;
+
+  --display:Georgia,"Iowan Old Style","Palatino Linotype","Book Antiqua",serif;
+  --texto:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --cifra:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+
+  --r:10px;
+  --sombra:0 1px 2px rgba(19,28,51,.06),0 8px 24px -12px rgba(19,28,51,.18);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--fondo);color:var(--tinta);
+  font-family:var(--texto);font-size:16px;line-height:1.55;
+}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;line-height:1.15;margin:0}
+p{margin:0 0 .8em}
+a{color:var(--acento)}
+button{font-family:inherit;font-size:inherit}
+:focus-visible{outline:3px solid var(--acento);outline-offset:2px;border-radius:4px}
+
+.cifra{font-family:var(--cifra);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.envoltura{max-width:1120px;margin:0 auto;padding:0 24px}
+.oculto{display:none !important}
+
+/* ---------- Barra superior ---------- */
+.barra{
+  position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--borde);
+}
+.barra-int{display:flex;align-items:center;gap:28px;height:62px}
+.marca{display:flex;align-items:baseline;gap:8px;font-family:var(--display);
+  font-size:21px;font-weight:700;letter-spacing:-.015em;color:var(--tinta);
+  background:none;border:0;cursor:pointer;padding:0}
+.marca span{color:var(--oro)}
+.menu{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.menu button{
+  background:none;border:0;padding:8px 13px;border-radius:7px;cursor:pointer;
+  color:var(--tinta-2);font-size:14.5px;font-weight:500;
+}
+.menu button:hover{background:var(--fondo-2);color:var(--tinta)}
+.menu button[aria-current="page"]{background:var(--tinta);color:#fff}
+
+/* ---------- Secciones ---------- */
+.pantalla{display:none;padding:56px 0 88px;animation:entrar .28s ease both}
+.pantalla.activa{display:block}
+@keyframes entrar{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .pantalla{animation:none}
+  *{transition:none !important}
+}
+
+.encabezado-seccion{max-width:660px;margin-bottom:34px}
+.encabezado-seccion h2{font-size:34px;letter-spacing:-.02em;margin-bottom:10px}
+.encabezado-seccion p{color:var(--tinta-2);font-size:17px;margin:0}
+.rotulo{
+  font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--tinta-3);margin-bottom:12px;
+}
+
+/* ---------- Inicio ---------- */
+.portada{padding:34px 0 12px}
+.portada h1{font-size:clamp(44px,7vw,74px);letter-spacing:-.035em;margin-bottom:14px}
+.portada h1 span{color:var(--oro)}
+.lema{font-family:var(--display);font-size:clamp(19px,2.4vw,25px);color:var(--tinta-2);
+  font-style:italic;margin-bottom:20px}
+.portada-texto{max-width:600px;font-size:17.5px;color:var(--tinta-2);margin-bottom:30px}
+.acciones{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+
+.btn{
+  display:inline-flex;align-items:center;gap:9px;border:1px solid transparent;
+  padding:13px 22px;border-radius:var(--r);font-size:15.5px;font-weight:600;
+  cursor:pointer;transition:transform .12s,box-shadow .12s,background .12s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:none}
+.btn-principal{background:var(--tinta);color:#fff}
+.btn-principal:hover{background:#0B1428;box-shadow:var(--sombra)}
+.btn-secundario{background:var(--papel);color:var(--tinta);border-color:var(--borde-fuerte)}
+.btn-secundario:hover{border-color:var(--tinta-3);box-shadow:var(--sombra)}
+.btn-suave{background:var(--fondo-2);color:var(--tinta-2);border-color:transparent;
+  padding:9px 15px;font-size:14px;border-radius:8px}
+.btn-suave:hover{background:var(--borde)}
+.btn-peligro{background:var(--papel);color:var(--credito);border-color:var(--credito-borde);
+  padding:9px 15px;font-size:14px;border-radius:8px}
+.btn-peligro:hover{background:var(--credito-tenue)}
+.btn-grande{padding:16px 28px;font-size:16.5px}
+
+.tarjetas-rapidas{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+.tarjeta-rapida{
+  background:var(--papel);border:1px solid var(--borde);border-radius:14px;padding:22px;
+  cursor:pointer;text-align:left;transition:border-color .15s,box-shadow .15s,transform .15s;
+}
+.tarjeta-rapida:hover{border-color:var(--tinta-3);box-shadow:var(--sombra);transform:translateY(-2px)}
+.tarjeta-rapida .formula{
+  font-family:var(--cifra);font-size:15px;color:var(--acento);
+  background:var(--fondo);border-radius:7px;padding:8px 11px;display:inline-block;margin:10px 0 12px;
+}
+.tarjeta-rapida h3{font-size:19px;margin-bottom:2px}
+.tarjeta-rapida p{font-size:14.5px;color:var(--tinta-2);margin:0}
+
+/* ---------- Tarjetas generales ---------- */
+.tarjeta{background:var(--papel);border:1px solid var(--borde);border-radius:14px;padding:24px}
+.rejilla-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.rejilla-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+/* ---------- Simulador: pasos ---------- */
+.paso{margin-bottom:26px}
+.paso-cab{display:flex;align-items:center;gap:11px;margin-bottom:13px}
+.paso-num{
+  width:26px;height:26px;border-radius:50%;background:var(--tinta);color:#fff;
+  display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;
+  font-family:var(--cifra);
+}
+.paso-cab h3{font-size:17.5px}
+
+.opciones{display:grid;gap:12px}
+.opciones.dos{grid-template-columns:1fr 1fr}
+.opciones.tres{grid-template-columns:repeat(3,1fr)}
+.opciones.seis{grid-template-columns:repeat(3,1fr)}
+
+.opcion{
+  background:var(--papel);border:1.5px solid var(--borde);border-radius:12px;
+  padding:15px 17px;cursor:pointer;text-align:left;transition:all .14s;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.opcion:hover{border-color:var(--tinta-3)}
+.opcion .icono{flex:none;margin-top:1px}
+.opcion strong{display:block;font-size:15.5px;font-weight:600;margin-bottom:1px}
+.opcion small{display:block;font-size:13px;color:var(--tinta-2);line-height:1.4}
+.opcion[aria-pressed="true"]{border-color:var(--tinta);background:var(--fondo-2)}
+.opcion[data-op="credito"][aria-pressed="true"]{
+  border-color:var(--credito);background:var(--credito-tenue)}
+.opcion[data-op="credito"][aria-pressed="true"] strong{color:var(--credito)}
+.opcion[data-op="inversion"][aria-pressed="true"]{
+  border-color:var(--inversion);background:var(--inversion-tenue)}
+.opcion[data-op="inversion"][aria-pressed="true"] strong{color:var(--inversion)}
+
+/* ---------- Formularios ---------- */
+.campos{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo label{font-size:13.5px;font-weight:600;color:var(--tinta-2)}
+.campo .pista{font-size:12.5px;color:var(--tinta-3);line-height:1.35}
+.control{
+  border:1.5px solid var(--borde);border-radius:9px;background:var(--papel);
+  padding:11px 13px;font-size:15.5px;font-family:var(--cifra);color:var(--tinta);
+  width:100%;transition:border-color .14s;
+}
+select.control{font-family:var(--texto);cursor:pointer}
+.control:focus{border-color:var(--acento);outline:none}
+.control.malo{border-color:var(--credito);background:var(--credito-tenue)}
+.con-simbolo{position:relative}
+.con-simbolo .simbolo{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-family:var(--cifra);font-size:14px;color:var(--tinta-3);pointer-events:none;
+}
+.con-simbolo .control{padding-left:44px}
+.sufijo{position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  font-size:14px;color:var(--tinta-3);pointer-events:none}
+
+/* ---------- Tabla de flujos ---------- */
+.flujos{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.flujo{
+  display:grid;grid-template-columns:34px 1.6fr 1fr 1.1fr 1fr 38px;gap:10px;
+  align-items:end;padding:13px;border:1px solid var(--borde);border-radius:11px;
+  background:var(--papel);
+}
+.flujo-num{
+  width:26px;height:26px;border-radius:7px;background:var(--fondo-2);color:var(--tinta-2);
+  display:grid;place-items:center;font-family:var(--cifra);font-size:13px;font-weight:700;
+  margin-bottom:11px;
+}
+.flujo .campo label{font-size:12px}
+.flujo .control{padding:9px 11px;font-size:14.5px}
+.quitar{
+  background:none;border:1px solid var(--borde);border-radius:8px;width:34px;height:38px;
+  cursor:pointer;color:var(--tinta-3);font-size:17px;line-height:1;margin-bottom:0;
+}
+.quitar:hover{border-color:var(--credito);color:var(--credito);background:var(--credito-tenue)}
+
+/* ---------- Línea de tiempo (elemento firma) ---------- */
+.lienzo-linea{
+  background:var(--papel);border:1px solid var(--borde);border-radius:14px;
+  padding:18px 8px 8px;margin-bottom:18px;overflow-x:auto;
+}
+.lienzo-linea svg{display:block;min-width:560px;width:100%;height:auto}
+.leyenda{
+  display:flex;gap:20px;flex-wrap:wrap;padding:4px 14px 10px;
+  font-size:12.5px;color:var(--tinta-2);
+}
+.leyenda span{display:inline-flex;align-items:center;gap:6px}
+.punto{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* ---------- Resultados ---------- */
+.resultado-principal{
+  border-radius:16px;padding:28px 30px;margin-bottom:20px;color:#fff;
+  background:var(--tinta);position:relative;overflow:hidden;
+}
+.resultado-principal.credito{background:linear-gradient(135deg,#8E2A18,#B3341F)}
+.resultado-principal.inversion{background:linear-gradient(135deg,#075F53,#0B7A6B)}
+.resultado-principal .rotulo{color:rgba(255,255,255,.72);margin-bottom:6px}
+.cifra-grande{
+  font-family:var(--cifra);font-size:clamp(30px,5.2vw,46px);font-weight:700;
+  letter-spacing:-.03em;line-height:1.05;
+}
+.resultado-principal .nota{color:rgba(255,255,255,.8);font-size:14.5px;margin-top:10px}
+
+/* Las tres magnitudes que el estudiante confunde */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.magnitud{
+  background:var(--papel);border:1px solid var(--borde);border-radius:13px;padding:17px 18px;
+  border-top:3px solid var(--borde-fuerte);
+}
+.magnitud.vf{border-top-color:var(--acento)}
+.magnitud.i-may{border-top-color:var(--oro)}
+.magnitud.i-min{border-top-color:var(--inversion)}
+.magnitud .simbolo-mag{
+  font-family:var(--cifra);font-size:19px;font-weight:700;margin-bottom:2px;display:block;
+}
+.magnitud.vf .simbolo-mag{color:var(--acento)}
+.magnitud.i-may .simbolo-mag{color:var(--oro)}
+.magnitud.i-min .simbolo-mag{color:var(--inversion)}
+.magnitud .que-es{font-size:12.5px;color:var(--tinta-3);margin-bottom:9px;line-height:1.35}
+.magnitud .valor{font-family:var(--cifra);font-size:20px;font-weight:600;letter-spacing:-.02em}
+
+.detalle-lista{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
+  background:var(--borde);border:1px solid var(--borde);border-radius:12px;overflow:hidden}
+.detalle-lista div{background:var(--papel);padding:13px 16px}
+.detalle-lista dt{font-size:12px;color:var(--tinta-3);margin-bottom:3px;
+  text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+.detalle-lista dd{margin:0;font-family:var(--cifra);font-size:15px;font-weight:600}
+
+.bloque{background:var(--papel);border:1px solid var(--borde);border-radius:13px;
+  padding:20px 22px;margin-top:18px}
+.bloque h4{font-size:15.5px;margin-bottom:11px;font-family:var(--texto);font-weight:700}
+.formula-caja{
+  font-family:var(--cifra);font-size:16px;background:var(--fondo);border-radius:9px;
+  padding:14px 16px;color:var(--acento);border-left:3px solid var(--acento);
+  overflow-x:auto;white-space:nowrap;
+}
+.pasos{list-style:none;padding:0;margin:12px 0 0;counter-reset:p}
+.pasos li{
+  counter-increment:p;position:relative;padding:9px 0 9px 34px;
+  border-top:1px solid var(--borde);font-family:var(--cifra);font-size:14px;
+  overflow-x:auto;white-space:nowrap;
+}
+.pasos li:first-child{border-top:0}
+.pasos li::before{
+  content:counter(p);position:absolute;left:0;top:9px;width:21px;height:21px;
+  background:var(--fondo-2);color:var(--tinta-2);border-radius:6px;
+  display:grid;place-items:center;font-size:11.5px;font-weight:700;
+}
+.significado{background:var(--oro-tenue);border:1px solid #EBD9A8;border-radius:13px;
+  padding:20px 22px;margin-top:18px}
+.significado h4{font-size:15.5px;margin-bottom:8px;font-family:var(--texto);font-weight:700;
+  color:var(--alerta)}
+.significado p{margin:0;font-size:15.5px;line-height:1.6}
+.significado strong{font-family:var(--cifra);font-weight:700}
+
+.aviso{
+  background:var(--alerta-fondo);border:1px solid #EBD9A8;border-left:4px solid var(--oro);
+  border-radius:10px;padding:14px 17px;margin-top:16px;font-size:14.5px;color:#6B4A0B;
+}
+.aviso strong{color:var(--alerta)}
+.error{
+  background:var(--credito-tenue);border:1px solid var(--credito-borde);
+  border-left:4px solid var(--credito);border-radius:10px;padding:15px 18px;
+  color:#7C2415;font-size:15px;margin-bottom:18px;
+}
+.error strong{display:block;margin-bottom:3px}
+
+/* tabla de traslados */
+.tabla{width:100%;border-collapse:collapse;font-size:14px}
+.tabla th{
+  text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--tinta-3);padding:0 10px 9px;border-bottom:1px solid var(--borde);font-weight:700;
+}
+.tabla td{padding:10px;border-bottom:1px solid var(--borde);font-family:var(--cifra)}
+.tabla td:first-child,.tabla th:first-child{padding-left:0}
+.tabla td.num{text-align:right}
+.tabla th.num{text-align:right}
+.tabla tr:last-child td{border-bottom:0}
+.tabla .total td{font-weight:700;border-top:2px solid var(--tinta);border-bottom:0;padding-top:12px}
+.arriba{color:var(--inversion)}
+.abajo{color:var(--credito)}
+
+/* ---------- Educación ---------- */
+.pestanas{display:flex;gap:6px;border-bottom:1px solid var(--borde);margin-bottom:26px;
+  flex-wrap:wrap}
+.pestanas button{
+  background:none;border:0;border-bottom:2.5px solid transparent;padding:11px 15px;
+  cursor:pointer;font-size:15px;font-weight:600;color:var(--tinta-3);margin-bottom:-1px;
+}
+.pestanas button:hover{color:var(--tinta)}
+.pestanas button[aria-selected="true"]{color:var(--tinta);border-bottom-color:var(--oro)}
+
+.leccion{display:none}
+.leccion.activa{display:block}
+.definicion{
+  background:var(--papel);border:1px solid var(--borde);border-left:4px solid var(--acento);
+  border-radius:11px;padding:18px 22px;margin-bottom:18px;
+}
+.error-comun{
+  background:var(--credito-tenue);border:1px solid var(--credito-borde);border-radius:12px;
+  padding:18px 22px;margin-top:18px;
+}
+.error-comun h4{color:var(--credito);font-family:var(--texto);font-size:15px;margin-bottom:9px}
+.mal-bien{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:13px}
+.mal,.bien{border-radius:10px;padding:14px 16px;font-family:var(--cifra);font-size:13.5px;
+  line-height:1.75}
+.mal{background:#fff;border:1px solid var(--credito-borde);color:var(--credito)}
+.mal .tachado{text-decoration:line-through;opacity:.7}
+.bien{background:#fff;border:1px solid var(--inversion-borde);color:var(--inversion)}
+.etiqueta-mb{display:block;font-family:var(--texto);font-size:11.5px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;opacity:.85}
+
+.tabla-simple{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:12px}
+.tabla-simple th{background:var(--fondo-2);text-align:left;padding:10px 13px;font-size:13px;
+  font-weight:700}
+.tabla-simple td{padding:9px 13px;border-top:1px solid var(--borde);font-family:var(--cifra)}
+.tabla-simple td:first-child{font-family:var(--texto)}
+
+/* ---------- Interacciones ---------- */
+.pregunta{background:var(--papel);border:1px solid var(--borde);border-radius:14px;
+  padding:22px 24px;margin-bottom:16px}
+.pregunta h4{font-size:17px;margin-bottom:14px;line-height:1.35}
+.respuestas{display:flex;flex-direction:column;gap:9px}
+.respuesta{
+  display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--papel);
+  border:1.5px solid var(--borde);border-radius:10px;padding:12px 15px;cursor:pointer;
+  font-size:15px;transition:all .14s;
+}
+.respuesta:hover:not(:disabled){border-color:var(--tinta-3)}
+.respuesta .letra{font-family:var(--cifra);font-weight:700;color:var(--tinta-3);flex:none}
+.respuesta.correcta{border-color:var(--inversion);background:var(--inversion-tenue)}
+.respuesta.correcta .letra{color:var(--inversion)}
+.respuesta.incorrecta{border-color:var(--credito);background:var(--credito-tenue)}
+.respuesta.incorrecta .letra{color:var(--credito)}
+.explicacion{margin-top:13px;padding:13px 16px;background:var(--fondo);border-radius:10px;
+  font-size:14.5px;color:var(--tinta-2)}
+.marcador{font-family:var(--cifra);font-size:14px;color:var(--tinta-2)}
+
+.deslizador{width:100%;margin:6px 0 2px;accent-color:var(--acento)}
+.comparador-cifras{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.mini{border:1px solid var(--borde);border-radius:11px;padding:14px 16px;background:var(--papel)}
+.mini .rotulo{margin-bottom:5px}
+.mini .v{font-family:var(--cifra);font-size:19px;font-weight:700;letter-spacing:-.02em}
+
+/* ---------- Acerca de ---------- */
+.acerca-lista{list-style:none;padding:0;margin:0;display:grid;gap:1px;background:var(--borde);
+  border:1px solid var(--borde);border-radius:12px;overflow:hidden}
+.acerca-lista li{background:var(--papel);padding:15px 18px;display:flex;gap:16px;
+  flex-wrap:wrap;font-size:15px}
+.acerca-lista b{min-width:190px;color:var(--tinta-2);font-weight:600}
+
+.pie{border-top:1px solid var(--borde);padding:26px 0;color:var(--tinta-3);font-size:13.5px}
+
+/* ---------- Módulos futuros en el menú ---------- */
+.separador-menu{width:1px;background:var(--borde);margin:6px 8px;align-self:stretch}
+.menu button.proximamente{
+  color:var(--tinta-3);cursor:not-allowed;font-size:13px;opacity:.75;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.menu button.proximamente:hover{background:none}
+.chip{
+  font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  background:var(--fondo-2);color:var(--tinta-3);border-radius:20px;padding:3px 8px;
+  border:1px solid var(--borde);
+}
+
+/* ---------- Educación: índice y lecciones ---------- */
+.tarjeta-rapida .ver-mas{
+  display:block;margin-top:12px;font-size:13.5px;font-weight:600;color:var(--acento);
+}
+.cab-leccion{
+  border-radius:16px;padding:30px 32px;margin:18px 0 26px;color:#fff;background:var(--tinta);
+}
+.cab-leccion.simple{background:linear-gradient(135deg,#20355F,#2B4C8C)}
+.cab-leccion.compuesto{background:linear-gradient(135deg,#8E2A18,#B3341F)}
+.cab-leccion.continuo{background:linear-gradient(135deg,#075F53,#0B7A6B)}
+.cab-leccion .rotulo{color:rgba(255,255,255,.7);margin-bottom:8px}
+.cab-leccion h2{font-size:clamp(30px,5vw,42px);letter-spacing:-.025em;margin-bottom:10px}
+.cab-leccion .bajada{font-size:17.5px;color:rgba(255,255,255,.88);max-width:620px;margin-bottom:18px}
+.cab-leccion .formula-cab{
+  font-family:var(--cifra);font-size:18px;background:rgba(255,255,255,.14);
+  border-radius:9px;padding:11px 16px;display:inline-block;
+}
+.bloque-edu{
+  background:var(--papel);border:1px solid var(--borde);border-radius:14px;
+  padding:26px 30px;margin-bottom:18px;
+}
+.bloque-edu h3{
+  font-size:22px;margin-bottom:12px;padding-bottom:11px;border-bottom:2px solid var(--fondo-2);
+}
+.bloque-edu p{font-size:16px;color:var(--tinta-2);max-width:760px}
+.bloque-edu p b,.bloque-edu li b{color:var(--tinta)}
+.bloque-edu.ejemplo{border-left:4px solid var(--oro)}
+.lista-pasos{margin:0;padding-left:22px;font-size:16px;color:var(--tinta-2);line-height:1.8}
+.lista-pasos li{margin-bottom:7px}
+.destaque{
+  background:var(--fondo);border:1px solid var(--borde);border-left:3px solid var(--tinta-3);
+  border-radius:11px;padding:16px 18px;
+}
+.destaque b{display:block;font-size:15.5px;margin-bottom:5px}
+.destaque p{margin:0;font-size:14.5px}
+.glosario{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.glosario>div{background:var(--fondo);border-radius:11px;padding:16px 18px}
+.glosario b{display:block;font-size:15.5px;margin:4px 0 4px}
+.glosario p{margin:0;font-size:14.5px}
+.letra-g{
+  font-family:var(--cifra);font-size:21px;font-weight:700;color:var(--acento);
+  display:block;line-height:1;
+}
+.cuento{
+  background:var(--oro-tenue);border:1px solid #EBD9A8;border-radius:13px;padding:22px 26px;
+}
+.cuento p{font-size:17px;color:#5C4208;max-width:none;line-height:1.65}
+.cuento p:last-child{margin-bottom:0}
+.cuento .cierre{
+  font-family:var(--display);font-size:18.5px;font-style:italic;color:var(--alerta);
+  border-top:1px solid #EBD9A8;padding-top:14px;margin-top:16px;
+}
+.enunciado{
+  background:var(--fondo-2);border-radius:11px;padding:16px 19px;font-size:16px;
+  margin-bottom:18px;color:var(--tinta);
+}
+.pasos-ej{list-style:none;padding:0;margin:0;counter-reset:e}
+.pasos-ej li{
+  counter-increment:e;position:relative;padding:14px 0 14px 44px;
+  border-top:1px solid var(--borde);font-size:15.5px;color:var(--tinta-2);line-height:1.7;
+}
+.pasos-ej li:first-child{border-top:0}
+.pasos-ej li::before{
+  content:counter(e);position:absolute;left:0;top:14px;width:28px;height:28px;
+  background:var(--oro-tenue);color:var(--alerta);border:1px solid #EBD9A8;border-radius:8px;
+  display:grid;place-items:center;font-family:var(--cifra);font-size:13px;font-weight:700;
+}
+.pasos-ej b{color:var(--tinta)}
+.respuesta-ej{
+  background:var(--inversion-tenue);border:1px solid var(--inversion-borde);border-radius:11px;
+  padding:18px 20px;margin-top:18px;font-size:16px;color:#07463D;
+}
+.respuesta-ej .rotulo{color:var(--inversion);margin-bottom:6px}
+
+/* ---------- Interacciones con IA ---------- */
+.tarjeta-ia{
+  background:var(--papel);border:1px solid var(--borde);border-radius:15px;
+  padding:26px 28px;margin-bottom:20px;
+}
+.tarjeta-ia.con-error{border-color:var(--credito-borde);border-left:4px solid var(--credito)}
+.cab-ia{border-bottom:1px solid var(--borde);padding-bottom:15px;margin-bottom:18px}
+.num-ia{
+  font-family:var(--cifra);font-size:11.5px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--tinta-3);
+}
+.marca-error{
+  display:inline-block;margin-left:10px;font-size:11px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;background:var(--credito-tenue);color:var(--credito);
+  border:1px solid var(--credito-borde);border-radius:20px;padding:3px 10px;
+}
+.cab-ia h3{font-size:21px;margin-top:8px}
+.fila-ia{margin-bottom:15px}
+.fila-ia .rotulo{margin-bottom:6px}
+.campo-ia{
+  background:var(--fondo);border:1px solid var(--borde);border-radius:10px;
+  padding:13px 16px;font-size:15px;color:var(--tinta);line-height:1.6;
+}
+.campo-ia.es-prompt{
+  font-family:var(--cifra);font-size:14px;background:#F7F9FD;
+  border-left:3px solid var(--acento);
+}
+.campo-ia.vacio{
+  color:var(--tinta-3);font-style:italic;border-style:dashed;background:transparent;
+}
+.caja-error-ia{
+  background:var(--credito-tenue);border:1px solid var(--credito-borde);border-radius:12px;
+  padding:18px 20px;margin:6px 0 15px;
+}
+.caja-error-ia h4{
+  font-family:var(--texto);font-size:15px;color:var(--credito);margin-bottom:13px;
+}
+.caja-error-ia .campo-ia{background:#fff}
+.pie-ia{border-top:1px solid var(--borde);padding-top:15px}
+.enlace-ia{font-size:15px;font-weight:600;text-decoration:none}
+.enlace-ia:hover{text-decoration:underline}
+
+/* ---------- Responsive ---------- */
+@media (max-width:860px){
+  .glosario{grid-template-columns:1fr}
+  .bloque-edu{padding:20px 18px}
+  .cab-leccion{padding:24px 20px}
+  .tarjeta-ia{padding:20px 18px}
+  .tarjetas-rapidas,.rejilla-3,.trio,.comparador-cifras{grid-template-columns:1fr}
+  .rejilla-2,.mal-bien,.opciones.dos{grid-template-columns:1fr}
+  .opciones.tres,.opciones.seis{grid-template-columns:1fr 1fr}
+  .flujo{grid-template-columns:1fr 1fr;gap:11px}
+  .flujo-num{grid-column:1/-1;margin-bottom:0}
+  .quitar{grid-column:1/-1;width:100%}
+  .barra-int{height:auto;padding:10px 0;flex-wrap:wrap;gap:10px}
+  .menu{margin-left:0;width:100%}
+  .pantalla{padding:34px 0 60px}
+}
+@media (max-width:520px){
+  .opciones.tres,.opciones.seis{grid-template-columns:1fr}
+  .encabezado-seccion h2{font-size:27px}
+}
+</style>
+</head>
+<body>
+
+<header class="barra">
+  <div class="envoltura barra-int">
+    <button class="marca" data-ir="inicio" aria-label="FinanClic, ir al inicio">
+      Finan<span>Clic</span>
+    </button>
+    <nav class="menu" aria-label="Secciones">
+      <button data-ir="inicio">Inicio</button>
+      <button data-ir="educacion">Educación financiera</button>
+      <button data-ir="simulacion">Simulación</button>
+      <button data-ir="interacciones">Interacciones</button>
+      <button data-ir="acerca">Acerca de</button>
+      <span class="separador-menu" aria-hidden="true"></span>
+      <button class="proximamente" disabled
+        title="Disponible en el segundo corte">Conversión de tasas y anualidades
+        <span class="chip">Próximamente</span></button>
+      <button class="proximamente" disabled
+        title="Disponible en el tercer corte">Gradientes, perpetuidades y amortización
+        <span class="chip">Próximamente</span></button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============================ INICIO ============================ -->
+<section id="pantalla-inicio" class="pantalla activa">
+  <div class="envoltura portada">
+    <h1>Finan<span>Clic</span></h1>
+    <p class="lema">Entiende tu dinero. Simula tus decisiones.</p>
+    <p class="portada-texto">
+      Una herramienta de educación financiera para entender cómo el tiempo, las tasas
+      y el dinero cambian el valor de una decisión.
+    </p>
+    <div class="acciones">
+      <button class="btn btn-principal btn-grande" data-ir="educacion">Quiero aprender</button>
+      <button class="btn btn-secundario btn-grande" data-ir="simulacion">Quiero simular</button>
+    </div>
+
+    <div class="tarjetas-rapidas">
+      <button class="tarjeta-rapida" data-leccion="simple">
+        <h3>Interés simple</h3>
+        <span class="formula">VF = VP (1 + i·n)</span>
+        <p>Los intereses no se reinvierten. Siempre se calculan sobre el valor inicial.</p>
+      </button>
+      <button class="tarjeta-rapida" data-leccion="compuesto">
+        <h3>Interés compuesto</h3>
+        <span class="formula">VF = VP (1 + i)<sup>n</sup></span>
+        <p>Los intereses ganados se reinvierten y empiezan a generar más intereses.</p>
+      </button>
+      <button class="tarjeta-rapida" data-leccion="continuo">
+        <h3>Interés continuo</h3>
+        <span class="formula">VF = VP · e<sup>i·t</sup></span>
+        <p>La capitalización ocurre en todo instante. El tiempo siempre va en años.</p>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ========================== EDUCACIÓN ========================== -->
+<section id="pantalla-educacion" class="pantalla">
+  <div class="envoltura">
+
+    <div id="edu-indice">
+      <div class="encabezado-seccion">
+        <p class="rotulo">Educación financiera</p>
+        <h2>Tres formas de que el dinero cambie con el tiempo</h2>
+        <p>La diferencia entre las tres está en una sola pregunta: ¿los intereses ganados se
+           vuelven a invertir, y cada cuánto? Elige una para ver la explicación completa.</p>
+      </div>
+
+      <div class="tarjetas-rapidas" id="edu-tarjetas"></div>
+
+      <div class="tarjeta" style="margin-top:44px">
+        <h3 style="font-size:20px;margin-bottom:6px">Las tres curvas, una al lado de la otra</h3>
+        <p style="color:var(--tinta-2);font-size:15px;margin-bottom:4px">
+          Mismo capital de $ 1.000.000, misma tasa del 3 % por período, mismos 24 períodos.
+          Lo único que cambia es cada cuánto se reinvierten los intereses.</p>
+        <div id="edu-comparativa"></div>
+      </div>
+
+      <div class="tarjeta" style="margin-top:26px">
+        <h3 style="font-size:20px;margin-bottom:6px">Muévele tú a las variables</h3>
+        <p style="color:var(--tinta-2);font-size:15px">
+          Cambia el capital, la tasa y el tiempo, y mira cómo se separan las tres curvas.</p>
+        <div class="campos" style="margin:18px 0 4px">
+          <div class="campo">
+            <label for="cmp-vp">Capital inicial</label>
+            <div class="con-simbolo">
+              <span class="simbolo">$</span>
+              <input type="text" class="control" id="cmp-vp" value="1.000.000" inputmode="decimal">
+            </div>
+          </div>
+          <div class="campo">
+            <label for="cmp-tasa">Tasa por período: <span class="cifra" id="cmp-tasa-v">3,00 %</span></label>
+            <input type="range" class="deslizador" id="cmp-tasa" min="1" max="150" value="30">
+            <span class="pista">De 0,10 % a 15,00 %</span>
+          </div>
+          <div class="campo">
+            <label for="cmp-n">Períodos: <span class="cifra" id="cmp-n-v">24</span></label>
+            <input type="range" class="deslizador" id="cmp-n" min="1" max="60" value="24">
+            <span class="pista">De 1 a 60</span>
+          </div>
+        </div>
+        <div id="cmp-grafica"></div>
+        <div class="comparador-cifras" id="cmp-cifras"></div>
+      </div>
+
+      <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:40px 0 14px">
+        <h3 style="font-size:20px">Ponte a prueba</h3>
+        <span class="marcador" id="marcador">0 de 4 respondidas</span>
+        <button class="btn btn-suave" id="btn-reiniciar-quiz" style="margin-left:auto">
+          Empezar de nuevo
+        </button>
+      </div>
+      <div id="quiz"></div>
+    </div>
+
+    <div id="edu-detalle" class="oculto"></div>
+  </div>
+</section>
+
+<!-- ========================== SIMULACIÓN ========================== -->
+<section id="pantalla-simulacion" class="pantalla">
+  <div class="envoltura">
+    <div class="encabezado-seccion">
+      <p class="rotulo">Simulación</p>
+      <h2>Arma tu ejercicio</h2>
+      <p>Elige qué estás haciendo con el dinero, cómo se capitaliza y qué quieres averiguar.
+         El formulario se ajusta a lo que elijas.</p>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">1</span><h3>¿Qué operación es?</h3></div>
+      <div class="opciones dos" id="op-operacion"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">2</span><h3>¿Cómo se capitalizan los intereses?</h3></div>
+      <div class="opciones tres" id="op-regimen"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">3</span><h3>¿Qué quieres averiguar?</h3></div>
+      <div class="opciones seis" id="op-incognita"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">4</span><h3>Datos del ejercicio</h3></div>
+      <div class="tarjeta">
+        <div class="campos" id="campos-generales"></div>
+        <div id="zona-flujos"></div>
+      </div>
+    </div>
+
+    <div id="zona-linea"></div>
+
+    <div class="acciones">
+      <button class="btn btn-principal" id="btn-calcular">Calcular</button>
+      <button class="btn btn-secundario" id="btn-limpiar">Limpiar</button>
+      <button class="btn btn-secundario" id="btn-ejemplo">Cargar un ejemplo</button>
+    </div>
+
+    <div id="zona-resultado" style="margin-top:26px"></div>
+  </div>
+</section>
+
+<!-- ==================== INTERACCIONES CON IA ==================== -->
+<section id="pantalla-interacciones" class="pantalla">
+  <div class="envoltura">
+    <div class="encabezado-seccion">
+      <p class="rotulo">Interacciones</p>
+      <h2>Interacciones con IA</h2>
+      <p>Cómo construimos y mejoramos FinanClic con inteligencia artificial.</p>
+    </div>
+    <div id="tarjetas-ia"></div>
+  </div>
+</section>
+
+<!-- =========================== ACERCA DE =========================== -->
+<section id="pantalla-acerca" class="pantalla">
+  <div class="envoltura">
+    <div class="encabezado-seccion">
+      <p class="rotulo">Acerca de</p>
+      <h2>Sobre este proyecto</h2>
+      <p>Qué es FinanClic, para qué se construyó y con qué se construyó.</p>
+    </div>
+    <ul class="acerca-lista">
+      <li><b>Nombre del proyecto</b><span>FinanClic — Entiende tu dinero. Simula tus decisiones.</span></li>
+      <li><b>Qué es</b><span>Una herramienta digital de educación financiera para aprender y
+        simular el valor del dinero en el tiempo.</span></li>
+      <li><b>Contexto académico</b><span>Proyecto de la asignatura Matemáticas Financieras,
+        primer corte.</span></li>
+      <li><b>Construcción</b><span>Construido con inteligencia artificial.</span></li>
+      <li><b>Herramienta de IA utilizada</b><span>Claude, de Anthropic.</span></li>
+      <li><b>Alcance del primer corte</b><span>Interés simple, compuesto y continuo, ecuaciones
+        de valor con varios flujos y fecha focal. No incluye conversión de tasas, anualidades,
+        gradientes ni amortización: eso llega en los cortes siguientes.</span></li>
+      <li><b>Funcionamiento</b><span>Todos los cálculos ocurren en el navegador. No requiere
+        internet, cuenta de usuario ni servidor.</span></li>
+    </ul>
+    <div class="bloque">
+      <h4>Una nota sobre la precisión</h4>
+      <p style="margin:0;color:var(--tinta-2);font-size:15px">
+        El motor de cálculo no redondea por dentro: trabaja con toda la precisión disponible y
+        solo redondea al mostrar los resultados, a dos decimales para dinero. Por eso puede haber
+        diferencias de centavos frente a un ejercicio resuelto a mano donde se redondearon los
+        pasos intermedios. Está verificado contra 134 casos de prueba, incluidos los ejercicios
+        resueltos en clase.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="pie">
+  <div class="envoltura">
+    FinanClic · Matemáticas Financieras · Primer corte · Los cálculos se ejecutan en tu navegador.
+  </div>
+</footer>
+
+<!-- ================================================================
+     CONTENIDO EDITABLE DE LA SECCIÓN "INTERACCIONES CON IA"
+     Es lo primero del bloque de scripts a propósito: se edita aquí
+     y no hay que tocar nada más del archivo.
+     ================================================================ -->
+<script>
+/* ==================================================================
+   INTERACCIONES CON IA
+   ------------------------------------------------------------------
+   TODO EL CONTENIDO DE ESA SECCIÓN VIVE EN ESTE ARRAY.
+   Para llenarlo no hay que tocar ninguna otra parte del archivo:
+   basta con escribir entre las comillas de cada campo.
+
+   Campos de cada tarjeta:
+     titulo              nombre corto de la interacción
+     promptOriginal      el prompt tal como se escribió
+     primeraRespuesta    lo que respondió la IA la primera vez
+     problemaDetectado   qué estaba mal o faltaba
+     correccionRealizada qué se hizo para arreglarlo
+     promptCorreccion    el prompt con el que se pidió la corrección
+     resultadoFinal      cómo quedó al final
+     parteVisible        qué parte de FinanClic salió de esta interacción
+     enlaceConversacion  URL de la conversación original
+
+   Una de las tres tarjetas documenta un error numérico o conceptual
+   de la IA. Esa lleva "documentaError: true" y además:
+     valorEquivocado     el número o afirmación que dio mal la IA
+     valorCorrecto       el número o afirmación correcta
+     razonDelError       por qué se equivocó
+
+   Los campos vacíos se muestran como "Pendiente de completar", así
+   que la sección funciona igual mientras se termina de llenar.
+   ================================================================== */
+
+var INTERACCIONES_IA = [
+
+  /* ---------------------- TARJETA 1 ---------------------- */
+  {
+    titulo: '',
+    promptOriginal: '',
+    primeraRespuesta: '',
+    problemaDetectado: '',
+    correccionRealizada: '',
+    promptCorreccion: '',
+    resultadoFinal: '',
+    parteVisible: '',
+    enlaceConversacion: '',
+    documentaError: false
+  },
+
+  /* ---------------------- TARJETA 2 ---------------------- */
+  {
+    titulo: '',
+    promptOriginal: '',
+    primeraRespuesta: '',
+    problemaDetectado: '',
+    correccionRealizada: '',
+    promptCorreccion: '',
+    resultadoFinal: '',
+    parteVisible: '',
+    enlaceConversacion: '',
+    documentaError: false
+  },
+
+  /* ------- TARJETA 3: la que documenta un error de la IA ------- */
+  {
+    titulo: '',
+    promptOriginal: '',
+    primeraRespuesta: '',
+    problemaDetectado: '',
+    correccionRealizada: '',
+    promptCorreccion: '',
+    resultadoFinal: '',
+    parteVisible: '',
+    enlaceConversacion: '',
+
+    documentaError: true,
+    valorEquivocado: '',
+    valorCorrecto: '',
+    razonDelError: ''
+  }
+];
+
+</script>
+
+<!-- Motor de cálculo financiero (fases 1 y 2) -->
+<script>
+/* =====================================================================
+   FinanClic — motor.js
+   Motor de cálculo puro para Matemáticas Financieras, Primer Corte.
+   Sin interfaz, sin DOM, sin dependencias.
+
+   Convenciones tomadas de los apuntes y ejercicios del profesor:
+     - La periodicidad de la tasa manda sobre el tiempo.
+       Tasa trimestral -> el resultado sale en trimestres.
+     - Todo se pasa primero a meses, luego se divide entre los meses
+       que tenga el periodo. Se permiten periodos fraccionarios.
+     - En interes continuo el tiempo SIEMPRE va en anios.
+     - Sin redondeo interno. Se redondea solo al mostrar.
+     - Prohibida la conversion de tasas entre periodicidades en este corte.
+
+   Modulos expuestos:
+     Periodicidad, Tiempo, Simple, Compuesto, Continuo, Traslado, Formato
+   ===================================================================== */
+
+(function (raiz, fabrica) {
+  var api = fabrica();
+  if (typeof module === 'object' && module.exports) {
+    module.exports = api;            // Node / pruebas
+  } else {
+    raiz.Motor = api;                // Navegador (fase 2 y 3)
+  }
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  /* ===================================================================
+     0. UTILIDADES INTERNAS DE VALIDACION
+     =================================================================== */
+
+  var Errores = {
+    NO_NUMERO: 'Falta un dato o no es un número válido',
+    NO_POSITIVO: 'El valor debe ser mayor que cero',
+    NO_NEGATIVO: 'El valor no puede ser negativo',
+    DIVISION_CERO: 'Con estos datos habría que dividir entre cero, así que la operación no es posible',
+    LOG_INVALIDO: 'El valor final y el valor presente deben tener el mismo signo y no ser cero',
+    BASE_INVALIDA: 'La tasa no puede ser menor o igual a −100 %',
+    PERIODICIDAD: 'No reconozco esa periodicidad',
+    N_MESES: 'Para una periodicidad personalizada indica cada cuántos meses, en número entero mayor que cero',
+    TASA_NEGATIVA: 'Este modelo no admite tasas negativas',
+    TIEMPO_NEGATIVO: 'El momento de un flujo no puede ser anterior al origen',
+    SIN_FLUJOS: 'Agrega al menos un flujo para armar la ecuación de valor',
+    DENOMINADOR_CERO: 'Los coeficientes se cancelan entre sí y la incógnita desaparece de la ecuación. Revisa los signos o los momentos de los flujos',
+    SIN_INCOGNITA: 'Ningún flujo está marcado como coeficiente por la incógnita X',
+    SIN_SOLUCION: 'No hay solución dentro del rango razonable para este problema',
+    VARIAS_SOLUCIONES: 'El problema tiene más de una solución en el rango, así que el resultado sería ambiguo',
+    SIN_CONVERGENCIA: 'El cálculo no logró estabilizarse en un resultado confiable'
+  };
+
+  function ErrorMotor(mensaje, campo) {
+    var e = new Error(mensaje);
+    e.nombre = 'ErrorMotor';
+    e.campo = campo || null;
+    return e;
+  }
+
+  function esNumeroFinito(v) {
+    return typeof v === 'number' && isFinite(v);
+  }
+
+  function exigirNumero(v, campo) {
+    if (!esNumeroFinito(v)) throw ErrorMotor(Errores.NO_NUMERO + ' en "' + campo + '"', campo);
+    return v;
+  }
+
+  function exigirPositivo(v, campo) {
+    exigirNumero(v, campo);
+    if (v <= 0) throw ErrorMotor(Errores.NO_POSITIVO + ' en "' + campo + '"', campo);
+    return v;
+  }
+
+  function exigirNoNegativo(v, campo) {
+    exigirNumero(v, campo);
+    if (v < 0) throw ErrorMotor(Errores.NO_NEGATIVO + ' en "' + campo + '"', campo);
+    return v;
+  }
+
+  /* ===================================================================
+     1. MODULO PERIODICIDAD
+     Traduce una periodicidad de tasa a "cuantos meses dura un periodo".
+     =================================================================== */
+
+  var TABLA_PERIODICIDAD = {
+    mensual: 1,
+    bimestral: 2,
+    trimestral: 3,
+    cuatrimestral: 4,
+    semestral: 6,
+    anual: 12
+  };
+
+  // Nombres que el profesor puede usar para periodos no estandar.
+  // Ej.: "quintumestral" aparece en el ejercicio de Agustin (cada 5 meses).
+  var ALIAS_PERIODICIDAD = {
+    quintumestral: 5,
+    quintimestral: 5,
+    semestral2: 6
+  };
+
+  var Periodicidad = {
+
+    /**
+     * Meses que dura un periodo de la periodicidad dada.
+     * @param {string} periodicidad  mensual|bimestral|trimestral|
+     *                               cuatrimestral|semestral|anual|cadaNMeses
+     * @param {number} [n]           Solo para "cadaNMeses": cuantos meses.
+     * @returns {number} meses por periodo
+     */
+    mesesPorPeriodo: function (periodicidad, n) {
+      if (typeof periodicidad !== 'string') {
+        throw ErrorMotor(Errores.PERIODICIDAD, 'periodicidad');
+      }
+      var clave = periodicidad.trim().toLowerCase();
+
+      if (clave === 'cadanmeses' || clave === 'personalizada' || clave === 'cada_n_meses') {
+        if (!esNumeroFinito(n) || n <= 0 || Math.floor(n) !== n) {
+          throw ErrorMotor(Errores.N_MESES, 'n');
+        }
+        return n;
+      }
+      if (Object.prototype.hasOwnProperty.call(TABLA_PERIODICIDAD, clave)) {
+        return TABLA_PERIODICIDAD[clave];
+      }
+      if (Object.prototype.hasOwnProperty.call(ALIAS_PERIODICIDAD, clave)) {
+        return ALIAS_PERIODICIDAD[clave];
+      }
+      throw ErrorMotor(Errores.PERIODICIDAD + ': "' + periodicidad + '"', 'periodicidad');
+    },
+
+    /**
+     * Nombre en plural de la unidad de los periodos, para mostrar el
+     * resultado en el idioma de la tasa ("9,33 trimestres").
+     */
+    nombrePeriodos: function (periodicidad, n) {
+      var clave = String(periodicidad).trim().toLowerCase();
+      var nombres = {
+        mensual: 'meses',
+        bimestral: 'bimestres',
+        trimestral: 'trimestres',
+        cuatrimestral: 'cuatrimestres',
+        semestral: 'semestres',
+        anual: 'anios',
+        quintumestral: 'quintumestres',
+        quintimestral: 'quintumestres'
+      };
+      if (nombres[clave]) return nombres[clave];
+      if (clave === 'cadanmeses' || clave === 'personalizada' || clave === 'cada_n_meses') {
+        return 'periodos de ' + n + ' meses';
+      }
+      return 'periodos';
+    },
+
+    /** Lista de periodicidades estandar, util para poblar un <select>. */
+    listar: function () {
+      return Object.keys(TABLA_PERIODICIDAD).map(function (k) {
+        return { clave: k, meses: TABLA_PERIODICIDAD[k] };
+      });
+    }
+  };
+
+  /* ===================================================================
+     2. MODULO TIEMPO
+     Anios y meses  ->  meses totales  ->  numero de periodos.
+     Acepta y devuelve resultados fraccionarios.
+     =================================================================== */
+
+  var Tiempo = {
+
+    /** Convierte {anios, meses} a meses totales. */
+    aMesesTotales: function (anios, meses) {
+      var a = exigirNoNegativo(anios || 0, 'anios');
+      var m = exigirNoNegativo(meses || 0, 'meses');
+      return a * 12 + m;
+    },
+
+    /**
+     * Numero de periodos a partir de meses totales.
+     * 28 meses con tasa trimestral -> 9.3333... trimestres (no 9).
+     */
+    aPeriodos: function (mesesTotales, mesesPorPeriodo) {
+      exigirNoNegativo(mesesTotales, 'mesesTotales');
+      exigirPositivo(mesesPorPeriodo, 'mesesPorPeriodo');
+      return mesesTotales / mesesPorPeriodo;
+    },
+
+    /** Atajo: de {anios, meses} + periodicidad directo a periodos. */
+    periodosDesde: function (anios, meses, periodicidad, n) {
+      var mpp = Periodicidad.mesesPorPeriodo(periodicidad, n);
+      return Tiempo.aPeriodos(Tiempo.aMesesTotales(anios, meses), mpp);
+    },
+
+    /** Camino inverso: de periodos a meses totales. */
+    periodosAMeses: function (periodos, mesesPorPeriodo) {
+      exigirNumero(periodos, 'periodos');
+      exigirPositivo(mesesPorPeriodo, 'mesesPorPeriodo');
+      return periodos * mesesPorPeriodo;
+    },
+
+    /**
+     * De periodos a {anios, meses, mesesTotales} para mostrar el resultado.
+     * Los meses residuales pueden quedar fraccionarios.
+     */
+    periodosAAniosMeses: function (periodos, mesesPorPeriodo) {
+      var mesesTotales = Tiempo.periodosAMeses(periodos, mesesPorPeriodo);
+      var signo = mesesTotales < 0 ? -1 : 1;
+      var abs = Math.abs(mesesTotales);
+      var anios = Math.floor(abs / 12);
+      var meses = abs - anios * 12;
+      return {
+        anios: signo * anios,
+        meses: signo * meses,
+        mesesTotales: mesesTotales
+      };
+    },
+
+    /** Meses a anios. Obligatorio antes de tocar cualquier formula continua. */
+    mesesAAnios: function (meses) {
+      exigirNumero(meses, 'meses');
+      return meses / 12;
+    },
+
+    /** Anios a meses. */
+    aniosAMeses: function (anios) {
+      exigirNumero(anios, 'anios');
+      return anios * 12;
+    }
+  };
+
+  /* ===================================================================
+     3. MODULO INTERES SIMPLE
+     VF = VP (1 + i*n)
+     i y n en la misma unidad temporal.
+     =================================================================== */
+
+  var Simple = {
+
+    vf: function (vp, i, n) {
+      exigirNumero(vp, 'vp'); exigirNumero(i, 'i'); exigirNumero(n, 'n');
+      return vp * (1 + i * n);
+    },
+
+    vp: function (vf, i, n) {
+      exigirNumero(vf, 'vf'); exigirNumero(i, 'i'); exigirNumero(n, 'n');
+      var factor = 1 + i * n;
+      if (factor === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'factor');
+      return vf / factor;
+    },
+
+    tasa: function (vp, vf, n) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf'); exigirNumero(n, 'n');
+      if (vp === 0 || n === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'vp*n');
+      return (vf - vp) / (vp * n);
+    },
+
+    periodos: function (vp, vf, i) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf'); exigirNumero(i, 'i');
+      if (vp === 0 || i === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'vp*i');
+      return (vf - vp) / (vp * i);
+    },
+
+    /** Interes ganado a partir de VP, i y n. */
+    interes: function (vp, i, n) {
+      exigirNumero(vp, 'vp'); exigirNumero(i, 'i'); exigirNumero(n, 'n');
+      return vp * i * n;
+    },
+
+    /** Interes como diferencia. Vale para simple, compuesto y continuo. */
+    interesPorDiferencia: function (vp, vf) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf');
+      return vf - vp;
+    }
+  };
+
+  /* ===================================================================
+     4. MODULO INTERES COMPUESTO
+     VF = VP (1 + i)^n
+     Nunca I = VP * i^n. El interes es siempre VF - VP.
+     =================================================================== */
+
+  var Compuesto = {
+
+    vf: function (vp, i, n) {
+      exigirNumero(vp, 'vp'); exigirNumero(i, 'i'); exigirNumero(n, 'n');
+      if (1 + i <= 0) throw ErrorMotor(Errores.BASE_INVALIDA, 'i');
+      return vp * Math.pow(1 + i, n);
+    },
+
+    vp: function (vf, i, n) {
+      exigirNumero(vf, 'vf'); exigirNumero(i, 'i'); exigirNumero(n, 'n');
+      if (1 + i <= 0) throw ErrorMotor(Errores.BASE_INVALIDA, 'i');
+      var factor = Math.pow(1 + i, n);
+      if (factor === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'factor');
+      return vf / factor;
+    },
+
+    tasa: function (vp, vf, n) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf'); exigirPositivo(n, 'n');
+      if (vp === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'vp');
+      var cociente = vf / vp;
+      if (cociente <= 0) throw ErrorMotor(Errores.LOG_INVALIDO, 'vf/vp');
+      return Math.pow(cociente, 1 / n) - 1;
+    },
+
+    /**
+     * n = Log(VF/VP) / Log(1+i)
+     * El profesor lo escribe con Log base 10; el cociente de logaritmos
+     * da identico en cualquier base, aqui se usa el natural.
+     */
+    periodos: function (vp, vf, i) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf'); exigirNumero(i, 'i');
+      if (vp === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'vp');
+      var cociente = vf / vp;
+      if (cociente <= 0) throw ErrorMotor(Errores.LOG_INVALIDO, 'vf/vp');
+      if (1 + i <= 0) throw ErrorMotor(Errores.BASE_INVALIDA, 'i');
+      var den = Math.log(1 + i);
+      if (den === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'log(1+i)');
+      return Math.log(cociente) / den;
+    },
+
+    interes: function (vp, vf) {
+      return Simple.interesPorDiferencia(vp, vf);
+    }
+  };
+
+  /* ===================================================================
+     5. MODULO INTERES CONTINUO
+     VF = VP * e^(i*t), con t SIEMPRE en anios.
+     Despejes con logaritmo natural.
+     =================================================================== */
+
+  var Continuo = {
+
+    vf: function (vp, i, tAnios) {
+      exigirNumero(vp, 'vp'); exigirNumero(i, 'i'); exigirNumero(tAnios, 't');
+      return vp * Math.exp(i * tAnios);
+    },
+
+    vp: function (vf, i, tAnios) {
+      exigirNumero(vf, 'vf'); exigirNumero(i, 'i'); exigirNumero(tAnios, 't');
+      return vf / Math.exp(i * tAnios);
+    },
+
+    tasa: function (vp, vf, tAnios) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf');
+      exigirNumero(tAnios, 't');
+      if (tAnios === 0) throw ErrorMotor(Errores.DIVISION_CERO, 't');
+      if (vp === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'vp');
+      var cociente = vf / vp;
+      if (cociente <= 0) throw ErrorMotor(Errores.LOG_INVALIDO, 'vf/vp');
+      return Math.log(cociente) / tAnios;
+    },
+
+    tiempo: function (vp, vf, i) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf'); exigirNumero(i, 'i');
+      if (i === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'i');
+      if (vp === 0) throw ErrorMotor(Errores.DIVISION_CERO, 'vp');
+      var cociente = vf / vp;
+      if (cociente <= 0) throw ErrorMotor(Errores.LOG_INVALIDO, 'vf/vp');
+      return Math.log(cociente) / i;   // resultado en anios
+    },
+
+    /* --- Envolturas que reciben meses y convierten antes de la formula --- */
+
+    vfDesdeMeses: function (vp, i, meses) {
+      return Continuo.vf(vp, i, Tiempo.mesesAAnios(meses));
+    },
+
+    vpDesdeMeses: function (vf, i, meses) {
+      return Continuo.vp(vf, i, Tiempo.mesesAAnios(meses));
+    },
+
+    tasaDesdeMeses: function (vp, vf, meses) {
+      return Continuo.tasa(vp, vf, Tiempo.mesesAAnios(meses));
+    },
+
+    /** Tiempo despejado, devuelto en meses. */
+    tiempoEnMeses: function (vp, vf, i) {
+      return Tiempo.aniosAMeses(Continuo.tiempo(vp, vf, i));
+    },
+
+    interes: function (vp, vf) {
+      return Simple.interesPorDiferencia(vp, vf);
+    }
+  };
+
+  /* ===================================================================
+     6. MODULO TRASLADO A FECHA FOCAL
+     Aqui es donde fallan casi todas las implementaciones.
+
+     deltaN = nFocal - nFlujo
+       deltaN > 0  el flujo esta ANTES de la focal  -> se capitaliza
+       deltaN < 0  el flujo esta DESPUES            -> se descuenta
+       deltaN = 0  el flujo ya esta en la focal
+
+     En SIMPLE la direccion cambia la formula:
+       adelante:  Flujo * (1 + i*deltaN)
+       atras:     Flujo / (1 + i*|deltaN|)
+     Nunca meter un deltaN negativo dentro del parentesis.
+
+     En COMPUESTO y CONTINUO el exponente negativo se encarga solo.
+     =================================================================== */
+
+  var Traslado = {
+
+    simple: function (flujo, i, deltaN) {
+      exigirNumero(flujo, 'flujo'); exigirNumero(i, 'i'); exigirNumero(deltaN, 'deltaN');
+      if (deltaN === 0) return flujo;
+      if (deltaN > 0) {
+        return flujo * (1 + i * deltaN);
+      }
+      var factor = 1 + i * Math.abs(deltaN);
+      if (factor === 0) throw ErrorMotor(Errores.DIVISION_CERO, '1 + i*|deltaN|');
+      return flujo / factor;
+    },
+
+    compuesto: function (flujo, i, deltaN) {
+      exigirNumero(flujo, 'flujo'); exigirNumero(i, 'i'); exigirNumero(deltaN, 'deltaN');
+      if (1 + i <= 0) throw ErrorMotor(Errores.BASE_INVALIDA, 'i');
+      return flujo * Math.pow(1 + i, deltaN);
+    },
+
+    continuo: function (flujo, i, deltaTAnios) {
+      exigirNumero(flujo, 'flujo'); exigirNumero(i, 'i'); exigirNumero(deltaTAnios, 'deltaT');
+      return flujo * Math.exp(i * deltaTAnios);
+    },
+
+    /**
+     * Lleva una lista de flujos a una fecha focal y los suma.
+     * flujos: [{ monto, n }]  con n en la unidad de la tasa
+     *         (o en anios cuando el regimen es continuo).
+     * regimen: 'simple' | 'compuesto' | 'continuo'
+     */
+    aFechaFocal: function (flujos, i, nFocal, regimen) {
+      if (!Array.isArray(flujos)) throw ErrorMotor('Se esperaba un arreglo de flujos', 'flujos');
+      exigirNumero(i, 'i'); exigirNumero(nFocal, 'nFocal');
+
+      var mover;
+      if (regimen === 'simple') mover = Traslado.simple;
+      else if (regimen === 'compuesto') mover = Traslado.compuesto;
+      else if (regimen === 'continuo') mover = Traslado.continuo;
+      else throw ErrorMotor('Regimen no reconocido: "' + regimen + '"', 'regimen');
+
+      var detalle = flujos.map(function (f, idx) {
+        exigirNumero(f.monto, 'flujos[' + idx + '].monto');
+        exigirNumero(f.n, 'flujos[' + idx + '].n');
+        var deltaN = nFocal - f.n;
+        var valor = mover(f.monto, i, deltaN);
+        return {
+          monto: f.monto,
+          n: f.n,
+          deltaN: deltaN,
+          direccion: deltaN > 0 ? 'capitaliza' : (deltaN < 0 ? 'descuenta' : 'en la focal'),
+          valorEnFocal: valor
+        };
+      });
+
+      var total = detalle.reduce(function (acc, d) { return acc + d.valorEnFocal; }, 0);
+      return { total: total, detalle: detalle, nFocal: nFocal, regimen: regimen };
+    }
+  };
+
+  /* ===================================================================
+     7. MODULO FORMATO
+     Redondeo SOLO aqui. Los calculos internos van sin redondear.
+     =================================================================== */
+
+  var Formato = {
+
+    redondear: function (valor, decimales) {
+      exigirNumero(valor, 'valor');
+      var d = (decimales === undefined) ? 2 : decimales;
+      var f = Math.pow(10, d);
+      return Math.round((valor + Number.EPSILON * Math.abs(valor)) * f) / f;
+    },
+
+    /** Dinero: dos decimales, separador de miles, formato colombiano. */
+    dinero: function (valor, simbolo) {
+      var v = Formato.redondear(valor, 2);
+      var texto = v.toLocaleString('es-CO', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      return (simbolo === false) ? texto : '$ ' + texto;
+    },
+
+    /** Tasa: recibe decimal (0.0336) y devuelve porcentaje ("3,36 %"). */
+    tasa: function (valorDecimal, decimales) {
+      var d = (decimales === undefined) ? 2 : decimales;
+      var v = Formato.redondear(valorDecimal * 100, d);
+      return v.toLocaleString('es-CO', {
+        minimumFractionDigits: d,
+        maximumFractionDigits: d
+      }) + ' %';
+    },
+
+    /** Periodos con su unidad: "9,33 trimestres". */
+    periodos: function (valor, periodicidad, n, decimales) {
+      var d = (decimales === undefined) ? 4 : decimales;
+      var v = Formato.redondear(valor, d);
+      return v.toLocaleString('es-CO', { maximumFractionDigits: d }) + ' ' +
+             Periodicidad.nombrePeriodos(periodicidad, n);
+    },
+
+    /** "3 anios y 9 meses" a partir de meses totales. */
+    aniosYMeses: function (mesesTotales) {
+      exigirNumero(mesesTotales, 'mesesTotales');
+      var anios = Math.floor(Math.abs(mesesTotales) / 12);
+      var meses = Math.abs(mesesTotales) - anios * 12;
+      var partes = [];
+      if (anios > 0) partes.push(anios + (anios === 1 ? ' anio' : ' anios'));
+      if (meses > 0) partes.push(Formato.redondear(meses, 4) + (meses === 1 ? ' mes' : ' meses'));
+      if (partes.length === 0) partes.push('0 meses');
+      return (mesesTotales < 0 ? '-' : '') + partes.join(' y ');
+    },
+
+    /** Convierte "3,36" o "3.36%" a decimal 0.0336. Para inputs de la fase 2. */
+    tasaDesdeTexto: function (texto) {
+      if (typeof texto === 'number') return texto / 100;
+      var limpio = String(texto).replace('%', '').replace(/\s/g, '').replace(',', '.');
+      var v = parseFloat(limpio);
+      if (!esNumeroFinito(v)) throw ErrorMotor(Errores.NO_NUMERO, 'tasa');
+      return v / 100;
+    }
+  };
+
+  /* ===================================================================
+     8. MODULO NUMERICO
+     Biseccion y Newton-Raphson con respaldo de biseccion, para las
+     incognitas que no tienen despeje algebraico (tasa y momento cuando
+     hay varios flujos).
+     =================================================================== */
+
+  var Numerico = {
+
+    TOLERANCIA: 1e-10,
+    MAX_ITER: 200,
+
+    /** Cuenta cambios de signo muestreando el intervalo. */
+    explorar: function (f, a, b, muestras) {
+      var m = muestras || 200;
+      var puntos = [], i, x, y, cruces = [];
+      for (i = 0; i <= m; i++) {
+        x = a + (b - a) * i / m;
+        try { y = f(x); } catch (e) { y = NaN; }
+        puntos.push({ x: x, y: y });
+      }
+      for (i = 1; i < puntos.length; i++) {
+        var y0 = puntos[i - 1].y, y1 = puntos[i].y;
+        if (!isFinite(y0) || !isFinite(y1)) continue;
+        if (y0 === 0) cruces.push({ a: puntos[i - 1].x, b: puntos[i - 1].x });
+        else if (y0 * y1 < 0) cruces.push({ a: puntos[i - 1].x, b: puntos[i].x });
+      }
+      return cruces;
+    },
+
+    biseccion: function (f, a, b, tol, maxIter) {
+      var t = tol || Numerico.TOLERANCIA;
+      var N = maxIter || Numerico.MAX_ITER;
+      var fa = f(a), fb = f(b);
+      if (!isFinite(fa) || !isFinite(fb)) throw ErrorMotor(Errores.SIN_SOLUCION);
+      if (fa === 0) return a;
+      if (fb === 0) return b;
+      if (fa * fb > 0) throw ErrorMotor(Errores.SIN_SOLUCION);
+      var m, fm, k;
+      for (k = 0; k < N; k++) {
+        m = (a + b) / 2;
+        fm = f(m);
+        if (fm === 0 || (b - a) / 2 < t) return m;
+        if (fa * fm < 0) { b = m; fb = fm; } else { a = m; fa = fm; }
+      }
+      return (a + b) / 2;
+    },
+
+    /**
+     * Newton-Raphson con derivada numerica. Si se sale del intervalo,
+     * si la derivada se anula o si no converge, cae a biseccion.
+     */
+    newton: function (f, a, b, x0, tol, maxIter) {
+      var t = tol || Numerico.TOLERANCIA;
+      var N = maxIter || 60;
+      var x = (x0 === undefined) ? (a + b) / 2 : x0;
+      var h = Math.max(1e-7, Math.abs(b - a) * 1e-7);
+      var k, fx, dfx, xn;
+      for (k = 0; k < N; k++) {
+        try { fx = f(x); } catch (e) { break; }
+        if (!isFinite(fx)) break;
+        if (Math.abs(fx) < t) return x;
+        try { dfx = (f(x + h) - f(x - h)) / (2 * h); } catch (e) { break; }
+        if (!isFinite(dfx) || dfx === 0) break;
+        xn = x - fx / dfx;
+        if (!isFinite(xn) || xn < a || xn > b) break;
+        if (Math.abs(xn - x) < t) return xn;
+        x = xn;
+      }
+      return Numerico.biseccion(f, a, b, t, Numerico.MAX_ITER);
+    },
+
+    /**
+     * Resuelve f(x) = 0 en [a, b] avisando si no hay raiz o si hay varias.
+     * Devuelve { valor, iteraciones, metodo }.
+     */
+    resolver: function (f, a, b, opciones) {
+      var op = opciones || {};
+      var cruces = Numerico.explorar(f, a, b, op.muestras || 200);
+      if (cruces.length === 0) {
+        throw ErrorMotor(op.mensajeSinSolucion || Errores.SIN_SOLUCION);
+      }
+      if (cruces.length > 1 && !op.permitirVarias) {
+        throw ErrorMotor(op.mensajeVarias || Errores.VARIAS_SOLUCIONES);
+      }
+      var c = cruces[0];
+      var valor = (c.a === c.b) ? c.a : Numerico.newton(f, c.a, c.b, (c.a + c.b) / 2);
+      if (!isFinite(valor)) throw ErrorMotor(Errores.SIN_CONVERGENCIA);
+      return { valor: valor, intervalo: [c.a, c.b], raicesDetectadas: cruces.length };
+    }
+  };
+
+  /* ===================================================================
+     9. MODULO FLUJOS
+     Normaliza y valida la lista de flujos de una ecuacion de valor.
+
+     Un flujo:
+       { numero, valor, momento, tipo, coeficiente, descripcion }
+       momento     en MESES desde el origen
+       tipo        'entrada' (suma) | 'salida' (resta)
+       clase       'conocido'  -> usa "valor"
+                   'incognita' -> usa "coeficiente" y multiplica a X
+     =================================================================== */
+
+  var Flujos = {
+
+    LIMITE_TASA: 2,          // 200 % por periodo
+    MARGEN_HORIZONTE: 1.5,   // para acotar la busqueda de un momento
+
+    /** Valida un flujo y le pone los valores por defecto. */
+    normalizar: function (f, indice) {
+      if (!f || typeof f !== 'object') {
+        throw ErrorMotor('El flujo ' + (indice + 1) + ' no tiene datos');
+      }
+      var etiqueta = 'flujo ' + (f.numero !== undefined ? f.numero : indice + 1);
+
+      var tipo = (f.tipo || 'entrada').toString().toLowerCase();
+      if (tipo !== 'entrada' && tipo !== 'salida') {
+        throw ErrorMotor('El ' + etiqueta + ' debe ser de entrada o de salida');
+      }
+
+      if (!esNumeroFinito(f.momento)) {
+        throw ErrorMotor('Falta el momento del ' + etiqueta + ', en meses desde el origen');
+      }
+      if (f.momento < 0) {
+        throw ErrorMotor(Errores.TIEMPO_NEGATIVO + ' (' + etiqueta + ')');
+      }
+
+      var clase = (f.clase || (f.coeficiente !== undefined && f.valor === undefined
+                    ? 'incognita' : 'conocido')).toString().toLowerCase();
+
+      var valor = 0, coeficiente = 0, porcentaje = 0, base = null, baseDe = 'acumulado';
+
+      if (clase === 'incognita') {
+        coeficiente = (f.coeficiente === undefined) ? 1 : f.coeficiente;
+        if (!esNumeroFinito(coeficiente) || coeficiente <= 0) {
+          throw ErrorMotor('El coeficiente del ' + etiqueta + ' debe ser un número mayor que cero');
+        }
+      } else if (clase === 'porcentaje' || clase === 'derivado') {
+        clase = 'porcentaje';
+        porcentaje = f.porcentaje;
+        if (!esNumeroFinito(porcentaje) || porcentaje <= 0) {
+          throw ErrorMotor('El porcentaje del ' + etiqueta + ' debe ser un número mayor que cero. ' +
+                           'Escríbelo en decimal: 10 % es 0,1');
+        }
+        if (f.base === undefined || f.base === null) {
+          throw ErrorMotor('Indica de cuál flujo toma su porcentaje el ' + etiqueta);
+        }
+        base = f.base;
+        baseDe = (f.baseDe || 'acumulado').toString().toLowerCase();
+        if (['acumulado', 'interes', 'nominal'].indexOf(baseDe) === -1) {
+          throw ErrorMotor('El ' + etiqueta + ' debe tomar su porcentaje sobre el valor acumulado, ' +
+                           'sobre los intereses ganados o sobre el valor nominal');
+        }
+      } else {
+        clase = 'conocido';
+        if (!esNumeroFinito(f.valor)) {
+          throw ErrorMotor('Falta el valor del ' + etiqueta);
+        }
+        if (f.valor < 0) {
+          throw ErrorMotor('El ' + etiqueta + ' no puede tener un valor negativo. ' +
+                           'Para restarlo, márcalo como salida');
+        }
+        valor = f.valor;
+      }
+
+      return {
+        numero: (f.numero !== undefined) ? f.numero : indice + 1,
+        valor: valor,
+        momento: f.momento,
+        tipo: tipo,
+        signo: (tipo === 'entrada') ? 1 : -1,
+        clase: clase,
+        coeficiente: coeficiente,
+        porcentaje: porcentaje,
+        base: base,
+        baseDe: baseDe,
+        descripcion: f.descripcion || ''
+      };
+    },
+
+    normalizarLista: function (lista) {
+      if (!Array.isArray(lista) || lista.length === 0) {
+        throw ErrorMotor(Errores.SIN_FLUJOS);
+      }
+      var flujos = lista.map(Flujos.normalizar);
+      var vistos = {};
+      flujos.forEach(function (f) {
+        if (vistos[f.numero]) {
+          throw ErrorMotor('Hay dos flujos con el número ' + f.numero +
+                           '. Cada flujo necesita un número distinto');
+        }
+        vistos[f.numero] = true;
+      });
+      return flujos;
+    },
+
+    /**
+     * Deja cada flujo expresado como  valor = a + b*X.
+     *   conocido   -> { a: valor,          b: 0 }
+     *   incognita  -> { a: 0,              b: coeficiente }
+     *   porcentaje -> el a y el b del flujo base, escalados
+     *
+     * Un flujo por porcentaje toma un % de otro flujo medido en SU propio
+     * momento. Segun "baseDe":
+     *   acumulado -> % del valor del flujo base capitalizado hasta aqui
+     *   interes   -> % de lo que ese flujo base GANO en el trayecto
+     *   nominal   -> % del monto original del flujo base, sin capitalizar
+     *
+     * Como el escalado es lineal, un porcentaje puede apuntar a un flujo
+     * incognito y la ecuacion sigue siendo lineal en X.
+     */
+    expandir: function (flujos, i, regimen, mesesPorPeriodo) {
+      var porNumero = {};
+      flujos.forEach(function (f) { porNumero[f.numero] = f; });
+
+      var resueltos = {}, enProceso = {};
+
+      function resolverUno(f) {
+        if (Object.prototype.hasOwnProperty.call(resueltos, f.numero)) {
+          return resueltos[f.numero];
+        }
+        if (enProceso[f.numero]) {
+          throw ErrorMotor('Los flujos definidos por porcentaje se referencian en círculo. ' +
+                           'Revisa cuál toma el porcentaje de cuál');
+        }
+        enProceso[f.numero] = true;
+
+        var r;
+        if (f.clase === 'incognita') {
+          r = { a: 0, b: f.coeficiente };
+        } else if (f.clase === 'porcentaje') {
+          var base = porNumero[f.base];
+          if (!base) {
+            throw ErrorMotor('El flujo ' + f.numero + ' toma un porcentaje del flujo ' +
+                             f.base + ', que no existe en la lista');
+          }
+          if (base.numero === f.numero) {
+            throw ErrorMotor('El flujo ' + f.numero + ' no puede tomar un porcentaje de sí mismo');
+          }
+          if (f.baseDe !== 'nominal' && f.momento < base.momento) {
+            throw ErrorMotor('El flujo ' + f.numero + ' ocurre antes que el flujo ' + f.base +
+                             ', así que todavía no hay valor acumulado del cual tomar un porcentaje');
+          }
+          var rb = resolverUno(base);
+          var d = Ecuacion.delta(f.momento, base.momento, regimen, mesesPorPeriodo);
+          var fac = Ecuacion.factor(d, i, regimen);
+          var k;
+          if (f.baseDe === 'nominal') k = f.porcentaje;
+          else if (f.baseDe === 'interes') k = f.porcentaje * (fac - 1);
+          else k = f.porcentaje * fac;
+          r = { a: rb.a * k, b: rb.b * k, factorBase: fac };
+        } else {
+          r = { a: f.valor, b: 0 };
+        }
+
+        enProceso[f.numero] = false;
+        resueltos[f.numero] = r;
+        return r;
+      }
+
+      return flujos.map(function (f) {
+        var r = resolverUno(f);
+        var copia = {};
+        for (var p in f) if (Object.prototype.hasOwnProperty.call(f, p)) copia[p] = f[p];
+        copia.a = r.a;
+        copia.b = r.b;
+        if (f.clase === 'porcentaje') copia.valor = r.a;   // queda resuelto si no depende de X
+        return copia;
+      });
+    },
+
+    /** Momento del ultimo flujo, en meses. */
+    horizonte: function (flujos) {
+      return flujos.reduce(function (mx, f) { return Math.max(mx, f.momento); }, 0);
+    }
+  };
+
+  /* ===================================================================
+     10. MODULO ECUACION DE VALOR
+     =================================================================== */
+
+  var Ecuacion = {
+
+    /** Resuelve la fecha focal pedida y la devuelve en meses. */
+    resolverFocal: function (focal, flujos) {
+      var f = focal || { tipo: 'presente' };
+      var tipo = (typeof f === 'string') ? f : (f.tipo || 'presente');
+      tipo = tipo.toString().toLowerCase();
+
+      if (tipo === 'presente' || tipo === 'origen') return 0;
+      if (tipo === 'futuro' || tipo === 'final') return Flujos.horizonte(flujos);
+      if (tipo === 'especifico' || tipo === 'especifica' || tipo === 'momento') {
+        var m = (f.meses !== undefined) ? f.meses : f.momento;
+        if (!esNumeroFinito(m)) throw ErrorMotor('Indica en qué mes quieres poner la fecha focal');
+        if (m < 0) throw ErrorMotor('La fecha focal no puede ser anterior al origen');
+        return m;
+      }
+      throw ErrorMotor('Fecha focal no reconocida: usa presente, futuro o un momento específico');
+    },
+
+    /**
+     * Delta entre la focal y el flujo, ya expresado en la unidad que
+     * usa la tasa (periodos) o en anios cuando el regimen es continuo.
+     */
+    delta: function (focalMeses, momentoMeses, regimen, mesesPorPeriodo) {
+      var diffMeses = focalMeses - momentoMeses;
+      return (regimen === 'continuo')
+        ? diffMeses / 12
+        : diffMeses / mesesPorPeriodo;
+    },
+
+    /** Factor por el que se multiplica un flujo para llevarlo a la focal. */
+    factor: function (delta, i, regimen) {
+      if (regimen === 'simple') {
+        if (delta === 0) return 1;
+        if (delta > 0) return 1 + i * delta;
+        var den = 1 + i * Math.abs(delta);
+        if (den === 0) throw ErrorMotor(Errores.DIVISION_CERO);
+        return 1 / den;
+      }
+      if (regimen === 'compuesto') {
+        if (1 + i <= 0) throw ErrorMotor(Errores.BASE_INVALIDA, 'i');
+        return Math.pow(1 + i, delta);
+      }
+      if (regimen === 'continuo') {
+        return Math.exp(i * delta);
+      }
+      throw ErrorMotor('Régimen no reconocido: usa simple, compuesto o continuo');
+    },
+
+    /** Validaciones comunes a toda la fase 2. */
+    validarEntrada: function (cfg) {
+      var regimen = (cfg.regimen || 'compuesto').toString().toLowerCase();
+      if (['simple', 'compuesto', 'continuo'].indexOf(regimen) === -1) {
+        throw ErrorMotor('Régimen no reconocido: usa simple, compuesto o continuo');
+      }
+      var mpp = (regimen === 'continuo')
+        ? 12
+        : Periodicidad.mesesPorPeriodo(cfg.periodicidad || 'mensual', cfg.mesesPersonalizados);
+
+      if (cfg.tasa !== undefined && cfg.tasa !== null) {
+        exigirNumero(cfg.tasa, 'tasa');
+        if (cfg.tasa < 0) throw ErrorMotor(Errores.TASA_NEGATIVA, 'tasa');
+      }
+      return { regimen: regimen, mesesPorPeriodo: mpp };
+    },
+
+    /**
+     * Lleva todos los flujos conocidos a la fecha focal y devuelve el
+     * detalle completo, la ganancia neta y las banderas para la interfaz.
+     */
+    resolver: function (cfg) {
+      var base = Ecuacion.validarEntrada(cfg);
+      var regimen = base.regimen, mpp = base.mesesPorPeriodo;
+      var flujos = Flujos.normalizarLista(cfg.flujos);
+      var i = cfg.tasa;
+      exigirNumero(i, 'tasa');
+
+      var focalMeses = Ecuacion.resolverFocal(cfg.focal, flujos);
+      flujos = Flujos.expandir(flujos, i, regimen, mpp);
+
+      var conIncognita = flujos.filter(function (f) { return Math.abs(f.b) > 1e-15; });
+      if (conIncognita.length > 0) {
+        throw ErrorMotor('Hay flujos que dependen de la incógnita X (el flujo ' +
+                         conIncognita[0].numero + '). Para resolverlos usa el despeje por ' +
+                         'coeficiente, no el cálculo directo');
+      }
+
+      var detalle = flujos.map(function (f) {
+        var d = Ecuacion.delta(focalMeses, f.momento, regimen, mpp);
+        var fac = Ecuacion.factor(d, i, regimen);
+        var aporte = f.signo * f.a * fac;
+        return {
+          numero: f.numero,
+          descripcion: f.descripcion,
+          valor: f.a,
+          momento: f.momento,
+          tipo: f.tipo,
+          clase: f.clase,
+          coeficiente: f.coeficiente,
+          porcentaje: f.porcentaje,
+          base: f.base,
+          baseDe: f.clase === 'porcentaje' ? f.baseDe : null,
+          delta: d,
+          direccion: d > 0 ? 'se capitaliza' : (d < 0 ? 'se descuenta' : 'ya está en la focal'),
+          factor: fac,
+          valorEnFocal: aporte
+        };
+      });
+
+      var valorFocal = detalle.reduce(function (a, d) { return a + d.valorEnFocal; }, 0);
+      var sumaNominal = flujos.reduce(function (a, f) { return a + f.a; }, 0);
+      var ganancia = valorFocal - sumaNominal;
+      var operacion = (cfg.operacion || 'inversion').toString().toLowerCase();
+
+      return {
+        regimen: regimen,
+        tasa: i,
+        periodicidad: cfg.periodicidad || (regimen === 'continuo' ? 'anual' : 'mensual'),
+        mesesPorPeriodo: mpp,
+        focalMeses: focalMeses,
+        focalPeriodos: (regimen === 'continuo') ? focalMeses / 12 : focalMeses / mpp,
+        detalle: detalle,
+        valorFocal: valorFocal,
+        sumaNominal: sumaNominal,
+        gananciaNeta: ganancia,
+        etiquetaGanancia: Ecuacion.etiquetaGanancia(operacion),
+        operacion: operacion,
+        // El resultado en interes simple depende de la fecha focal elegida.
+        // No es un error: es una propiedad del regimen. La interfaz avisa.
+        dependeDeFechaFocal: regimen === 'simple',
+        avisoFechaFocal: regimen === 'simple'
+          ? 'En interés simple el resultado depende de la fecha focal que elijas. ' +
+            'Llevar todo al mes ' + focalMeses + ' y luego descontarlo al origen ' +
+            'no devuelve el mismo número. Es una propiedad del interés simple, no un error.'
+          : null
+      };
+    },
+
+    etiquetaGanancia: function (operacion) {
+      return (operacion === 'credito')
+        ? 'Costo del crédito (intereses pagados)'
+        : 'Ganancia neta (intereses ganados)';
+    },
+
+    /* --------------------------------------------------------------
+       Despeje de X cuando hay flujos con coeficiente.
+       La ecuacion es lineal en X:
+         valorFocal(X) = Sconocidos + X * Scoef
+       Segun el modo, el objetivo es el valor en la focal o la ganancia neta:
+         valorFocal:   X = (objetivo - Sconocidos) / Scoef
+         gananciaNeta: X = (objetivo - Sconocidos + SnomConocidos)
+                           / (Scoef - Scoef_nominal)
+       -------------------------------------------------------------- */
+    despejarCoeficiente: function (cfg) {
+      var base = Ecuacion.validarEntrada(cfg);
+      var regimen = base.regimen, mpp = base.mesesPorPeriodo;
+      var flujos = Flujos.normalizarLista(cfg.flujos);
+      var i = cfg.tasa;
+      exigirNumero(i, 'tasa');
+      exigirNumero(cfg.objetivo, 'objetivo');
+
+      var incognitas = flujos.filter(function (f) { return f.clase === 'incognita'; });
+      if (incognitas.length === 0) throw ErrorMotor(Errores.SIN_INCOGNITA);
+
+      var focalMeses = Ecuacion.resolverFocal(cfg.focal, flujos);
+      flujos = Flujos.expandir(flujos, i, regimen, mpp);
+      var modo = (cfg.modo || 'valorFocal').toString();
+
+      var sConocidos = 0, sCoef = 0, nomConocidos = 0, nomCoef = 0;
+      var detalle = flujos.map(function (f) {
+        var d = Ecuacion.delta(focalMeses, f.momento, regimen, mpp);
+        var fac = Ecuacion.factor(d, i, regimen);
+        sConocidos += f.signo * f.a * fac;
+        sCoef += f.signo * f.b * fac;
+        nomConocidos += f.a;
+        nomCoef += f.b;
+        return { numero: f.numero, clase: f.clase, coeficiente: f.coeficiente,
+                 a: f.a, b: f.b, momento: f.momento, delta: d, factor: fac };
+      });
+
+      var numerador, denominador;
+      if (modo === 'gananciaNeta') {
+        numerador = cfg.objetivo - sConocidos + nomConocidos;
+        denominador = sCoef - nomCoef;
+      } else {
+        numerador = cfg.objetivo - sConocidos;
+        denominador = sCoef;
+      }
+
+      if (Math.abs(denominador) < 1e-12) throw ErrorMotor(Errores.DENOMINADOR_CERO);
+
+      var X = numerador / denominador;
+
+      var valores = flujos.map(function (f) {
+        return {
+          numero: f.numero,
+          descripcion: f.descripcion,
+          momento: f.momento,
+          tipo: f.tipo,
+          clase: f.clase,
+          valor: f.a + f.b * X
+        };
+      });
+
+      return {
+        X: X,
+        modo: modo,
+        focalMeses: focalMeses,
+        sumaConocidosEnFocal: sConocidos,
+        sumaCoeficientesEnFocal: sCoef,
+        denominador: denominador,
+        valoresResueltos: valores,
+        detalle: detalle
+      };
+    },
+
+    /* --------------------------------------------------------------
+       Despeje de la tasa por metodo numerico.
+       -------------------------------------------------------------- */
+    despejarTasa: function (cfg) {
+      var base = Ecuacion.validarEntrada(
+        { regimen: cfg.regimen, periodicidad: cfg.periodicidad,
+          mesesPersonalizados: cfg.mesesPersonalizados });
+      exigirNumero(cfg.objetivo, 'objetivo');
+      Flujos.normalizarLista(cfg.flujos);
+
+      var min = (cfg.tasaMinima === undefined) ? 0 : cfg.tasaMinima;
+      var max = (cfg.tasaMaxima === undefined) ? Flujos.LIMITE_TASA : cfg.tasaMaxima;
+      if (min < 0) throw ErrorMotor(Errores.TASA_NEGATIVA);
+      if (max <= min) throw ErrorMotor('El rango de búsqueda de la tasa no es válido');
+
+      var modo = (cfg.modo || 'valorFocal').toString();
+
+      var f = function (i) {
+        var r = Ecuacion.resolver({
+          flujos: cfg.flujos, regimen: base.regimen, tasa: i,
+          periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados,
+          focal: cfg.focal, operacion: cfg.operacion
+        });
+        var obtenido = (modo === 'gananciaNeta') ? r.gananciaNeta : r.valorFocal;
+        return obtenido - cfg.objetivo;
+      };
+
+      var r = Numerico.resolver(f, min, max, {
+        mensajeSinSolucion: 'No existe una tasa entre ' + Formato.tasa(min) + ' y ' +
+          Formato.tasa(max) + ' que produzca ese resultado. Revisa los datos del problema',
+        mensajeVarias: 'Hay más de una tasa que cumple la condición en el rango buscado. ' +
+          'Acota el rango para obtener un resultado único'
+      });
+
+      return { tasa: r.valor, intervalo: r.intervalo, regimen: base.regimen };
+    },
+
+    /* --------------------------------------------------------------
+       Despeje del momento de un flujo por metodo numerico.
+       -------------------------------------------------------------- */
+    despejarMomento: function (cfg) {
+      var base = Ecuacion.validarEntrada(cfg);
+      exigirNumero(cfg.objetivo, 'objetivo');
+      exigirNumero(cfg.tasa, 'tasa');
+      var flujos = Flujos.normalizarLista(
+        cfg.flujos.map(function (f, k) {
+          // El flujo incognito puede venir sin momento; se le pone 0 provisional.
+          if (k === cfg.indiceFlujo && !esNumeroFinito(f.momento)) {
+            var copia = {}; for (var p in f) copia[p] = f[p]; copia.momento = 0; return copia;
+          }
+          return f;
+        }));
+
+      var idx = cfg.indiceFlujo;
+      if (!Number.isInteger(idx) || idx < 0 || idx >= flujos.length) {
+        throw ErrorMotor('Indica cuál de los flujos tiene el momento desconocido');
+      }
+
+      var horizonte = Flujos.horizonte(flujos);
+      var min = (cfg.momentoMinimo === undefined) ? 0 : cfg.momentoMinimo;
+      var max = (cfg.momentoMaximo === undefined)
+        ? Math.max(horizonte * Flujos.MARGEN_HORIZONTE, horizonte + 12, 12)
+        : cfg.momentoMaximo;
+      if (min < 0) throw ErrorMotor(Errores.TIEMPO_NEGATIVO);
+      if (max <= min) throw ErrorMotor('El rango de búsqueda del momento no es válido');
+
+      var modo = (cfg.modo || 'valorFocal').toString();
+      var focalFija = cfg.focal;
+
+      var f = function (m) {
+        var lista = flujos.map(function (fl, k) {
+          var copia = { numero: fl.numero, valor: fl.valor, momento: fl.momento,
+                        tipo: fl.tipo, clase: fl.clase, coeficiente: fl.coeficiente };
+          if (k === idx) copia.momento = m;
+          return copia;
+        });
+        var r = Ecuacion.resolver({
+          flujos: lista, regimen: base.regimen, tasa: cfg.tasa,
+          periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados,
+          focal: focalFija, operacion: cfg.operacion
+        });
+        var obtenido = (modo === 'gananciaNeta') ? r.gananciaNeta : r.valorFocal;
+        return obtenido - cfg.objetivo;
+      };
+
+      var r = Numerico.resolver(f, min, max, {
+        mensajeSinSolucion: 'No hay un momento entre el mes ' + Formato.redondear(min, 2) +
+          ' y el mes ' + Formato.redondear(max, 2) + ' que produzca ese resultado. ' +
+          'Revisa los datos o amplía el horizonte',
+        mensajeVarias: 'Hay más de un momento que cumple la condición en el rango buscado. ' +
+          'Acota el horizonte para obtener un resultado único'
+      });
+
+      return {
+        momentoMeses: r.valor,
+        momentoAniosMeses: Formato.aniosYMeses(r.valor),
+        intervalo: r.intervalo
+      };
+    },
+
+    /** Ganancia neta de un solo flujo: VF − VP. */
+    gananciaSimple: function (vp, vf, operacion) {
+      exigirNumero(vp, 'vp'); exigirNumero(vf, 'vf');
+      return {
+        ganancia: vf - vp,
+        etiqueta: Ecuacion.etiquetaGanancia((operacion || 'inversion').toLowerCase())
+      };
+    }
+  };
+
+  /* =================================================================== */
+
+  return {
+    Periodicidad: Periodicidad,
+    Tiempo: Tiempo,
+    Simple: Simple,
+    Compuesto: Compuesto,
+    Continuo: Continuo,
+    Traslado: Traslado,
+    Formato: Formato,
+    Numerico: Numerico,
+    Flujos: Flujos,
+    Ecuacion: Ecuacion,
+    Errores: Errores,
+    version: '2.1.0-corte1'
+  };
+});
+
+</script>
+
+<!-- Interfaz -->
+<script>
+/* ==================================================================
+   FinanClic — capa de interfaz
+   No contiene lógica financiera: toda cuenta se delega a window.Motor.
+   Secciones: Fmt (formato), Nav, Edu, Sim, Linea, Inter.
+   ================================================================== */
+(function () {
+'use strict';
+
+var M = window.Motor;
+var $  = function (s, c) { return (c || document).querySelector(s); };
+var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+function el(tag, attrs, html) {
+  var n = document.createElement(tag);
+  if (attrs) for (var k in attrs) if (attrs[k] !== null && attrs[k] !== undefined) n.setAttribute(k, attrs[k]);
+  if (html !== undefined) n.innerHTML = html;
+  return n;
+}
+
+/* ==================================================================
+   1. FORMATO COLOMBIANO
+   Punto para miles, coma para decimales, en la salida y en la entrada.
+   ================================================================== */
+var Fmt = {
+
+  MONEDAS: { COP: '$', USD: 'US$', EUR: '€' },
+
+  /** 1234567.5 -> "1.234.567,50" */
+  numero: function (n, dec) {
+    if (!isFinite(n)) return '—';
+    dec = (dec === undefined) ? 2 : dec;
+    var s = Math.abs(n).toFixed(dec).split('.');
+    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return (n < 0 ? '-' : '') + (s.length > 1 ? s[0] + ',' + s[1] : s[0]);
+  },
+
+  dinero: function (n, moneda) {
+    return (Fmt.MONEDAS[moneda] || '$') + ' ' + Fmt.numero(n, 2);
+  },
+
+  tasa: function (i, dec) { return Fmt.numero(i * 100, dec === undefined ? 4 : dec) + ' %'; },
+
+  /** Nombre de la unidad de los períodos, con tilde. */
+  unidad: function (periodicidad, n) {
+    var u = M.Periodicidad.nombrePeriodos(periodicidad, n);
+    return u === 'anios' ? 'años' : u;
+  },
+
+  /** "3 años y 9 meses" a partir de meses totales, con tilde. */
+  tiempoTexto: function (meses) {
+    return M.Formato.aniosYMeses(meses).replace(/anios/g, 'años').replace(/anio/g, 'año');
+  },
+
+  /** Períodos: hasta 4 decimales, sin ceros de relleno inútiles. */
+  periodos: function (n) {
+    if (!isFinite(n)) return '—';
+    var r = Math.round(n * 10000) / 10000;
+    if (Math.abs(r - Math.round(r)) < 1e-9) return Fmt.numero(r, 0);
+    // se muestran hasta cuatro decimales, pero sin ceros de relleno al final
+    return Fmt.numero(r, 4).replace(/0+$/, '').replace(/,$/, '');
+  },
+
+  /**
+   * Acepta "1.000.000,50", "1000000,5", "1000000.5", "1.5" y "1.000".
+   * Regla: si hay coma, la coma es decimal y los puntos son miles.
+   * Si no hay coma, un punto seguido de exactamente tres dígitos es
+   * separador de miles; en cualquier otro caso es decimal.
+   */
+  parsear: function (txt) {
+    if (typeof txt === 'number') return txt;
+    if (txt === null || txt === undefined) return NaN;
+    var s = String(txt).trim().replace(/\s/g, '').replace(/[$€]/g, '')
+             .replace(/US\$/i, '').replace(/%/g, '');
+    if (s === '') return NaN;
+    var negativo = s.charAt(0) === '-';
+    if (negativo) s = s.slice(1);
+
+    if (s.indexOf(',') !== -1) {
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else {
+      var p = s.split('.');
+      if (p.length > 2) s = p.join('');
+      else if (p.length === 2 && p[1].length === 3) s = p.join('');
+    }
+    if (!/^\d*\.?\d*$/.test(s) || s === '' || s === '.') return NaN;
+    var v = parseFloat(s);
+    return isNaN(v) ? NaN : (negativo ? -v : v);
+  },
+
+  /** Reescribe el contenido de un campo al salir de él. */
+  normalizarCampo: function (input, dec) {
+    var v = Fmt.parsear(input.value);
+    if (input.value.trim() === '') { input.classList.remove('malo'); return; }
+    if (isNaN(v)) { input.classList.add('malo'); return; }
+    input.classList.remove('malo');
+    input.value = Fmt.numero(v, dec === undefined ? 2 : dec).replace(/,00$/, '');
+  }
+};
+
+/* ==================================================================
+   2. NAVEGACIÓN
+   ================================================================== */
+var Nav = {
+  ir: function (id) {
+    // al salir de una lección se vuelve al índice, para no dejarla abierta al regresar
+    if (id !== 'educacion') {
+      var det = $('#edu-detalle');
+      if (det && !det.classList.contains('oculto')) Edu.volver();
+    }
+    $$('.pantalla').forEach(function (p) { p.classList.remove('activa'); });
+    var destino = $('#pantalla-' + id);
+    if (destino) destino.classList.add('activa');
+    $$('.menu button').forEach(function (b) {
+      if (b.dataset.ir === id) b.setAttribute('aria-current', 'page');
+      else b.removeAttribute('aria-current');
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+  iniciar: function () {
+    $$('[data-ir]').forEach(function (b) {
+      if (b.disabled) return;
+      b.addEventListener('click', function () { Nav.ir(b.dataset.ir); });
+    });
+    $$('[data-leccion]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        Nav.ir('educacion'); Edu.abrir(b.dataset.leccion);
+      });
+    });
+  }
+};
+
+/* ==================================================================
+   3. EDUCACIÓN FINANCIERA
+   ================================================================== */
+var Edu = {
+
+  /** Gráfica de líneas en SVG, escrita a mano. */
+  grafica: function (series, opciones) {
+    var o = opciones || {};
+    var W = 620, H = 260, mI = 62, mD = 16, mS = 16, mF = 32;
+    var maxX = 0, maxY = 0, minY = Infinity;
+    series.forEach(function (s) {
+      s.puntos.forEach(function (p) {
+        if (p[0] > maxX) maxX = p[0];
+        if (p[1] > maxY) maxY = p[1];
+        if (p[1] < minY) minY = p[1];
+      });
+    });
+    var pad = (maxY - minY) * 0.08 || 1;
+    maxY += pad; minY = Math.max(0, minY - pad);
+    var ex = function (x) { return mI + (W - mI - mD) * (x / (maxX || 1)); };
+    var ey = function (y) { return H - mF - (H - mS - mF) * ((y - minY) / ((maxY - minY) || 1)); };
+
+    var g = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' +
+            (o.titulo || 'Gráfica') + '">';
+    for (var k = 0; k <= 4; k++) {
+      var yv = minY + (maxY - minY) * k / 4, yy = ey(yv);
+      g += '<line x1="' + mI + '" y1="' + yy + '" x2="' + (W - mD) + '" y2="' + yy +
+           '" stroke="#E4E9F2" stroke-width="1"/>' +
+           '<text x="' + (mI - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="10.5" ' +
+           'fill="#7A849B" font-family="ui-monospace,Menlo,monospace">' +
+           Fmt.numero(yv, 0) + '</text>';
+    }
+    var pasos = Math.min(maxX, 6);
+    for (var t = 0; t <= pasos; t++) {
+      var xv = Math.round(maxX * t / pasos);
+      g += '<text x="' + ex(xv) + '" y="' + (H - 12) + '" text-anchor="middle" font-size="10.5" ' +
+           'fill="#7A849B" font-family="ui-monospace,Menlo,monospace">' + xv + '</text>';
+    }
+    series.forEach(function (s) {
+      var d = s.puntos.map(function (p, idx) {
+        return (idx ? 'L' : 'M') + ex(p[0]).toFixed(1) + ' ' + ey(p[1]).toFixed(1);
+      }).join(' ');
+      g += '<path d="' + d + '" fill="none" stroke="' + s.color +
+           '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>';
+      var ult = s.puntos[s.puntos.length - 1];
+      g += '<circle cx="' + ex(ult[0]) + '" cy="' + ey(ult[1]) + '" r="3.5" fill="' + s.color + '"/>';
+    });
+    g += '</svg>';
+
+    var leyenda = '<div class="leyenda">' + series.map(function (s) {
+      return '<span><i class="punto" style="background:' + s.color + '"></i>' + s.nombre + '</span>';
+    }).join('') + '</div>';
+    return '<div class="lienzo-linea">' + g + leyenda + '</div>';
+  },
+
+  puntos: function (fn, n) {
+    var a = []; for (var k = 0; k <= n; k++) a.push([k, fn(k)]); return a;
+  },
+
+  /* ------------------------------------------------------------------
+     Bloques que se repiten en los tres regímenes.
+     El enunciado pide que estos tres aparezcan en simple, compuesto
+     y continuo, sin excepción.
+     ------------------------------------------------------------------ */
+
+  glosario: function (unidadTiempo) {
+    return '<div class="bloque-edu"><h3>Las cuatro letras que verás siempre</h3>' +
+      '<div class="glosario">' +
+      '<div><span class="letra-g">VP</span><b>Valor presente</b>' +
+      '<p>El dinero al principio. Lo que prestas, lo que te prestan o lo que inviertes hoy.</p></div>' +
+      '<div><span class="letra-g">VF</span><b>Valor futuro</b>' +
+      '<p>El dinero al final. El valor presente <i>más</i> todos los intereses acumulados.</p></div>' +
+      '<div><span class="letra-g">i</span><b>Tasa de interés</b>' +
+      '<p>Un porcentaje. Dice cuánto crece el dinero en <i>un</i> período.</p></div>' +
+      '<div><span class="letra-g">n</span><b>Número de períodos</b>' +
+      '<p>Cuántas veces se aplica esa tasa. Se cuenta en ' + unidadTiempo + '.</p></div>' +
+      '</div></div>';
+  },
+
+  iContraI: function () {
+    return '<div class="bloque-edu"><h3>I y la i no son lo mismo</h3>' +
+      '<p>Se escriben casi igual y significan cosas distintas. Es el error que más se repite ' +
+      'en los parciales.</p>' +
+      '<div class="rejilla-2" style="margin-top:14px">' +
+      '<div class="destaque" style="border-color:var(--oro)">' +
+      '<span class="letra-g" style="color:var(--oro)">I</span>' +
+      '<b>Los intereses, en pesos</b>' +
+      '<p>Un monto de dinero. Si ganaste ' + Fmt.dinero(360000, 'COP') + ' de intereses, ' +
+      'I = ' + Fmt.dinero(360000, 'COP') + '. Es lo que el enunciado llama ' +
+      '"ganancia neta" o "costo del crédito".</p></div>' +
+      '<div class="destaque" style="border-color:var(--inversion)">' +
+      '<span class="letra-g" style="color:var(--inversion)">i</span>' +
+      '<b>La tasa, en porcentaje</b>' +
+      '<p>Un porcentaje, nunca un monto. Si te cobran 2 % mensual, i = 2 %. La i no se mide ' +
+      'en pesos y la I no se mide en porcentaje.</p></div>' +
+      '</div>' +
+      '<div class="aviso" style="margin-top:14px"><strong>Y una tercera:</strong> VF no es ni I ' +
+      'ni i. VF es el total al final, es decir VP + I. Si el ejercicio pide la ganancia y ' +
+      'respondes con el VF, la respuesta está mal aunque el cálculo esté bien.</div></div>';
+  },
+
+  mismaUnidad: function (contexto) {
+    return '<div class="bloque-edu"><h3>i y n tienen que hablar el mismo idioma</h3>' +
+      '<p>La unidad de tiempo de la tasa y la del número de períodos <b>siempre</b> debe ser la ' +
+      'misma, y la que manda es la tasa. Si la tasa es trimestral, el tiempo se cuenta en ' +
+      'trimestres y el resultado sale en trimestres.</p>' +
+      '<div class="formula-caja" style="margin-top:12px">n = (años × 12 + meses) ÷ meses que dura un período</div>' +
+      '<table class="tabla-simple" style="margin-top:14px"><thead><tr>' +
+      '<th>Si la tasa es…</th><th>Un período dura</th><th>n se cuenta en</th></tr></thead><tbody>' +
+      [['Mensual', '1 mes', 'meses'], ['Bimestral', '2 meses', 'bimestres'],
+       ['Trimestral', '3 meses', 'trimestres'], ['Cuatrimestral', '4 meses', 'cuatrimestres'],
+       ['Semestral', '6 meses', 'semestres'], ['Anual', '12 meses', 'años'],
+       ['Cada N meses', 'N meses', 'períodos de N meses']].map(function (f) {
+        return '<tr><td>' + f[0] + '</td><td>' + f[1] + '</td><td>' + f[2] + '</td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<p style="margin-top:14px">Un plazo de 2 años y 4 meses son 28 meses. Con una tasa ' +
+      'bimestral eso son 28 ÷ 2 = <b>14 bimestres</b>, no 28. Y con una tasa trimestral son ' +
+      '28 ÷ 3 = <b>' + Fmt.numero(28 / 3, 4) + ' trimestres</b>: el resultado fraccionario se ' +
+      'deja tal cual, no se redondea a 9.</p>' +
+      (contexto || '') + '</div>';
+  },
+
+  /* ------------------------------------------------------------------
+     INTERÉS SIMPLE
+     ------------------------------------------------------------------ */
+  simple: function () {
+    var vp = 1000000, i = 0.0926, n = 14;
+    var vf = M.Simple.vf(vp, i, n), I = M.Simple.interes(vp, i, n);
+
+    return '' +
+    '<div class="cab-leccion simple">' +
+      '<p class="rotulo">Educación financiera</p>' +
+      '<h2>Interés simple</h2>' +
+      '<p class="bajada">Los intereses no se reinvierten: siempre se calculan sobre el ' +
+      'valor inicial.</p>' +
+      '<div class="formula-cab">VF = VP · (1 + i · n)</div>' +
+    '</div>' +
+
+    '<div class="bloque-edu"><h3>¿Qué es?</h3>' +
+    '<p>El interés simple es la forma más directa de cobrar o pagar por el uso del dinero ' +
+    'durante un tiempo. Se pacta un porcentaje por período y ese porcentaje se aplica ' +
+    '<b>siempre sobre el capital inicial</b>, sin importar cuántos períodos pasen.</p>' +
+    '<p>Como la base nunca cambia, cada período aporta exactamente la misma cantidad de ' +
+    'intereses. Por eso se dice que el interés simple <b>no capitaliza</b>: los intereses que ' +
+    'se van generando quedan aparte y no se suman al capital que produce más intereses.</p></div>' +
+
+    '<div class="bloque-edu"><h3>¿Cómo funciona?</h3>' +
+    '<p>Funciona en tres movimientos:</p>' +
+    '<ol class="lista-pasos">' +
+    '<li><b>Se fija la base.</b> El capital inicial (VP) es la única base de cálculo. No se toca ' +
+    'en todo el ejercicio.</li>' +
+    '<li><b>Se calculan los intereses de un período</b> multiplicando VP × i. Ese número es fijo.</li>' +
+    '<li><b>Se repite n veces.</b> Los intereses totales son VP × i × n, y el valor final es el ' +
+    'capital más esos intereses.</li></ol>' +
+    '<p>El resultado es un crecimiento <b>lineal</b>: en una gráfica es una recta, porque los ' +
+    'escalones son todos del mismo tamaño.</p>' +
+    Edu.grafica([
+      { nombre: 'Valor futuro con interés simple', color: '#2B4C8C',
+        puntos: Edu.puntos(function (k) { return M.Simple.vf(1000000, 0.015, k); }, 12) }
+    ], { titulo: 'Crecimiento lineal del interés simple' }) +
+    '<p style="margin-top:-4px">' + Fmt.dinero(1000000, 'COP') + ' al 1,50 % mensual. Cada mes ' +
+    'entran exactamente ' + Fmt.dinero(15000, 'COP') + ', ni un peso más. Al mes 1 hay ' +
+    Fmt.dinero(M.Simple.vf(1000000, 0.015, 1), 'COP') + ', al mes 12 hay ' +
+    Fmt.dinero(M.Simple.vf(1000000, 0.015, 12), 'COP') + '.</p></div>' +
+
+    '<div class="bloque-edu"><h3>¿En qué casos se usa?</h3>' +
+    '<div class="rejilla-2">' +
+    '<div class="destaque"><b>Créditos de muy corto plazo</b><p>Préstamos entre personas, ' +
+    'libranzas cortas y algunos créditos de consumo pactados a pocos meses, donde no alcanza ' +
+    'a haber reinversión.</p></div>' +
+    '<div class="destaque"><b>Intereses de mora</b><p>Muchos recargos por pago tardío se ' +
+    'liquidan sobre el saldo original, sin capitalizar.</p></div>' +
+    '<div class="destaque"><b>Descuento de facturas y pagarés</b><p>Operaciones comerciales ' +
+    'donde se adelanta el pago de un documento con vencimiento cercano.</p></div>' +
+    '<div class="destaque"><b>Enseñanza y comparación</b><p>Es la referencia contra la cual se ' +
+    'mide cuánto aporta realmente la capitalización.</p></div>' +
+    '</div>' +
+    '<div class="aviso" style="margin-top:14px"><strong>Una advertencia práctica.</strong> ' +
+    'En Colombia la mayoría de productos financieros reales (tarjetas, hipotecas, CDT) usan ' +
+    'interés compuesto. Si te ofrecen algo "al 2 % simple", verifica el plazo: en operaciones ' +
+    'largas el interés simple casi nunca aparece.</div></div>' +
+
+    '<div class="bloque-edu"><h3>Fórmula</h3>' +
+    '<div class="rejilla-2">' +
+    '<div><p class="rotulo">Valor futuro</p><div class="formula-caja">VF = VP · (1 + i · n)</div>' +
+    '<p class="rotulo" style="margin-top:16px">Solo los intereses</p>' +
+    '<div class="formula-caja">I = VP · i · n</div>' +
+    '<div class="formula-caja" style="margin-top:9px">I = VF − VP</div></div>' +
+    '<div><p class="rotulo">Los tres despejes</p>' +
+    '<div class="formula-caja">VP = VF ÷ (1 + i · n)</div>' +
+    '<div class="formula-caja" style="margin-top:9px">i = (VF − VP) ÷ (VP · n)</div>' +
+    '<div class="formula-caja" style="margin-top:9px">n = (VF − VP) ÷ (VP · i)</div></div>' +
+    '</div>' +
+    '<h4 style="margin-top:20px;font-family:var(--texto);font-size:15px">Mover dinero en el tiempo</h4>' +
+    '<p>Para llevar un flujo hacia el futuro se <b>multiplica</b>; para traerlo hacia el presente ' +
+    'se <b>divide</b>. En interés simple no basta con poner el tiempo en negativo.</p>' +
+    '<div class="mal-bien"><div class="mal"><span class="etiqueta-mb">Incorrecto</span>' +
+    '<span class="tachado">Flujo × (1 + i · (−n))</span></div>' +
+    '<div class="bien"><span class="etiqueta-mb">Correcto</span>Flujo ÷ (1 + i · n)</div></div></div>' +
+
+    Edu.glosario('la misma unidad que tenga la tasa') +
+    Edu.iContraI() +
+    Edu.mismaUnidad(
+      '<div class="mal-bien" style="margin-top:14px">' +
+      '<div class="mal"><span class="etiqueta-mb">Incorrecto</span>' +
+      '9,26 % bimestral durante 28 meses<br>' +
+      '<span class="tachado">1.000.000 (1 + 9,26 % × 28) = ' +
+      Fmt.numero(M.Simple.vf(1000000, 0.0926, 28), 0) + '</span></div>' +
+      '<div class="bien"><span class="etiqueta-mb">Correcto</span>' +
+      '9,26 % bimestral durante 14 bimestres<br>' +
+      '1.000.000 (1 + 9,26 % × 14) = ' + Fmt.numero(vf, 0) + '</div></div>') +
+
+    '<div class="bloque-edu"><h3>Explicación sencilla</h3>' +
+    '<div class="cuento">' +
+    '<p>Imagina que le prestas tu caja de crayones a un amigo. Cada semana, para agradecerte, ' +
+    'te da <b>una moneda</b>.</p>' +
+    '<p>Pasa una semana: una moneda. Pasan dos: otra moneda. Pasan diez: diez monedas en total. ' +
+    'Siempre te da una por semana, ni más ni menos, porque lo que le prestaste sigue siendo ' +
+    '<b>la misma caja de crayones</b>.</p>' +
+    '<p>Las monedas que ya tienes las guardas en tu bolsillo. Ahí se quedan quietas: no hacen ' +
+    'nada, no crecen, no traen amigas. Solo se van juntando.</p>' +
+    '<p class="cierre">Eso es el interés simple: lo que prestaste no cambia, así que lo que te ' +
+    'pagan por período tampoco cambia.</p>' +
+    '</div></div>' +
+
+    '<div class="bloque-edu ejemplo"><h3>Un ejemplo práctico resuelto</h3>' +
+    '<div class="enunciado"><b>Enunciado.</b> Inviertes ' + Fmt.dinero(vp, 'COP') + ' a una tasa ' +
+    'del <b>9,26 % bimestral sin capitalización</b> durante <b>2 años y 4 meses</b>. ' +
+    '¿Cuánto tendrás al final y cuánto ganaste de intereses?</div>' +
+    '<ol class="pasos-ej">' +
+    '<li><b>Identifica los datos.</b><br>VP = ' + Fmt.dinero(vp, 'COP') + '  ·  ' +
+      'i = 9,26 % bimestral  ·  tiempo = 2 años y 4 meses  ·  VF = ?</li>' +
+    '<li><b>Pasa el plazo a meses.</b><br>2 × 12 + 4 = <b>28 meses</b></li>' +
+    '<li><b>Convierte los meses a períodos de la tasa.</b> La tasa es bimestral, y un bimestre ' +
+      'dura 2 meses.<br>28 ÷ 2 = <b>n = 14 bimestres</b></li>' +
+    '<li><b>Calcula los intereses.</b><br>I = VP · i · n = ' + Fmt.numero(vp, 0) + ' × 9,26 % × 14 ' +
+      '= <b>' + Fmt.numero(I) + '</b></li>' +
+    '<li><b>Calcula el valor futuro.</b><br>VF = VP (1 + i·n) = ' + Fmt.numero(vp, 0) +
+      ' × (1 + 9,26 % × 14) = ' + Fmt.numero(vp, 0) + ' × ' + Fmt.numero(1 + i * n, 4) +
+      ' = <b>' + Fmt.numero(vf) + '</b></li>' +
+    '<li><b>Comprueba.</b> VF − VP debe dar lo mismo que I.<br>' +
+      Fmt.numero(vf) + ' − ' + Fmt.numero(vp, 0) + ' = <b>' + Fmt.numero(vf - vp) + '</b> ✓</li>' +
+    '</ol>' +
+    '<div class="respuesta-ej"><span class="rotulo">Respuesta</span>' +
+    'Al final tendrás <b>' + Fmt.dinero(vf, 'COP') + '</b>, de los cuales ' +
+    '<b>' + Fmt.dinero(I, 'COP') + '</b> son intereses ganados. La tasa (i) fue 9,26 % ' +
+    'bimestral; los intereses (I) fueron ' + Fmt.dinero(I, 'COP') + '. No confundas las dos.' +
+    '</div></div>';
+  },
+
+  /* ------------------------------------------------------------------
+     INTERÉS COMPUESTO
+     ------------------------------------------------------------------ */
+  compuesto: function () {
+    var vp = 1000000, i = 0.10, n = 12;
+    var vf = M.Compuesto.vf(vp, i, n), I = vf - vp;
+    var vfs = M.Simple.vf(vp, i, n);
+
+    return '' +
+    '<div class="cab-leccion compuesto">' +
+      '<p class="rotulo">Educación financiera</p>' +
+      '<h2>Interés compuesto</h2>' +
+      '<p class="bajada">Los intereses se reinvierten y empiezan a generar sus propios ' +
+      'intereses.</p>' +
+      '<div class="formula-cab">VF = VP · (1 + i)ⁿ</div>' +
+    '</div>' +
+
+    '<div class="bloque-edu"><h3>¿Qué es?</h3>' +
+    '<p>El interés compuesto es la forma de calcular intereses en la que, al terminar cada ' +
+    'período, <b>los intereses ganados se suman al capital</b>. A partir de ese momento el ' +
+    'capital es más grande, así que el período siguiente produce más intereses que el anterior.</p>' +
+    '<p>Ese paso de sumar los intereses al capital se llama <b>capitalización</b>. Es la única ' +
+    'diferencia real frente al interés simple, y es la que hace que el dinero crezca de forma ' +
+    'acelerada en vez de constante.</p></div>' +
+
+    '<div class="bloque-edu"><h3>¿Cómo funciona?</h3>' +
+    '<p>Al final de cada período se hace lo mismo: se calculan los intereses sobre el saldo ' +
+    'actual y se suman a ese saldo. Multiplicar por (1 + i) es exactamente eso, en un solo paso.</p>' +
+    '<div class="formula-caja">VF = VP · (1+i) · (1+i) · (1+i) · … tantas veces como períodos</div>' +
+    '<p style="margin-top:12px">Como sería incómodo escribir n multiplicaciones, n se convierte ' +
+    'en <b>exponente</b>. Eso es todo lo que significa el exponente en la fórmula: cuántas veces ' +
+    'se capitalizó.</p>' +
+    '<table class="tabla-simple" style="margin-top:14px"><thead><tr>' +
+    '<th>Período</th><th>Saldo al inicio</th><th>Intereses del período</th>' +
+    '<th>Saldo al final</th></tr></thead><tbody>' +
+    [0, 1, 2, 3].map(function (k) {
+      var ini = M.Compuesto.vf(1000000, 0.015, k);
+      var fin = M.Compuesto.vf(1000000, 0.015, k + 1);
+      return '<tr><td>' + (k + 1) + '</td><td>' + Fmt.numero(ini) + '</td><td>' +
+             Fmt.numero(fin - ini) + '</td><td>' + Fmt.numero(fin) + '</td></tr>';
+    }).join('') + '</tbody></table>' +
+    '<p style="margin-top:12px">' + Fmt.dinero(1000000, 'COP') + ' al 1,50 % por período. Fíjate ' +
+    'en la tercera columna: los intereses <b>crecen solos</b>, sin que nadie ponga más plata. ' +
+    'En interés simple esa columna sería ' + Fmt.dinero(15000, 'COP') + ' en las cuatro filas.</p>' +
+    '</div>' +
+
+    '<div class="bloque-edu"><h3>¿Por qué es diferente al interés simple?</h3>' +
+    '<p>La diferencia está en una sola cosa: <b>sobre qué base se calculan los intereses</b>.</p>' +
+    '<div class="rejilla-2" style="margin-top:14px">' +
+    '<div class="destaque" style="border-color:var(--acento)"><b>Interés simple</b>' +
+    '<p>La base es siempre el capital inicial. Los intereses salen del sistema y se quedan ' +
+    'quietos. El crecimiento es una <b>recta</b>.</p></div>' +
+    '<div class="destaque" style="border-color:var(--credito)"><b>Interés compuesto</b>' +
+    '<p>La base es el saldo acumulado. Los intereses vuelven al sistema y trabajan. El ' +
+    'crecimiento es una <b>curva</b> que se empina.</p></div>' +
+    '</div>' +
+    Edu.grafica([
+      { nombre: 'Interés simple', color: '#2B4C8C',
+        puntos: Edu.puntos(function (k) { return M.Simple.vf(1000000, 0.015, k); }, 24) },
+      { nombre: 'Interés compuesto', color: '#B3341F',
+        puntos: Edu.puntos(function (k) { return M.Compuesto.vf(1000000, 0.015, k); }, 24) }
+    ], { titulo: 'Recta contra curva: simple frente a compuesto' }) +
+    '<p style="margin-top:-4px">Mismo capital, misma tasa, mismo tiempo. Al período 24 el ' +
+    'compuesto va en ' + Fmt.dinero(M.Compuesto.vf(1000000, 0.015, 24), 'COP') + ' contra ' +
+    Fmt.dinero(M.Simple.vf(1000000, 0.015, 24), 'COP') + ' del simple: ' +
+    Fmt.dinero(M.Compuesto.vf(1000000, 0.015, 24) - M.Simple.vf(1000000, 0.015, 24), 'COP') +
+    ' de diferencia que salieron de la pura reinversión.</p>' +
+    '<div class="aviso"><strong>Con un solo período dan idéntico.</strong> Para n = 1, ' +
+    'VP(1 + i·1) y VP(1 + i)¹ son la misma cuenta. La diferencia nace en el segundo período y ' +
+    'de ahí en adelante no para de crecer.</div></div>' +
+
+    '<div class="bloque-edu"><h3>Fórmula</h3>' +
+    '<div class="rejilla-2">' +
+    '<div><p class="rotulo">Valor futuro</p><div class="formula-caja">VF = VP · (1 + i)ⁿ</div>' +
+    '<p class="rotulo" style="margin-top:16px">Solo los intereses</p>' +
+    '<div class="formula-caja">I = VF − VP</div></div>' +
+    '<div><p class="rotulo">Los tres despejes</p>' +
+    '<div class="formula-caja">VP = VF ÷ (1 + i)ⁿ</div>' +
+    '<div class="formula-caja" style="margin-top:9px">i = (VF ÷ VP)^(1/n) − 1</div>' +
+    '<div class="formula-caja" style="margin-top:9px">n = Log(VF ÷ VP) ÷ Log(1 + i)</div></div>' +
+    '</div>' +
+    '<div class="error-comun" style="margin-top:18px">' +
+    '<h4>Los intereses no se calculan con I = VP · iⁿ</h4>' +
+    '<p>El exponente acompaña a (1 + i), no a la tasa sola. En interés compuesto los intereses ' +
+    'salen únicamente por diferencia.</p>' +
+    '<div class="mal-bien"><div class="mal"><span class="etiqueta-mb">Incorrecto</span>' +
+    '<span class="tachado">I = VP · iⁿ</span></div>' +
+    '<div class="bien"><span class="etiqueta-mb">Correcto</span>I = VF − VP</div></div></div></div>' +
+
+    Edu.glosario('la misma unidad que tenga la tasa') +
+    Edu.iContraI() +
+    Edu.mismaUnidad(
+      '<p style="margin-top:12px">En interés compuesto n significa además <b>cuántas veces se ' +
+      'capitaliza</b>, es decir cuántas veces los intereses se reinvierten. Por eso equivocar la ' +
+      'unidad cambia el resultado mucho más que en el interés simple: con 28 períodos en vez de ' +
+      '14 no te equivocas por el doble, te equivocas por ' +
+      Fmt.numero(M.Compuesto.vf(1000000, 0.0926, 28) / M.Compuesto.vf(1000000, 0.0926, 14), 1) +
+      ' veces.</p>') +
+
+    '<div class="bloque-edu"><h3>Explicación sencilla</h3>' +
+    '<div class="cuento">' +
+    '<p>Vuelve el amigo con la caja de crayones, pero ahora el trato cambia.</p>' +
+    '<p>Cada semana te da una moneda, igual que antes. La diferencia es que ahora las monedas ' +
+    'que ya te dio <b>no se quedan quietas en tu bolsillo</b>: también se las prestas.</p>' +
+    '<p>Entonces la segunda semana ya no te paga solo por los crayones. Te paga por los crayones ' +
+    '<b>y</b> por la moneda de la semana pasada. La tercera semana te paga por los crayones, por ' +
+    'la primera moneda y por la segunda. Cada moneda nueva se pone a trabajar.</p>' +
+    '<p>Al principio casi no se nota. Pero después de muchas semanas tienes una montaña de ' +
+    'monedas, porque cada una fue trayendo más.</p>' +
+    '<p class="cierre">Eso es el interés compuesto: lo que ganas también empieza a ganar. Y esa ' +
+    'bola de nieve funciona igual de bien a favor tuyo cuando inviertes que en contra tuya ' +
+    'cuando debes.</p>' +
+    '</div></div>' +
+
+    '<div class="bloque-edu ejemplo"><h3>Un ejemplo práctico resuelto</h3>' +
+    '<div class="enunciado"><b>Enunciado.</b> Un banco te presta ' + Fmt.dinero(vp, 'COP') +
+    ' a una tasa del <b>10 % que capitaliza mensual</b>. ¿Cuánto debes al final del año y ' +
+    'cuánto de eso son intereses?</div>' +
+    '<ol class="pasos-ej">' +
+    '<li><b>Identifica los datos.</b><br>VP = ' + Fmt.dinero(vp, 'COP') + '  ·  ' +
+      'i = 10 % mensual  ·  tiempo = 1 año  ·  VF = ?</li>' +
+    '<li><b>Convierte el tiempo a períodos de la tasa.</b> La tasa es mensual, así que el tiempo ' +
+      'va en meses.<br>1 año × 12 = <b>n = 12 meses</b></li>' +
+    '<li><b>Aplica la fórmula.</b><br>VF = VP (1 + i)ⁿ = ' + Fmt.numero(vp, 0) +
+      ' × (1 + 10 %)¹² = ' + Fmt.numero(vp, 0) + ' × ' + Fmt.numero(Math.pow(1.1, 12), 6) +
+      '<br>VF = <b>' + Fmt.numero(vf) + '</b></li>' +
+    '<li><b>Calcula los intereses por diferencia.</b><br>I = VF − VP = ' + Fmt.numero(vf) +
+      ' − ' + Fmt.numero(vp, 0) + ' = <b>' + Fmt.numero(I) + '</b></li>' +
+    '<li><b>Compara con el interés simple</b> para ver qué aportó la capitalización.<br>' +
+      'Simple: ' + Fmt.numero(vp, 0) + ' (1 + 10 % × 12) = ' + Fmt.numero(vfs) + '<br>' +
+      'Diferencia: ' + Fmt.numero(vf) + ' − ' + Fmt.numero(vfs) + ' = <b>' +
+      Fmt.numero(vf - vfs) + '</b> que salieron solo de reinvertir.</li>' +
+    '</ol>' +
+    '<div class="respuesta-ej"><span class="rotulo">Respuesta</span>' +
+    'Al final del año debes <b>' + Fmt.dinero(vf, 'COP') + '</b>, de los cuales ' +
+    '<b>' + Fmt.dinero(I, 'COP') + '</b> son intereses. Con interés simple habrías debido ' +
+    Fmt.dinero(vfs, 'COP') + ': la capitalización te costó ' + Fmt.dinero(vf - vfs, 'COP') +
+    ' adicionales.</div></div>';
+  },
+
+  /* ------------------------------------------------------------------
+     INTERÉS CONTINUO
+     ------------------------------------------------------------------ */
+  continuo: function () {
+    var vp = 2000000, i = 0.06, meses = 30, t = meses / 12;
+    var vf = M.Continuo.vf(vp, i, t), I = vf - vp;
+    var malo = M.Continuo.vf(vp, i, meses);
+    var filas = [[1, 2, 'Una vez al año'], [12, 2.613035290, 'Cada mes'],
+                 [52, 2.692596954, 'Cada semana'], [365, 2.714567482, 'Cada día'],
+                 [8760, 2.718126691, 'Cada hora'], [525600, 2.718279242, 'Cada minuto']];
+
+    return '' +
+    '<div class="cab-leccion continuo">' +
+      '<p class="rotulo">Educación financiera</p>' +
+      '<h2>Interés continuo</h2>' +
+      '<p class="bajada">La capitalización ocurre en todo instante, sin períodos definidos.</p>' +
+      '<div class="formula-cab">VF = VP · e<sup>(i · t)</sup></div>' +
+    '</div>' +
+
+    '<div class="bloque-edu"><h3>¿Qué es?</h3>' +
+    '<p>El interés continuo es el caso límite del interés compuesto: aquel en el que los ' +
+    'intereses se reinvierten <b>a cada instante</b>, sin esperar a que termine un mes, un ' +
+    'trimestre ni ningún período.</p>' +
+    '<p>Aquí no existe una pregunta como "¿cada cuánto capitaliza?", porque la respuesta sería ' +
+    '"todo el tiempo, sin parar". No hay períodos de capitalización definidos, y por eso la ' +
+    'fórmula no lleva un exponente n, sino el número e elevado a la tasa por el tiempo.</p></div>' +
+
+    '<div class="bloque-edu"><h3>¿En qué contextos se utiliza?</h3>' +
+    '<div class="rejilla-2">' +
+    '<div class="destaque"><b>Valoración de derivados</b><p>Los modelos de opciones y otros ' +
+    'instrumentos financieros trabajan en tiempo continuo porque los precios se mueven ' +
+    'permanentemente.</p></div>' +
+    '<div class="destaque"><b>Modelos económicos y de riesgo</b><p>Cuando se modela una ' +
+    'variable que cambia de forma constante, el tiempo continuo es más simple de manejar ' +
+    'matemáticamente.</p></div>' +
+    '<div class="destaque"><b>Comparación entre alternativas</b><p>Sirve como techo teórico: ' +
+    'ninguna capitalización discreta puede superar al continuo con la misma tasa.</p></div>' +
+    '<div class="destaque"><b>Crecimiento fuera de las finanzas</b><p>La misma fórmula describe ' +
+    'poblaciones, decaimiento radiactivo y otros fenómenos de cambio continuo.</p></div>' +
+    '</div></div>' +
+
+    '<div class="bloque-edu"><h3>¿Cuál es la diferencia frente al interés compuesto?</h3>' +
+    '<p>La diferencia es <b>cada cuánto se reinvierten los intereses</b>. En el compuesto hay un ' +
+    'reloj: cada mes, cada trimestre, cada año. En el continuo no hay reloj.</p>' +
+    '<p>Si en el compuesto se aumentan los períodos de capitalización sin parar, el resultado ' +
+    'no crece sin límite: se va acercando a un techo. Ese techo es el número <b>e</b>.</p>' +
+    '<table class="tabla-simple" style="margin-top:14px"><thead><tr>' +
+    '<th>Si capitaliza…</th><th>Períodos en un año</th>' +
+    '<th>En qué se convierte $ 1 al 100 %</th></tr></thead><tbody>' +
+    filas.map(function (f) {
+      return '<tr><td>' + f[2] + '</td><td>' + Fmt.numero(f[0], 0) + '</td><td>' +
+             Fmt.numero(f[1], 9) + '</td></tr>';
+    }).join('') +
+    '<tr style="background:var(--oro-tenue)"><td><b>Sin parar (continuo)</b></td>' +
+    '<td><b>infinitos</b></td><td><b>' + Fmt.numero(Math.E, 10) + ' = e</b></td></tr>' +
+    '</tbody></table>' +
+    '<h4 style="margin-top:20px;font-family:var(--texto);font-size:15px">Qué representa el ' +
+    'número e y por qué aparece</h4>' +
+    '<p>El número e ≈ <b>' + Fmt.numero(Math.E, 10) + '</b> no se eligió por gusto: es el ' +
+    'resultado exacto de esa tabla llevada al infinito. Representa <b>cuánto crece una unidad ' +
+    'de capital, en un año, al 100 %, si se reinvierte continuamente</b>. Por eso aparece en la ' +
+    'fórmula: es la base natural del crecimiento continuo.</p>' +
+    '<div class="error-comun" style="margin-top:16px">' +
+    '<h4>Los despejes usan logaritmo natural, no logaritmo base 10</h4>' +
+    '<p>Como e es la base de la potencia, la operación que la deshace es el logaritmo natural ' +
+    '(Ln), porque Ln(e) = 1. Usar Log base 10 da un número distinto y equivocado.</p>' +
+    '<div class="mal-bien"><div class="mal"><span class="etiqueta-mb">Incorrecto</span>' +
+    '<span class="tachado">t = Log(VF ÷ VP) ÷ i</span></div>' +
+    '<div class="bien"><span class="etiqueta-mb">Correcto</span>t = Ln(VF ÷ VP) ÷ i</div></div>' +
+    '</div></div>' +
+
+    '<div class="bloque-edu"><h3>Fórmula</h3>' +
+    '<div class="rejilla-2">' +
+    '<div><p class="rotulo">Valor futuro</p>' +
+    '<div class="formula-caja">VF = VP · e^(i · t)</div>' +
+    '<p class="rotulo" style="margin-top:16px">Valor presente</p>' +
+    '<div class="formula-caja">VP = VF ÷ e^(i · t)</div>' +
+    '<p class="rotulo" style="margin-top:16px">Intereses</p>' +
+    '<div class="formula-caja">I = VF − VP</div></div>' +
+    '<div><p class="rotulo">Despejes con logaritmo natural</p>' +
+    '<div class="formula-caja">i = Ln(VF ÷ VP) ÷ t</div>' +
+    '<div class="formula-caja" style="margin-top:9px">t = Ln(VF ÷ VP) ÷ i</div>' +
+    '<p style="font-size:14px;color:var(--tinta-2);margin:14px 0 0">En las dos, t va en años.</p>' +
+    '</div></div>' +
+    '<div class="aviso" style="margin-top:16px"><strong>El tiempo siempre va en años.</strong> ' +
+    'Es la convención del curso y no admite excepciones. Si el enunciado dice 30 meses, en la ' +
+    'fórmula entra t = ' + Fmt.numero(2.5, 1) + ' años. Si dice 45 meses, entra t = ' +
+    Fmt.numero(3.75, 2) + '. FinanClic hace esa conversión por dentro antes de tocar la ' +
+    'fórmula, pero en el examen la haces tú.</div></div>' +
+
+    Edu.glosario('años, siempre') +
+    Edu.iContraI() +
+    Edu.mismaUnidad(
+      '<p style="margin-top:12px">En interés continuo esta regla se simplifica: la tasa es ' +
+      '<b>continua anual</b> y el tiempo va en <b>años</b>. No hay periodicidades que elegir, ' +
+      'pero sí hay que convertir los meses a años antes de calcular.</p>') +
+
+    '<div class="bloque-edu"><h3>Explicación sencilla</h3>' +
+    '<div class="cuento">' +
+    '<p>Tercera versión del trato con tu amigo, y la más rara de todas.</p>' +
+    '<p>Antes te daba una moneda cada semana. Después las monedas también empezaron a ganar ' +
+    'monedas, pero seguía habiendo un día de pago: los domingos.</p>' +
+    '<p>Ahora imagina que <b>no hay día de pago</b>. Que en vez de monedas te cae un chorrito de ' +
+    'arena dorada, todo el tiempo, sin parar ni un segundo. Y que la arena que ya cayó también ' +
+    'empieza a soltar su propio chorrito, al instante, sin esperar a nada.</p>' +
+    '<p>No hay "semanas". No hay momentos en que se reparte. Solo hay un montón de arena que ' +
+    'crece de forma continua mientras pasa el tiempo.</p>' +
+    '<p class="cierre">Eso es el interés continuo. Y como no hay semanas que contar, en vez de ' +
+    'preguntar "¿cuántas veces?" solo preguntamos "¿cuánto tiempo?". Ese tiempo se mide en años.' +
+    '</p></div></div>' +
+
+    '<div class="bloque-edu ejemplo"><h3>Un ejemplo práctico resuelto</h3>' +
+    '<div class="enunciado"><b>Enunciado.</b> Hallar el valor futuro de una inversión de ' +
+    Fmt.dinero(vp, 'COP') + ' al <b>6 % continuo</b> a <b>30 meses</b>.</div>' +
+    '<ol class="pasos-ej">' +
+    '<li><b>Identifica los datos.</b><br>VP = ' + Fmt.dinero(vp, 'COP') + '  ·  ' +
+      'i = 6 % continuo  ·  tiempo = 30 meses  ·  VF = ?</li>' +
+    '<li><b>Convierte el tiempo a años.</b> Este es el paso donde más gente se equivoca.<br>' +
+      '30 ÷ 12 = <b>t = ' + Fmt.numero(t, 1) + ' años</b></li>' +
+    '<li><b>Calcula el exponente.</b><br>i · t = 6 % × ' + Fmt.numero(t, 1) + ' = <b>' +
+      Fmt.numero(i * t, 4) + '</b></li>' +
+    '<li><b>Aplica la fórmula.</b><br>VF = VP · e^(i·t) = ' + Fmt.numero(vp, 0) + ' × e^' +
+      Fmt.numero(i * t, 3) + ' = ' + Fmt.numero(vp, 0) + ' × ' + Fmt.numero(Math.exp(i * t), 6) +
+      '<br>VF = <b>' + Fmt.numero(vf) + '</b></li>' +
+    '<li><b>Calcula los intereses.</b><br>I = VF − VP = ' + Fmt.numero(vf) + ' − ' +
+      Fmt.numero(vp, 0) + ' = <b>' + Fmt.numero(I) + '</b></li>' +
+    '<li><b>Verifica el error típico.</b> Si por descuido pones t = 30 en vez de ' +
+      Fmt.numero(t, 1) + ', el resultado sería ' + Fmt.numero(malo) + ', es decir ' +
+      Fmt.numero(malo / vf, 0) + ' veces el valor correcto. Un error de unidades, no de fórmula.</li>' +
+    '</ol>' +
+    '<div class="respuesta-ej"><span class="rotulo">Respuesta</span>' +
+    'El valor futuro es <b>' + Fmt.dinero(vf, 'COP') + '</b>, con ' +
+    '<b>' + Fmt.dinero(I, 'COP') + '</b> de intereses ganados en los 30 meses.</div></div>';
+  },
+
+  /* ------------------------------------------------------------------
+     Índice y navegación interna
+     ------------------------------------------------------------------ */
+  TARJETAS: [
+    { id: 'simple', titulo: 'Interés simple', formula: 'VF = VP (1 + i·n)',
+      texto: 'Los intereses no se reinvierten. Siempre se calculan sobre el valor inicial, ' +
+             'así que el crecimiento es una recta.' },
+    { id: 'compuesto', titulo: 'Interés compuesto', formula: 'VF = VP (1 + i)<sup>n</sup>',
+      texto: 'Los intereses se suman al capital y empiezan a generar más intereses. Eso se ' +
+             'llama capitalización.' },
+    { id: 'continuo', titulo: 'Interés continuo', formula: 'VF = VP · e<sup>i·t</sup>',
+      texto: 'La capitalización ocurre en todo instante. No hay períodos, y el tiempo siempre ' +
+             'va en años.' }
+  ],
+
+  abrir: function (clave) {
+    var cont = $('#edu-detalle');
+    if (!Edu[clave]) return;
+    cont.innerHTML = '<button class="btn btn-suave" id="btn-volver-edu">← Volver a educación ' +
+      'financiera</button>' + Edu[clave]() +
+      '<div class="acciones" style="margin-top:26px">' +
+      '<button class="btn btn-principal" data-ir="simulacion">Simular un caso como este</button>' +
+      '<button class="btn btn-secundario" id="btn-volver-edu-2">Volver</button></div>';
+    $('#edu-indice').classList.add('oculto');
+    cont.classList.remove('oculto');
+    $('#btn-volver-edu').addEventListener('click', Edu.volver);
+    $('#btn-volver-edu-2').addEventListener('click', Edu.volver);
+    $$('[data-ir]', cont).forEach(function (b) {
+      b.addEventListener('click', function () { Nav.ir(b.dataset.ir); });
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  volver: function () {
+    $('#edu-detalle').classList.add('oculto');
+    $('#edu-detalle').innerHTML = '';
+    $('#edu-indice').classList.remove('oculto');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  },
+
+  iniciar: function () {
+    var cont = $('#edu-tarjetas');
+    cont.innerHTML = '';
+    Edu.TARJETAS.forEach(function (t) {
+      var b = el('button', { 'class': 'tarjeta-rapida', 'data-abrir': t.id },
+        '<h3>' + t.titulo + '</h3><span class="formula">' + t.formula + '</span>' +
+        '<p>' + t.texto + '</p>' +
+        '<span class="ver-mas">Ver la explicación completa →</span>');
+      b.addEventListener('click', function () { Edu.abrir(t.id); });
+      cont.appendChild(b);
+    });
+
+    var comp = $('#edu-comparativa');
+    comp.innerHTML = Edu.grafica([
+      { nombre: 'Interés simple', color: '#2B4C8C',
+        puntos: Edu.puntos(function (k) { return M.Simple.vf(1000000, 0.03, k); }, 24) },
+      { nombre: 'Interés compuesto', color: '#B3341F',
+        puntos: Edu.puntos(function (k) { return M.Compuesto.vf(1000000, 0.03, k); }, 24) },
+      { nombre: 'Interés continuo', color: '#0B7A6B',
+        puntos: Edu.puntos(function (k) { return M.Continuo.vf(1000000, 0.03, k); }, 24) }
+    ], { titulo: 'Los tres regímenes comparados' });
+  }
+};
+
+/* ==================================================================
+   4. LÍNEA DE TIEMPO EN SVG
+   Flechas arriba para entradas, abajo para salidas, fecha focal
+   resaltada y, tras calcular, un arco por flujo con su factor.
+   ================================================================== */
+var Linea = {
+
+  dibujar: function (flujos, focalMes, opciones) {
+    var o = opciones || {};
+    var W = 780, H = 258, ejeY = 148, x0 = 46, x1 = W - 30;
+    var momentos = flujos.map(function (f) { return f.momento; });
+    var maxMes = Math.max.apply(null, momentos.concat([focalMes, 1]));
+    var minMes = 0;
+    var ex = function (m) { return x0 + (x1 - x0) * ((m - minMes) / ((maxMes - minMes) || 1)); };
+
+    var validos = flujos.filter(function (f) { return isFinite(f.valor) && f.valor > 0; });
+    var maxV = validos.length ? Math.max.apply(null, validos.map(function (f) { return f.valor; })) : 1;
+    var alto = function (v) {
+      if (!isFinite(v) || v <= 0) return 42;
+      return 34 + 62 * Math.sqrt(v / maxV);
+    };
+
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Línea de tiempo del ejercicio">';
+
+    /* arcos de traslado (solo después de calcular) */
+    if (o.arcos && o.arcos.length && o.arcos.length <= 8) {
+      o.arcos.forEach(function (a) {
+        var xa = ex(a.momento), xb = ex(focalMes);
+        if (Math.abs(xa - xb) < 2) return;
+        var cy = ejeY - 104 - Math.abs(xa - xb) * 0.04;
+        s += '<path d="M' + xa + ' ' + (ejeY - 4) + ' Q' + ((xa + xb) / 2) + ' ' + cy +
+             ' ' + xb + ' ' + (ejeY - 4) + '" fill="none" stroke="#B27C10" stroke-width="1.3" ' +
+             'stroke-dasharray="3 3" opacity=".75"/>' +
+             '<text x="' + ((xa + xb) / 2) + '" y="' + (cy + 16) + '" text-anchor="middle" ' +
+             'font-size="10.5" fill="#B27C10" font-family="ui-monospace,Menlo,monospace">×' +
+             Fmt.numero(a.factor, 4) + '</text>';
+      });
+    }
+
+    /* eje */
+    s += '<line x1="' + x0 + '" y1="' + ejeY + '" x2="' + x1 + '" y2="' + ejeY +
+         '" stroke="#131C33" stroke-width="1.8"/>' +
+         '<polygon points="' + x1 + ',' + ejeY + ' ' + (x1 - 9) + ',' + (ejeY - 4.5) + ' ' +
+         (x1 - 9) + ',' + (ejeY + 4.5) + '" fill="#131C33"/>';
+
+    /* marcas de mes */
+    var marcas = {};
+    momentos.concat([0, focalMes]).forEach(function (m) { if (isFinite(m)) marcas[m] = true; });
+    Object.keys(marcas).map(Number).sort(function (a, b) { return a - b; }).forEach(function (m) {
+      var x = ex(m);
+      s += '<line x1="' + x + '" y1="' + (ejeY - 5) + '" x2="' + x + '" y2="' + (ejeY + 5) +
+           '" stroke="#131C33" stroke-width="1.5"/>' +
+           '<text x="' + x + '" y="' + (ejeY + 21) + '" text-anchor="middle" font-size="11" ' +
+           'fill="#48546F" font-family="ui-monospace,Menlo,monospace">' + Fmt.periodos(m) + '</text>';
+    });
+    s += '<text x="' + x0 + '" y="' + (ejeY + 38) + '" text-anchor="middle" font-size="10" ' +
+         'fill="#7A849B">mes</text>';
+
+    /* fecha focal */
+    var xf = ex(focalMes);
+    s += '<line x1="' + xf + '" y1="18" x2="' + xf + '" y2="' + (ejeY + 30) +
+         '" stroke="#B27C10" stroke-width="1.6" stroke-dasharray="5 4"/>' +
+         '<rect x="' + (xf - 44) + '" y="4" width="88" height="19" rx="5" fill="#FCF3DF" ' +
+         'stroke="#B27C10" stroke-width="1"/>' +
+         '<text x="' + xf + '" y="17.5" text-anchor="middle" font-size="10.5" fill="#8A5A00" ' +
+         'font-weight="700">FECHA FOCAL</text>';
+
+    /* flujos */
+    flujos.forEach(function (f) {
+      var x = ex(f.momento), h = alto(f.valor);
+      var arriba = f.tipo === 'entrada';
+      var color = arriba ? '#0B7A6B' : '#B3341F';
+      var yFin = arriba ? ejeY - h : ejeY + h;
+      var yPunta = arriba ? yFin + 11 : yFin - 11;
+      s += '<line x1="' + x + '" y1="' + ejeY + '" x2="' + x + '" y2="' + yPunta +
+           '" stroke="' + color + '" stroke-width="2.6"/>' +
+           '<polygon points="' + x + ',' + yFin + ' ' + (x - 6) + ',' + yPunta + ' ' +
+           (x + 6) + ',' + yPunta + '" fill="' + color + '"/>';
+      var etq = f.etiqueta || (isFinite(f.valor) && f.valor > 0 ? Fmt.numero(f.valor, 0) : '?');
+      var yTxt = arriba ? yFin - 8 : yFin + 15;
+      s += '<text x="' + x + '" y="' + yTxt + '" text-anchor="middle" font-size="11.5" fill="' +
+           color + '" font-family="ui-monospace,Menlo,monospace" font-weight="600">' +
+           Linea.escapar(etq) + '</text>';
+    });
+
+    s += '</svg>';
+
+    return '<div class="lienzo-linea">' + s +
+      '<div class="leyenda">' +
+        '<span><i class="punto" style="background:#0B7A6B"></i>Entrada de dinero (flecha arriba)</span>' +
+        '<span><i class="punto" style="background:#B3341F"></i>Salida de dinero (flecha abajo)</span>' +
+        '<span><i class="punto" style="background:#B27C10"></i>Fecha focal</span>' +
+        (o.arcos && o.arcos.length ? '<span>Los arcos punteados muestran el factor de traslado ' +
+         'aplicado a cada flujo.</span>' : '') +
+      '</div></div>';
+  },
+
+  escapar: function (t) {
+    return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+};
+
+/* ==================================================================
+   5. SIMULADOR
+   ================================================================== */
+var Sim = {
+
+  OPERACIONES: [
+    { id: 'credito', titulo: 'Crédito', sub: 'Recibes dinero ahora y lo pagas después. Los intereses son un costo.',
+      icono: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5"/><path d="M5 12l7 7 7-7"/></svg>' },
+    { id: 'inversion', titulo: 'Inversión', sub: 'Entregas dinero ahora y lo recuperas con intereses. Los intereses son ganancia.',
+      icono: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14"/><path d="M19 12l-7-7-7 7"/></svg>' }
+  ],
+
+  REGIMENES: [
+    { id: 'simple', titulo: 'Interés simple', sub: 'Sin capitalización. VF = VP (1 + i·n)' },
+    { id: 'compuesto', titulo: 'Interés compuesto', sub: 'Con capitalización. VF = VP (1 + i)ⁿ' },
+    { id: 'continuo', titulo: 'Interés continuo', sub: 'Capitaliza en todo instante. VF = VP·e^(i·t)' }
+  ],
+
+  INCOGNITAS: [
+    { id: 'vf', titulo: 'Valor futuro', sub: 'Cuánto llegará a valer' },
+    { id: 'vp', titulo: 'Valor presente', sub: 'Cuánto vale hoy' },
+    { id: 'tasa', titulo: 'Tasa de interés', sub: 'Qué tasa se está cobrando o ganando' },
+    { id: 'tiempo', titulo: 'Tiempo', sub: 'Cuánto tarda en llegar a un valor' },
+    { id: 'valorFlujo', titulo: 'Valor de un flujo', sub: 'Un desembolso o aporte desconocido' },
+    { id: 'momentoFlujo', titulo: 'Momento de un flujo', sub: 'Cuándo ocurrió un movimiento' }
+  ],
+
+  estado: null,
+
+  inicial: function () {
+    return {
+      operacion: 'inversion', regimen: 'compuesto', incognita: 'vf',
+      periodicidad: 'mensual', mesesN: '5', moneda: 'COP',
+      tasa: '', anios: '', meses: '', objetivo: '', modo: 'valorFocal',
+      focalTipo: 'futuro', focalMes: '', vp: '', vf: '',
+      flujos: [{ valor: '', momento: '0', tipo: 'entrada', clase: 'conocido', coeficiente: '1' }]
+    };
+  },
+
+  /* ---------- Render de los selectores ---------- */
+  pintarOpciones: function () {
+    var E = Sim.estado;
+    function grupo(cont, lista, campo) {
+      cont.innerHTML = '';
+      lista.forEach(function (o) {
+        var b = el('button', {
+          'class': 'opcion', 'type': 'button', 'data-op': o.id,
+          'aria-pressed': E[campo] === o.id ? 'true' : 'false'
+        }, (o.icono ? '<span class="icono">' + o.icono + '</span>' : '') +
+           '<span><strong>' + o.titulo + '</strong><small>' + o.sub + '</small></span>');
+        b.addEventListener('click', function () {
+          E[campo] = o.id;
+          if (campo === 'incognita') Sim.ajustarPorIncognita();
+          Sim.pintarTodo();
+        });
+        cont.appendChild(b);
+      });
+    }
+    grupo($('#op-operacion'), Sim.OPERACIONES, 'operacion');
+    grupo($('#op-regimen'), Sim.REGIMENES, 'regimen');
+    grupo($('#op-incognita'), Sim.INCOGNITAS, 'incognita');
+  },
+
+  ajustarPorIncognita: function () {
+    var E = Sim.estado;
+    if (E.incognita === 'vp') E.focalTipo = 'presente';
+    else if (E.focalTipo === 'presente') E.focalTipo = 'futuro';
+    if (E.incognita === 'valorFlujo') {
+      var hay = E.flujos.some(function (f) { return f.clase === 'incognita'; });
+      if (!hay) E.flujos[0].clase = 'incognita';
+    } else {
+      E.flujos.forEach(function (f) { if (f.clase === 'incognita') f.clase = 'conocido'; });
+    }
+    if (E.incognita === 'momentoFlujo') {
+      var hayM = E.flujos.some(function (f) { return f.momentoDesconocido; });
+      if (!hayM && E.flujos.length > 1) E.flujos[1].momentoDesconocido = true;
+      else if (!hayM) E.flujos[0].momentoDesconocido = true;
+    } else {
+      E.flujos.forEach(function (f) { delete f.momentoDesconocido; });
+    }
+  },
+
+  usaFlujos: function () {
+    return Sim.estado.incognita !== 'tiempo';
+  },
+
+  /* ---------- Campos generales ---------- */
+  pintarCampos: function () {
+    var E = Sim.estado, c = $('#campos-generales');
+    var esContinuo = E.regimen === 'continuo';
+    var h = '';
+
+    h += '<div class="campo"><label for="f-moneda">Moneda</label>' +
+      '<select class="control" id="f-moneda" data-e="moneda">' +
+      ['COP', 'USD', 'EUR'].map(function (m) {
+        return '<option value="' + m + '"' + (E.moneda === m ? ' selected' : '') + '>' + m +
+               ' (' + Fmt.MONEDAS[m] + ')</option>';
+      }).join('') + '</select>' +
+      '<span class="pista">Solo indica la unidad. No se convierte entre monedas.</span></div>';
+
+    if (!esContinuo) {
+      h += '<div class="campo"><label for="f-periodicidad">Periodicidad de la tasa</label>' +
+        '<select class="control" id="f-periodicidad" data-e="periodicidad">' +
+        [['mensual', 'Mensual'], ['bimestral', 'Bimestral'], ['trimestral', 'Trimestral'],
+         ['cuatrimestral', 'Cuatrimestral'], ['semestral', 'Semestral'], ['anual', 'Anual'],
+         ['cadaNMeses', 'Cada N meses']].map(function (p) {
+          return '<option value="' + p[0] + '"' + (E.periodicidad === p[0] ? ' selected' : '') +
+                 '>' + p[1] + '</option>';
+        }).join('') + '</select>' +
+        '<span class="pista">La tasa manda: el tiempo se cuenta en esta unidad.</span></div>';
+      if (E.periodicidad === 'cadaNMeses') {
+        h += '<div class="campo"><label for="f-mesesN">¿Cada cuántos meses?</label>' +
+          '<input type="text" inputmode="numeric" class="control" id="f-mesesN" data-e="mesesN" value="' +
+          E.mesesN + '"><span class="pista">Número entero de meses por período.</span></div>';
+      }
+    }
+
+    if (E.incognita !== 'tasa') {
+      h += '<div class="campo"><label for="f-tasa">Tasa de interés' +
+        (esContinuo ? ' continua anual' : '') + '</label>' +
+        '<div class="con-simbolo"><input type="text" inputmode="decimal" class="control" ' +
+        'id="f-tasa" data-e="tasa" placeholder="2,5" value="' + E.tasa + '" style="padding-left:13px">' +
+        '<span class="sufijo">%</span></div>' +
+        '<span class="pista">Escríbela en porcentaje: 2,5 significa 2,5 %.</span></div>';
+    }
+
+    if (E.incognita === 'tiempo') {
+      h += Sim.campoDinero('f-vp', 'vp', 'Valor presente (VP)', E.vp) +
+           Sim.campoDinero('f-vf', 'vf', 'Valor futuro (VF)', E.vf);
+    }
+
+    if (Sim.usaFlujos()) {
+      var etqFocal = esContinuo ? 'Fecha focal (en meses)' : 'Fecha focal';
+      h += '<div class="campo"><label for="f-focal">' + etqFocal + '</label>' +
+        '<select class="control" id="f-focal" data-e="focalTipo"' +
+        (E.incognita === 'vp' ? ' disabled' : '') + '>' +
+        [['presente', 'El presente (mes 0)'], ['futuro', 'El último flujo'],
+         ['especifico', 'Un momento específico']].map(function (p) {
+          return '<option value="' + p[0] + '"' + (E.focalTipo === p[0] ? ' selected' : '') +
+                 '>' + p[1] + '</option>';
+        }).join('') + '</select>' +
+        (E.incognita === 'vp'
+          ? '<span class="pista">Para hallar el valor presente la focal es el mes 0.</span>'
+          : '<span class="pista">El momento al que se llevan todos los flujos.</span>') + '</div>';
+
+      if (E.focalTipo === 'especifico') {
+        h += '<div class="campo"><label for="f-focalMes">Mes de la fecha focal</label>' +
+          '<input type="text" inputmode="decimal" class="control" id="f-focalMes" data-e="focalMes" ' +
+          'placeholder="30" value="' + E.focalMes + '">' +
+          '<span class="pista">Contado desde el origen, en meses.</span></div>';
+      }
+    }
+
+    if (E.incognita === 'tasa' || E.incognita === 'valorFlujo' || E.incognita === 'momentoFlujo') {
+      var etq = E.modo === 'gananciaNeta'
+        ? (E.operacion === 'credito' ? 'Costo del crédito conocido' : 'Ganancia neta conocida')
+        : 'Valor conocido en la fecha focal';
+      h += Sim.campoDinero('f-objetivo', 'objetivo', etq, E.objetivo,
+        'El dato que ya conoces y que permite despejar la incógnita.');
+      h += '<div class="campo"><label for="f-modo">Ese dato es…</label>' +
+        '<select class="control" id="f-modo" data-e="modo">' +
+        '<option value="valorFocal"' + (E.modo === 'valorFocal' ? ' selected' : '') +
+        '>El valor total en la fecha focal</option>' +
+        '<option value="gananciaNeta"' + (E.modo === 'gananciaNeta' ? ' selected' : '') +
+        '>Solo los intereses (ganancia neta)</option></select>' +
+        '<span class="pista">Cambia según cómo esté redactado el enunciado.</span></div>';
+    }
+
+    if (!esContinuo && E.incognita !== 'tiempo' && !Sim.usaFlujos()) {
+      h += Sim.campoTiempo();
+    }
+
+    c.innerHTML = h;
+    Sim.enlazarCampos(c);
+  },
+
+  campoDinero: function (id, clave, etiqueta, valor, pista) {
+    var E = Sim.estado;
+    return '<div class="campo"><label for="' + id + '">' + etiqueta + '</label>' +
+      '<div class="con-simbolo"><span class="simbolo">' + Fmt.MONEDAS[E.moneda] + '</span>' +
+      '<input type="text" inputmode="decimal" class="control" id="' + id + '" data-e="' + clave +
+      '" data-dinero="1" placeholder="1.000.000" value="' + valor + '"></div>' +
+      (pista ? '<span class="pista">' + pista + '</span>' : '') + '</div>';
+  },
+
+  campoTiempo: function () {
+    var E = Sim.estado;
+    return '<div class="campo"><label for="f-anios">Años</label>' +
+      '<input type="text" inputmode="numeric" class="control" id="f-anios" data-e="anios" ' +
+      'placeholder="2" value="' + E.anios + '"></div>' +
+      '<div class="campo"><label for="f-meses">Meses adicionales</label>' +
+      '<input type="text" inputmode="numeric" class="control" id="f-meses" data-e="meses" ' +
+      'placeholder="4" value="' + E.meses + '"></div>';
+  },
+
+  enlazarCampos: function (cont) {
+    $$('[data-e]', cont).forEach(function (n) {
+      var ev = n.tagName === 'SELECT' ? 'change' : 'input';
+      n.addEventListener(ev, function () {
+        Sim.estado[n.dataset.e] = n.value;
+        if (n.tagName === 'SELECT') {
+          if (n.dataset.e === 'focalTipo' || n.dataset.e === 'periodicidad' ||
+              n.dataset.e === 'moneda' || n.dataset.e === 'modo') Sim.pintarTodo();
+        }
+        if (n.dataset.e === 'focalTipo' || n.dataset.e === 'focalMes') Sim.pintarLinea();
+      });
+      if (n.dataset.dinero) {
+        n.addEventListener('blur', function () {
+          Fmt.normalizarCampo(n); Sim.estado[n.dataset.e] = n.value;
+        });
+      }
+    });
+  },
+
+  /* ---------- Tabla de flujos ---------- */
+  pintarFlujos: function () {
+    var E = Sim.estado, z = $('#zona-flujos');
+    if (!Sim.usaFlujos()) { z.innerHTML = ''; return; }
+
+    var conClase = E.incognita === 'valorFlujo';
+    var conMomento = E.incognita === 'momentoFlujo';
+
+    var h = '<div style="margin:22px 0 12px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">' +
+      '<p class="rotulo" style="margin:0">Flujos del ejercicio</p>' +
+      '<span class="pista">Cada movimiento de dinero, con el mes en que ocurre.</span></div>' +
+      '<div class="flujos">';
+
+    E.flujos.forEach(function (f, k) {
+      var esX = conClase && f.clase === 'incognita';
+      var esM = conMomento && f.momentoDesconocido;
+      h += '<div class="flujo" data-k="' + k + '">' +
+        '<span class="flujo-num">' + (k + 1) + '</span>' +
+        '<div class="campo"><label>' + (esX ? 'Coeficiente × X' : 'Valor') + '</label>' +
+          (esX
+            ? '<input type="text" inputmode="decimal" class="control" data-f="coeficiente" ' +
+              'placeholder="1,4" value="' + (f.coeficiente || '') + '">'
+            : '<div class="con-simbolo"><span class="simbolo">' + Fmt.MONEDAS[E.moneda] + '</span>' +
+              '<input type="text" inputmode="decimal" class="control" data-f="valor" data-dinero="1" ' +
+              'placeholder="1.000.000" value="' + (f.valor || '') + '"></div>') +
+        '</div>' +
+        '<div class="campo"><label>Mes</label>' +
+          (esM
+            ? '<input type="text" class="control" value="?" disabled style="text-align:center">'
+            : '<input type="text" inputmode="decimal" class="control" data-f="momento" ' +
+              'placeholder="0" value="' + (f.momento || '') + '">') +
+        '</div>' +
+        '<div class="campo"><label>Tipo</label><select class="control" data-f="tipo">' +
+          '<option value="entrada"' + (f.tipo === 'entrada' ? ' selected' : '') + '>Entrada</option>' +
+          '<option value="salida"' + (f.tipo === 'salida' ? ' selected' : '') + '>Salida</option>' +
+        '</select></div>' +
+        '<div class="campo">' +
+          (conClase
+            ? '<label>Clase</label><select class="control" data-f="clase">' +
+              '<option value="conocido"' + (f.clase === 'conocido' ? ' selected' : '') +
+              '>Valor conocido</option>' +
+              '<option value="incognita"' + (f.clase === 'incognita' ? ' selected' : '') +
+              '>Coeficiente × X</option></select>'
+            : conMomento
+              ? '<label>Momento</label><select class="control" data-f="momentoDesconocido">' +
+                '<option value=""' + (!f.momentoDesconocido ? ' selected' : '') + '>Conocido</option>' +
+                '<option value="1"' + (f.momentoDesconocido ? ' selected' : '') +
+                '>Es el que busco</option></select>'
+              : '<label>Descripción</label><input type="text" class="control" data-f="descripcion" ' +
+                'placeholder="Opcional" value="' + (f.descripcion || '') + '" ' +
+                'style="font-family:var(--texto)">') +
+        '</div>' +
+        '<button class="quitar" type="button" data-quitar="' + k + '" ' +
+          'aria-label="Eliminar el flujo ' + (k + 1) + '"' +
+          (E.flujos.length === 1 ? ' disabled style="opacity:.35;cursor:not-allowed"' : '') +
+          '>×</button>' +
+      '</div>';
+    });
+
+    h += '</div><button class="btn btn-suave" type="button" id="btn-agregar">+ Agregar flujo</button>';
+    z.innerHTML = h;
+
+    $$('[data-f]', z).forEach(function (n) {
+      var fila = n.closest('.flujo'), k = +fila.dataset.k;
+      var ev = n.tagName === 'SELECT' ? 'change' : 'input';
+      n.addEventListener(ev, function () {
+        var campo = n.dataset.f;
+        if (campo === 'momentoDesconocido') {
+          E.flujos.forEach(function (f) { delete f.momentoDesconocido; });
+          if (n.value) E.flujos[k].momentoDesconocido = true;
+          Sim.pintarTodo(); return;
+        }
+        E.flujos[k][campo] = n.value;
+        if (campo === 'clase') { Sim.pintarTodo(); return; }
+        Sim.pintarLinea();
+      });
+      if (n.dataset.dinero) {
+        n.addEventListener('blur', function () {
+          Fmt.normalizarCampo(n); E.flujos[k][n.dataset.f] = n.value; Sim.pintarLinea();
+        });
+      }
+    });
+    $$('[data-quitar]', z).forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (E.flujos.length === 1) return;
+        E.flujos.splice(+b.dataset.quitar, 1);
+        Sim.ajustarPorIncognita(); Sim.pintarTodo();
+      });
+    });
+    $('#btn-agregar').addEventListener('click', function () {
+      var ult = E.flujos[E.flujos.length - 1];
+      var sig = Fmt.parsear(ult.momento);
+      E.flujos.push({
+        valor: '', momento: isFinite(sig) ? String(sig + 12) : '', tipo: 'entrada',
+        clase: 'conocido', coeficiente: '1'
+      });
+      Sim.pintarTodo();
+    });
+  },
+
+  /* ---------- Línea de tiempo ---------- */
+  flujosParaLinea: function () {
+    var E = Sim.estado;
+    return E.flujos.map(function (f, k) {
+      var esX = E.incognita === 'valorFlujo' && f.clase === 'incognita';
+      var v = Fmt.parsear(f.valor);
+      return {
+        momento: f.momentoDesconocido ? NaN : Fmt.parsear(f.momento),
+        valor: esX ? NaN : v,
+        tipo: f.tipo === 'salida' ? 'salida' : 'entrada',
+        etiqueta: esX ? ((f.coeficiente || '1') + '·X') : (isFinite(v) ? Fmt.numero(v, 0) : '?')
+      };
+    });
+  },
+
+  focalEnMeses: function (flujos) {
+    var E = Sim.estado;
+    if (E.focalTipo === 'presente') return 0;
+    if (E.focalTipo === 'especifico') {
+      var m = Fmt.parsear(E.focalMes);
+      return isFinite(m) ? m : 0;
+    }
+    var ms = flujos.map(function (f) { return f.momento; }).filter(isFinite);
+    return ms.length ? Math.max.apply(null, ms) : 0;
+  },
+
+  pintarLinea: function (arcos) {
+    var z = $('#zona-linea');
+    if (!Sim.usaFlujos()) { z.innerHTML = ''; return; }
+    var fl = Sim.flujosParaLinea();
+    var conocidos = fl.map(function (f, k) {
+      return { momento: isFinite(f.momento) ? f.momento : (k * 6), valor: f.valor,
+               tipo: f.tipo, etiqueta: f.etiqueta };
+    });
+    var focal = Sim.focalEnMeses(fl);
+    z.innerHTML = '<p class="rotulo" style="margin-bottom:10px">Línea de tiempo</p>' +
+      Linea.dibujar(conocidos, focal, { arcos: arcos });
+  },
+
+  pintarTodo: function () {
+    Sim.pintarOpciones(); Sim.pintarCampos(); Sim.pintarFlujos(); Sim.pintarLinea();
+  },
+
+  /* ---------- Recolección de datos ---------- */
+  leerFlujos: function () {
+    var E = Sim.estado, salida = [], iX = -1;
+    E.flujos.forEach(function (f, k) {
+      var base = {
+        numero: k + 1,
+        tipo: f.tipo === 'salida' ? 'salida' : 'entrada',
+        descripcion: f.descripcion || ''
+      };
+      if (f.momentoDesconocido) { iX = k; base.momento = 0; }
+      else {
+        var m = Fmt.parsear(f.momento);
+        if (!isFinite(m)) throw new Error('Falta el mes del flujo ' + (k + 1) +
+          '. Escribe en qué mes ocurre, contado desde el origen.');
+        base.momento = m;
+      }
+      if (E.incognita === 'valorFlujo' && f.clase === 'incognita') {
+        base.clase = 'incognita';
+        var c = Fmt.parsear(f.coeficiente);
+        if (!isFinite(c)) throw new Error('Falta el coeficiente del flujo ' + (k + 1) +
+          '. Si ese flujo es X, escribe 1; si es 1,4 veces X, escribe 1,4.');
+        base.coeficiente = c;
+      } else {
+        var v = Fmt.parsear(f.valor);
+        if (!isFinite(v)) throw new Error('Falta el valor del flujo ' + (k + 1) + '.');
+        base.valor = v;
+      }
+      salida.push(base);
+    });
+    return { flujos: salida, indiceMomento: iX };
+  },
+
+  leerTasa: function () {
+    var t = Fmt.parsear(Sim.estado.tasa);
+    if (!isFinite(t)) throw new Error('Falta la tasa de interés. Escríbela en porcentaje, ' +
+      'por ejemplo 2,5 para 2,5 %.');
+    return t / 100;
+  },
+
+  leerObjetivo: function () {
+    var o = Fmt.parsear(Sim.estado.objetivo);
+    if (!isFinite(o)) throw new Error('Falta el valor conocido que permite despejar la incógnita.');
+    return o;
+  },
+
+  focalConfig: function () {
+    var E = Sim.estado;
+    if (E.focalTipo === 'especifico') {
+      var m = Fmt.parsear(E.focalMes);
+      if (!isFinite(m)) throw new Error('Elegiste una fecha focal específica pero no escribiste ' +
+        'en qué mes cae.');
+      return { tipo: 'especifico', meses: m };
+    }
+    return E.focalTipo;
+  },
+
+  baseConfig: function () {
+    var E = Sim.estado;
+    return {
+      regimen: E.regimen,
+      periodicidad: E.regimen === 'continuo' ? 'anual' : E.periodicidad,
+      mesesPersonalizados: Fmt.parsear(E.mesesN),
+      operacion: E.operacion
+    };
+  },
+
+  /* ---------- Cálculo ---------- */
+  calcular: function () {
+    var E = Sim.estado, z = $('#zona-resultado');
+    try {
+      var salida = Sim.despachar();
+      z.innerHTML = Res.pintar(salida);
+      Sim.pintarLinea(salida.arcos);
+      z.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {
+      z.innerHTML = '<div class="error"><strong>No se pudo calcular</strong>' +
+        Linea.escapar(e.message) + '</div>';
+      Sim.pintarLinea();
+    }
+  },
+
+  despachar: function () {
+    var E = Sim.estado;
+    var base = Sim.baseConfig();
+
+    if (E.incognita === 'tiempo') return Sim.calcTiempo(base);
+
+    // Se valida en el mismo orden en que aparecen los campos en pantalla,
+    // para que el mensaje apunte al primer hueco que el usuario ve.
+    if (E.incognita !== 'tasa') Sim.leerTasa();
+    var lec = Sim.leerFlujos();
+    var focal = Sim.focalConfig();
+
+    if (E.incognita === 'vf' || E.incognita === 'vp') {
+      var cfg = { flujos: lec.flujos, tasa: Sim.leerTasa(), focal: focal };
+      for (var k in base) cfg[k] = base[k];
+      var r = M.Ecuacion.resolver(cfg);
+      return Sim.empaquetar(r, E.incognita === 'vp' ? 'Valor presente' : 'Valor futuro',
+        r.valorFocal, cfg);
+    }
+
+    if (E.incognita === 'tasa') {
+      var cfgT = { flujos: lec.flujos, focal: focal, objetivo: Sim.leerObjetivo(), modo: E.modo };
+      for (var k2 in base) cfgT[k2] = base[k2];
+      var rt = M.Ecuacion.despejarTasa(cfgT);
+      var cfg2 = { flujos: lec.flujos, tasa: rt.tasa, focal: focal };
+      for (var k3 in base) cfg2[k3] = base[k3];
+      var r2 = M.Ecuacion.resolver(cfg2);
+      var emp = Sim.empaquetar(r2, 'Tasa de interés', rt.tasa, cfg2);
+      emp.esTasa = true;
+      emp.principalTexto = Fmt.tasa(rt.tasa, 4) + ' ' +
+        (E.regimen === 'continuo' ? 'continuo anual' : Sim.nombrePeriodicidad(E.periodicidad));
+      return emp;
+    }
+
+    if (E.incognita === 'valorFlujo') {
+      var cfgC = { flujos: lec.flujos, tasa: Sim.leerTasa(), focal: focal,
+                   objetivo: Sim.leerObjetivo(), modo: E.modo };
+      for (var k4 in base) cfgC[k4] = base[k4];
+      var rc = M.Ecuacion.despejarCoeficiente(cfgC);
+      var resueltos = rc.valoresResueltos.map(function (v) {
+        return { numero: v.numero, valor: v.valor, momento: v.momento, tipo: v.tipo,
+                 clase: 'conocido', descripcion: v.descripcion };
+      });
+      var cfgV = { flujos: resueltos, tasa: Sim.leerTasa(), focal: focal };
+      for (var k5 in base) cfgV[k5] = base[k5];
+      var rv = M.Ecuacion.resolver(cfgV);
+      var e2 = Sim.empaquetar(rv, 'Valor de X', rc.X, cfgV);
+      e2.extraX = rc;
+      return e2;
+    }
+
+    if (E.incognita === 'momentoFlujo') {
+      if (lec.indiceMomento < 0) throw new Error('Marca cuál de los flujos tiene el momento ' +
+        'desconocido, en la columna "Momento".');
+      var cfgM = { flujos: lec.flujos, indiceFlujo: lec.indiceMomento, tasa: Sim.leerTasa(),
+                   focal: focal, objetivo: Sim.leerObjetivo(), modo: E.modo };
+      for (var k6 in base) cfgM[k6] = base[k6];
+      var rm = M.Ecuacion.despejarMomento(cfgM);
+      var flujosR = lec.flujos.map(function (f, k) {
+        var c = {}; for (var p in f) c[p] = f[p];
+        if (k === lec.indiceMomento) c.momento = rm.momentoMeses;
+        return c;
+      });
+      var cfgM2 = { flujos: flujosR, tasa: Sim.leerTasa(), focal: focal };
+      for (var k7 in base) cfgM2[k7] = base[k7];
+      var rmr = M.Ecuacion.resolver(cfgM2);
+      var e3 = Sim.empaquetar(rmr, 'Momento del flujo', rm.momentoMeses, cfgM2);
+      e3.esMomento = true;
+      e3.principalTexto = Fmt.periodos(rm.momentoMeses) + ' meses';
+      e3.subPrincipal = rm.momentoAniosMeses;
+      return e3;
+    }
+
+    throw new Error('Elige qué quieres averiguar.');
+  },
+
+  calcTiempo: function (base) {
+    var E = Sim.estado;
+    var vp = Fmt.parsear(E.vp), vf = Fmt.parsear(E.vf), i = Sim.leerTasa();
+    if (!isFinite(vp)) throw new Error('Falta el valor presente (VP).');
+    if (!isFinite(vf)) throw new Error('Falta el valor futuro (VF).');
+    var n, mpp, unidad, formula, pasos = [];
+    if (E.regimen === 'continuo') {
+      n = M.Continuo.tiempo(vp, vf, i); mpp = 12; unidad = 'años';
+      formula = 't = Ln(VF / VP) / i';
+      pasos.push('t = Ln(' + Fmt.numero(vf) + ' / ' + Fmt.numero(vp) + ') / ' + Fmt.tasa(i, 4));
+      pasos.push('t = ' + Fmt.numero(Math.log(vf / vp), 8) + ' / ' + Fmt.numero(i, 8));
+      pasos.push('t = ' + Fmt.periodos(n) + ' años = ' + Fmt.periodos(n * 12) + ' meses');
+    } else {
+      mpp = M.Periodicidad.mesesPorPeriodo(base.periodicidad, base.mesesPersonalizados);
+      unidad = Fmt.unidad(base.periodicidad, base.mesesPersonalizados);
+      if (E.regimen === 'simple') {
+        n = M.Simple.periodos(vp, vf, i);
+        formula = 'n = (VF − VP) / (VP · i)';
+        pasos.push('n = (' + Fmt.numero(vf) + ' − ' + Fmt.numero(vp) + ') / (' +
+          Fmt.numero(vp) + ' × ' + Fmt.tasa(i, 4) + ')');
+      } else {
+        n = M.Compuesto.periodos(vp, vf, i);
+        formula = 'n = Log(VF / VP) / Log(1 + i)';
+        pasos.push('n = Log(' + Fmt.numero(vf) + ' / ' + Fmt.numero(vp) + ') / Log(1 + ' +
+          Fmt.tasa(i, 4) + ')');
+      }
+      pasos.push('n = ' + Fmt.periodos(n) + ' ' + unidad);
+    }
+    var meses = (E.regimen === 'continuo') ? n * 12 : n * mpp;
+    return {
+      titulo: 'Tiempo', principal: n,
+      principalTexto: Fmt.periodos(n) + ' ' + unidad,
+      subPrincipal: Fmt.tiempoTexto(meses),
+      vf: vf, vp: vp, interes: vf - vp, tasa: i,
+      operacion: E.operacion, moneda: E.moneda, regimen: E.regimen,
+      periodicidad: base.periodicidad, mesesPersonalizados: base.mesesPersonalizados,
+      periodos: n, mesesTotales: meses, formula: formula, pasos: pasos,
+      detalleFlujos: null, dependeDeFocal: false, aviso: null, arcos: null,
+      etiquetaGanancia: M.Ecuacion.etiquetaGanancia(E.operacion)
+    };
+  },
+
+  nombrePeriodicidad: function (p) {
+    var n = { mensual: 'mensual', bimestral: 'bimestral', trimestral: 'trimestral',
+      cuatrimestral: 'cuatrimestral', semestral: 'semestral', anual: 'anual',
+      cadaNMeses: 'por período' };
+    return n[p] || 'por período';
+  },
+
+  /** Convierte el resultado del motor en lo que la vista necesita. */
+  empaquetar: function (r, titulo, principal, cfg) {
+    var E = Sim.estado;
+    var mesesTotales = r.focalMeses;
+    var suma = r.sumaNominal;
+    return {
+      titulo: titulo, principal: principal,
+      principalTexto: null,
+      vf: r.valorFocal, vp: suma, interes: r.gananciaNeta, tasa: r.tasa,
+      operacion: E.operacion, moneda: E.moneda, regimen: r.regimen,
+      periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados,
+      periodos: r.focalPeriodos, mesesTotales: mesesTotales,
+      detalleFlujos: r.detalle,
+      dependeDeFocal: r.dependeDeFechaFocal,
+      aviso: r.avisoFechaFocal,
+      etiquetaGanancia: r.etiquetaGanancia,
+      formula: Sim.formulaDe(r.regimen),
+      pasos: Sim.pasosDe(r),
+      arcos: r.detalle.map(function (d) { return { momento: d.momento, factor: d.factor }; })
+    };
+  },
+
+  formulaDe: function (reg) {
+    if (reg === 'simple') return 'Adelante: Flujo × (1 + i·Δn)   ·   Atrás: Flujo ÷ (1 + i·|Δn|)';
+    if (reg === 'continuo') return 'Valor en la focal = Flujo × e^(i·Δt),  con Δt en años';
+    return 'Valor en la focal = Flujo × (1 + i)^Δn';
+  },
+
+  pasosDe: function (r) {
+    var E = Sim.estado, p = [];
+    var unidad = r.regimen === 'continuo' ? 'años'
+      : Fmt.unidad(r.periodicidad, r.mesesPorPeriodo);
+    r.detalle.forEach(function (d) {
+      var signo = d.tipo === 'salida' ? '−' : '+';
+      var op;
+      if (r.regimen === 'simple') {
+        op = d.delta >= 0
+          ? Fmt.numero(d.valor) + ' × (1 + ' + Fmt.tasa(r.tasa, 4) + ' × ' + Fmt.periodos(d.delta) + ')'
+          : Fmt.numero(d.valor) + ' ÷ (1 + ' + Fmt.tasa(r.tasa, 4) + ' × ' +
+            Fmt.periodos(Math.abs(d.delta)) + ')';
+      } else if (r.regimen === 'continuo') {
+        op = Fmt.numero(d.valor) + ' × e^(' + Fmt.tasa(r.tasa, 4) + ' × ' +
+             Fmt.periodos(d.delta) + ')';
+      } else {
+        op = Fmt.numero(d.valor) + ' × (1 + ' + Fmt.tasa(r.tasa, 4) + ')^' + Fmt.periodos(d.delta);
+      }
+      p.push(signo + ' Flujo ' + d.numero + ' (mes ' + Fmt.periodos(d.momento) + ', Δ = ' +
+        Fmt.periodos(d.delta) + ' ' + unidad + '):  ' + op + ' = ' +
+        Fmt.numero(Math.abs(d.valorEnFocal)));
+    });
+    p.push('Valor total en la fecha focal = ' + Fmt.numero(r.valorFocal));
+    return p;
+  },
+
+  /* ---------- Ejemplo cargado ---------- */
+  ejemplo: function () {
+    Sim.estado = Sim.inicial();
+    var E = Sim.estado;
+    E.operacion = 'credito'; E.regimen = 'simple'; E.incognita = 'vf';
+    E.periodicidad = 'mensual'; E.tasa = '2'; E.moneda = 'COP';
+    E.focalTipo = 'especifico'; E.focalMes = '30';
+    E.flujos = [
+      { valor: '1.400.000', momento: '0', tipo: 'entrada', clase: 'conocido', coeficiente: '1',
+        descripcion: 'Primer desembolso' },
+      { valor: '1.000.000', momento: '9', tipo: 'entrada', clase: 'conocido', coeficiente: '1',
+        descripcion: 'Segundo desembolso' },
+      { valor: '600.000', momento: '18', tipo: 'entrada', clase: 'conocido', coeficiente: '1',
+        descripcion: 'Tercer desembolso' }
+    ];
+    Sim.pintarTodo();
+    Sim.calcular();
+  },
+
+  iniciar: function () {
+    Sim.estado = Sim.inicial();
+    Sim.pintarTodo();
+    $('#btn-calcular').addEventListener('click', Sim.calcular);
+    $('#btn-ejemplo').addEventListener('click', Sim.ejemplo);
+    $('#btn-limpiar').addEventListener('click', function () {
+      Sim.estado = Sim.inicial(); Sim.pintarTodo(); $('#zona-resultado').innerHTML = '';
+    });
+  }
+};
+
+/* ==================================================================
+   6. RESULTADOS
+   ================================================================== */
+var Res = {
+
+  pintar: function (s) {
+    var esCredito = s.operacion === 'credito';
+    var mon = s.moneda;
+    var principalTexto = s.principalTexto || Fmt.dinero(s.principal, mon);
+
+    var h = '';
+
+    /* tarjeta principal */
+    h += '<div class="resultado-principal ' + (esCredito ? 'credito' : 'inversion') + '">' +
+      '<p class="rotulo">' + s.titulo + '</p>' +
+      '<div class="cifra-grande">' + principalTexto + '</div>' +
+      (s.subPrincipal ? '<p class="nota">' + s.subPrincipal + '</p>' : '') +
+      '<p class="nota">' + s.etiquetaGanancia + ': <b class="cifra">' +
+      Fmt.dinero(Math.abs(s.interes), mon) + '</b></p>' +
+      '</div>';
+
+    /* VF / I / i, las tres magnitudes que se confunden */
+    h += '<div class="trio">' +
+      '<div class="magnitud vf"><span class="simbolo-mag">VF</span>' +
+        '<p class="que-es">Valor futuro: el capital más los intereses</p>' +
+        '<div class="valor">' + Fmt.dinero(s.vf, mon) + '</div></div>' +
+      '<div class="magnitud i-may"><span class="simbolo-mag">I</span>' +
+        '<p class="que-es">' + (esCredito ? 'Intereses pagados, en dinero'
+          : 'Intereses ganados, en dinero') + '</p>' +
+        '<div class="valor">' + Fmt.dinero(Math.abs(s.interes), mon) + '</div></div>' +
+      '<div class="magnitud i-min"><span class="simbolo-mag">i</span>' +
+        '<p class="que-es">La tasa: un porcentaje, no un monto</p>' +
+        '<div class="valor">' + Fmt.tasa(s.tasa, 4) + '</div></div>' +
+      '</div>';
+
+    /* detalle */
+    var unidad = s.regimen === 'continuo' ? 'años'
+      : Fmt.unidad(s.periodicidad, Fmt.parsear(s.mesesPersonalizados));
+    var nombreReg = { simple: 'Interés simple', compuesto: 'Interés compuesto',
+                      continuo: 'Interés continuo' }[s.regimen];
+    var tiempoTexto = Fmt.tiempoTexto(s.mesesTotales);
+
+    h += '<dl class="detalle-lista">' +
+      '<div><dt>Régimen</dt><dd style="font-family:var(--texto)">' + nombreReg + '</dd></div>' +
+      '<div><dt>Tasa</dt><dd>' + Fmt.tasa(s.tasa, 4) + ' ' +
+        (s.regimen === 'continuo' ? 'continua' : Sim.nombrePeriodicidad(s.periodicidad)) +
+        '</dd></div>' +
+      '<div><dt>Tiempo</dt><dd style="font-family:var(--texto)">' + tiempoTexto + '</dd></div>' +
+      '<div><dt>Períodos</dt><dd>' + Fmt.periodos(s.periodos) + ' ' + unidad + '</dd></div>' +
+      '<div><dt>Moneda</dt><dd>' + s.moneda + '</dd></div>' +
+      '</dl>';
+
+    /* aviso de fecha focal en interés simple */
+    if (s.dependeDeFocal && s.detalleFlujos && s.detalleFlujos.length > 1) {
+      h += '<div class="aviso"><strong>Ojo con la fecha focal.</strong> ' +
+        Linea.escapar(s.aviso) + '</div>';
+    }
+
+    /* traslado flujo por flujo */
+    if (s.detalleFlujos && s.detalleFlujos.length > 1) {
+      h += '<div class="bloque"><h4>Cada flujo llevado a la fecha focal</h4>' +
+        '<table class="tabla"><thead><tr><th>#</th><th>Mes</th><th>Tipo</th>' +
+        '<th class="num">Valor</th><th class="num">Δ períodos</th><th class="num">Factor</th>' +
+        '<th class="num">En la focal</th></tr></thead><tbody>';
+      s.detalleFlujos.forEach(function (d) {
+        h += '<tr><td>' + d.numero + '</td><td>' + Fmt.periodos(d.momento) + '</td>' +
+          '<td class="' + (d.tipo === 'entrada' ? 'arriba' : 'abajo') + '" ' +
+          'style="font-family:var(--texto)">' + (d.tipo === 'entrada' ? '↑ Entrada' : '↓ Salida') +
+          '</td>' +
+          '<td class="num">' + Fmt.numero(d.valor) + '</td>' +
+          '<td class="num">' + Fmt.periodos(d.delta) + '</td>' +
+          '<td class="num">' + Fmt.numero(d.factor, 6) + '</td>' +
+          '<td class="num">' + Fmt.numero(d.valorEnFocal) + '</td></tr>';
+      });
+      h += '<tr class="total"><td colspan="6">Valor total en la fecha focal</td>' +
+        '<td class="num">' + Fmt.numero(s.vf) + '</td></tr></tbody></table></div>';
+    }
+
+    /* valores despejados de X */
+    if (s.extraX) {
+      h += '<div class="bloque"><h4>Valores despejados</h4>' +
+        '<table class="tabla"><thead><tr><th>Flujo</th><th>Mes</th>' +
+        '<th class="num">Valor</th></tr></thead><tbody>';
+      s.extraX.valoresResueltos.forEach(function (v) {
+        h += '<tr><td>' + v.numero + '</td><td>' + Fmt.periodos(v.momento) + '</td>' +
+          '<td class="num">' + Fmt.dinero(v.valor, mon) + '</td></tr>';
+      });
+      h += '</tbody></table></div>';
+    }
+
+    /* fórmula y pasos */
+    h += '<div class="bloque"><h4>Fórmula utilizada</h4>' +
+      '<div class="formula-caja">' + Linea.escapar(s.formula) + '</div>' +
+      '<h4 style="margin-top:18px">Pasos del cálculo</h4><ol class="pasos">' +
+      s.pasos.map(function (p) { return '<li>' + Linea.escapar(p) + '</li>'; }).join('') +
+      '</ol></div>';
+
+    /* significado */
+    h += '<div class="significado"><h4>¿Qué significa este resultado?</h4><p>' +
+      Res.significado(s) + '</p></div>';
+
+    return h;
+  },
+
+  significado: function (s) {
+    var mon = s.moneda, esCredito = s.operacion === 'credito';
+    var tiempo = Fmt.tiempoTexto(s.mesesTotales);
+    var d = function (v) { return '<strong>' + Fmt.dinero(v, mon) + '</strong>'; };
+
+    if (s.titulo === 'Tasa de interés') {
+      return 'Para que esta operación llegue al valor que indicaste después de ' + tiempo +
+        ', la tasa tendría que ser de <strong>' + Fmt.tasa(s.tasa, 4) + '</strong> ' +
+        (s.regimen === 'continuo' ? 'continua anual' : Sim.nombrePeriodicidad(s.periodicidad)) +
+        '. Con esa tasa, ' + (esCredito ? 'pagarías ' : 'ganarías ') + d(Math.abs(s.interes)) +
+        ' en intereses.';
+    }
+    if (s.titulo === 'Tiempo') {
+      return 'Manteniendo una tasa de <strong>' + Fmt.tasa(s.tasa, 4) + '</strong>, pasar de ' +
+        d(s.vp) + ' a ' + d(s.vf) + ' toma <strong>' + Fmt.periodos(s.periodos) + '</strong> ' +
+        (s.regimen === 'continuo' ? 'años' :
+          Fmt.unidad(s.periodicidad, Fmt.parsear(s.mesesPersonalizados))) +
+        ', es decir ' + tiempo + '. En el camino se ' + (esCredito ? 'pagan ' : 'generan ') +
+        d(Math.abs(s.interes)) + ' de intereses.';
+    }
+    if (s.titulo === 'Momento del flujo') {
+      return 'El flujo que buscabas ocurre en el mes <strong>' + Fmt.periodos(s.principal) +
+        '</strong> (' + s.subPrincipal + ' desde el origen). Con ese momento, la operación cierra ' +
+        'en ' + d(s.vf) + ' en la fecha focal.';
+    }
+    if (s.titulo === 'Valor de X') {
+      return 'El flujo desconocido vale ' + d(s.principal) + '. Con ese valor, todos los ' +
+        'movimientos llevados a la fecha focal suman ' + d(s.vf) + ', y los intereses ' +
+        (esCredito ? 'pagados' : 'ganados') + ' son ' + d(Math.abs(s.interes)) + '.';
+    }
+    if (s.titulo === 'Valor presente') {
+      return 'Todo el dinero de esta operación, traído al día de hoy, equivale a ' + d(s.vf) +
+        '. Los aportes suman ' + d(s.vp) + ' en valores nominales, pero no se pueden sumar ' +
+        'directamente porque están en momentos distintos.';
+    }
+    return 'Si mantienes esta operación durante ' + tiempo + ' bajo las condiciones indicadas, ' +
+      (esCredito ? 'terminarías debiendo ' : 'terminarías con ') + 'aproximadamente ' + d(s.vf) +
+      '. De ese valor, ' + d(Math.abs(s.interes)) + ' corresponden a intereses' +
+      (esCredito ? ' que pagas por el crédito' : ' que ganaste') + '.';
+  }
+};
+
+/* ==================================================================
+   7. INTERACCIONES
+   ================================================================== */
+var Inter = {
+
+  PREGUNTAS: [
+    {
+      p: 'Inviertes $ 5.000.000 al 1 % mensual sin capitalización. Si en 12 meses tienes ' +
+         '$ 5.600.000, ¿en 24 meses podrías tener el doble de ese valor?',
+      r: ['Sí, se tendría el doble', 'Se tendría más del doble', 'Se tendría menos que el doble'],
+      ok: 2,
+      exp: function () {
+        return 'En 24 meses tendrías ' + Fmt.dinero(M.Simple.vf(5000000, 0.01, 24), 'COP') +
+          ', no ' + Fmt.dinero(11200000, 'COP') + '. El capital inicial no se duplica: solo se ' +
+          'duplican los intereses, que pasan de ' + Fmt.dinero(600000, 'COP') + ' a ' +
+          Fmt.dinero(1200000, 'COP') + '.';
+      }
+    },
+    {
+      p: 'Inviertes $ 2.000.000 a una tasa del 2 % mensual con capitalización. De esa inversión ' +
+         'retiras $ 4.079.774,69. ¿Cuántos meses duró?',
+      r: ['26 meses', '35 meses', '36 meses'],
+      ok: 2,
+      exp: function () {
+        return 'n = Log(VF/VP) / Log(1 + i) = Log(4.079.774,69 / 2.000.000) / Log(1,02) = ' +
+          Fmt.periodos(M.Compuesto.periodos(2000000, 4079774.69, 0.02)) + ' meses. La tasa es ' +
+          'mensual, así que el resultado sale en meses.';
+      }
+    },
+    {
+      p: 'Si en el interés continuo no hay períodos de capitalización, ¿por qué la fórmula ' +
+         'tiene una variable de tiempo?',
+      r: ['Es un error de las fórmulas', 'Los períodos se cuentan como infinito',
+          'Mide cuánto tiempo estuvo capitalizando'],
+      ok: 2,
+      exp: function () {
+        return 'La capitalización es continua, pero sigue ocurriendo durante un lapso. La ' +
+          'variable t mide ese lapso, y en interés continuo siempre va en años.';
+      }
+    },
+    {
+      p: 'Una inversión de $ 1.000.000 rinde 9,26 % bimestral durante 2 años y 4 meses, sin ' +
+         'capitalización. ¿Cuántos períodos se usan en la fórmula?',
+      r: ['28, porque son 28 meses', '14, porque son 14 bimestres', '2,33, porque son 2,33 años'],
+      ok: 1,
+      exp: function () {
+        return 'La tasa manda. 2 años y 4 meses son 28 meses, y 28 / 2 = 14 bimestres. Usar 28 ' +
+          'daría ' + Fmt.dinero(M.Simple.vf(1000000, 0.0926, 28), 'COP') + ' en vez de ' +
+          Fmt.dinero(M.Simple.vf(1000000, 0.0926, 14), 'COP') + '.';
+      }
+    }
+  ],
+
+  respondidas: 0,
+
+  pintarQuiz: function () {
+    var cont = $('#quiz');
+    cont.innerHTML = '';
+    Inter.respondidas = 0;
+    Inter.actualizarMarcador();
+    Inter.PREGUNTAS.forEach(function (q, idx) {
+      var d = el('div', { 'class': 'pregunta' });
+      d.innerHTML = '<h4>' + q.p + '</h4><div class="respuestas">' +
+        q.r.map(function (t, k) {
+          return '<button class="respuesta" type="button" data-k="' + k + '">' +
+            '<span class="letra">' + 'ABC'.charAt(k) + '</span><span>' + t + '</span></button>';
+        }).join('') + '</div><div class="explicacion oculto"></div>';
+      $$('.respuesta', d).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (d.dataset.hecha) return;
+          d.dataset.hecha = '1';
+          var k = +b.dataset.k;
+          $$('.respuesta', d).forEach(function (o) { o.disabled = true; });
+          if (k === q.ok) b.classList.add('correcta');
+          else {
+            b.classList.add('incorrecta');
+            $$('.respuesta', d)[q.ok].classList.add('correcta');
+          }
+          var e = $('.explicacion', d);
+          e.classList.remove('oculto');
+          e.innerHTML = (k === q.ok ? '<b>Correcto.</b> ' : '<b>No es esa.</b> ') + q.exp();
+          Inter.respondidas++;
+          Inter.actualizarMarcador();
+        });
+      });
+      cont.appendChild(d);
+    });
+  },
+
+  actualizarMarcador: function () {
+    $('#marcador').textContent = Inter.respondidas + ' de ' + Inter.PREGUNTAS.length + ' respondidas';
+  },
+
+  comparar: function () {
+    var vp = Fmt.parsear($('#cmp-vp').value);
+    if (!isFinite(vp) || vp <= 0) vp = 1000000;
+    var i = (+$('#cmp-tasa').value) / 1000;
+    var n = +$('#cmp-n').value;
+    $('#cmp-tasa-v').textContent = Fmt.numero(i * 100, 2) + ' %';
+    $('#cmp-n-v').textContent = n;
+
+    var pts = function (fn) {
+      var a = []; for (var k = 0; k <= n; k++) a.push([k, fn(k)]); return a;
+    };
+    $('#cmp-grafica').innerHTML = Edu.grafica([
+      { nombre: 'Simple', color: '#2B4C8C', puntos: pts(function (k) { return M.Simple.vf(vp, i, k); }) },
+      { nombre: 'Compuesto', color: '#B3341F', puntos: pts(function (k) { return M.Compuesto.vf(vp, i, k); }) },
+      { nombre: 'Continuo', color: '#0B7A6B', puntos: pts(function (k) { return M.Continuo.vf(vp, i, k); }) }
+    ], { titulo: 'Comparación de regímenes' }).replace(/^<div class="lienzo-linea">/, '<div>')
+      .replace(/<\/div>$/, '</div>');
+
+    var vs = M.Simple.vf(vp, i, n), vc = M.Compuesto.vf(vp, i, n), vk = M.Continuo.vf(vp, i, n);
+    $('#cmp-cifras').innerHTML =
+      '<div class="mini"><p class="rotulo" style="color:#2B4C8C">Simple</p>' +
+        '<div class="v">' + Fmt.dinero(vs, 'COP') + '</div></div>' +
+      '<div class="mini"><p class="rotulo" style="color:#B3341F">Compuesto</p>' +
+        '<div class="v">' + Fmt.dinero(vc, 'COP') + '</div>' +
+        '<p class="pista" style="margin-top:4px">' + Fmt.dinero(vc - vs, 'COP') +
+        ' más que el simple</p></div>' +
+      '<div class="mini"><p class="rotulo" style="color:#0B7A6B">Continuo</p>' +
+        '<div class="v">' + Fmt.dinero(vk, 'COP') + '</div>' +
+        '<p class="pista" style="margin-top:4px">' + Fmt.dinero(vk - vc, 'COP') +
+        ' más que el compuesto</p></div>';
+  },
+
+  iniciar: function () {
+    ['cmp-vp', 'cmp-tasa', 'cmp-n'].forEach(function (id) {
+      $('#' + id).addEventListener('input', Inter.comparar);
+    });
+    $('#cmp-vp').addEventListener('blur', function () {
+      Fmt.normalizarCampo($('#cmp-vp'), 0); Inter.comparar();
+    });
+    $('#btn-reiniciar-quiz').addEventListener('click', Inter.pintarQuiz);
+    Inter.comparar();
+    Inter.pintarQuiz();
+  }
+};
+
+var IA = {
+
+  CAMPOS: [
+    ['promptOriginal', 'Prompt original', 'prompt'],
+    ['primeraRespuesta', 'Primera respuesta de la IA', 'texto'],
+    ['problemaDetectado', 'Problema detectado', 'problema'],
+    ['correccionRealizada', 'Corrección realizada', 'texto'],
+    ['promptCorreccion', 'Prompt de corrección', 'prompt'],
+    ['resultadoFinal', 'Resultado final', 'texto'],
+    ['parteVisible', 'Parte visible de la aplicación', 'texto']
+  ],
+
+  vacio: function (v) { return !v || String(v).trim() === ''; },
+
+  valor: function (v, clase) {
+    if (IA.vacio(v)) {
+      return '<div class="campo-ia vacio">Pendiente de completar</div>';
+    }
+    return '<div class="campo-ia ' + (clase === 'prompt' ? 'es-prompt' : '') + '">' +
+      Linea.escapar(v).replace(/\n/g, '<br>') + '</div>';
+  },
+
+  pintar: function () {
+    var cont = $('#tarjetas-ia');
+    cont.innerHTML = '';
+
+    var datos = window.INTERACCIONES_IA;
+    if (!Array.isArray(datos) || datos.length === 0) {
+      cont.innerHTML = '<div class="error"><strong>No hay interacciones para mostrar</strong>' +
+        'Revisa el array INTERACCIONES_IA, al inicio del bloque de scripts del archivo.</div>';
+      return;
+    }
+
+    datos.forEach(function (x, idx) {
+      var t = el('article', { 'class': 'tarjeta-ia' + (x.documentaError ? ' con-error' : '') });
+      var h = '';
+
+      h += '<header class="cab-ia">' +
+        '<span class="num-ia">Interacción ' + (idx + 1) + '</span>' +
+        (x.documentaError
+          ? '<span class="marca-error">Documenta un error de la IA</span>' : '') +
+        '<h3>' + (IA.vacio(x.titulo) ? 'Sin título todavía' : Linea.escapar(x.titulo)) + '</h3>' +
+        '</header>';
+
+      IA.CAMPOS.forEach(function (c) {
+        h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' +
+             IA.valor(x[c[0]], c[2]) + '</div>';
+      });
+
+      if (x.documentaError) {
+        h += '<div class="caja-error-ia">' +
+          '<h4>Detalle del error</h4>' +
+          '<div class="rejilla-2">' +
+          '<div class="fila-ia"><span class="rotulo">Valor equivocado que dio la IA</span>' +
+            IA.valor(x.valorEquivocado) + '</div>' +
+          '<div class="fila-ia"><span class="rotulo">Valor correcto</span>' +
+            IA.valor(x.valorCorrecto) + '</div>' +
+          '</div>' +
+          '<div class="fila-ia"><span class="rotulo">Razón del error</span>' +
+            IA.valor(x.razonDelError) + '</div>' +
+          '</div>';
+      }
+
+      h += '<footer class="pie-ia"><span class="rotulo">Conversación original</span>' +
+        (IA.vacio(x.enlaceConversacion)
+          ? '<span class="campo-ia vacio" style="margin:0">Pendiente de completar</span>'
+          : '<a href="' + Linea.escapar(x.enlaceConversacion) + '" target="_blank" ' +
+            'rel="noopener noreferrer" class="enlace-ia">Abrir la conversación →</a>') +
+        '</footer>';
+
+      t.innerHTML = h;
+      cont.appendChild(t);
+    });
+  },
+
+  iniciar: function () { IA.pintar(); }
+};
+
+/* ==================================================================
+   ARRANQUE
+   Tolera que el script se evalúe antes o después de DOMContentLoaded,
+   y no se ejecuta dos veces.
+   ================================================================== */
+var arrancado = false;
+function arrancar() {
+  if (arrancado) return;
+  arrancado = true;
+  Nav.iniciar(); Edu.iniciar(); Sim.iniciar(); Inter.iniciar(); IA.iniciar();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', arrancar);
+} else {
+  arrancar();
+}
+
+})();
+
+</script>
+</body>
+</html>
