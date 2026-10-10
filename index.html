@@ -64,14 +64,14 @@ button{font-family:inherit;font-size:inherit}
   position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);
   backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--borde);
 }
-.barra-int{display:flex;align-items:center;gap:28px;height:62px}
+.barra-int{display:flex;align-items:center;gap:22px;min-height:62px;padding:8px 0}
 .marca{display:flex;align-items:baseline;gap:8px;font-family:var(--display);
   font-size:21px;font-weight:700;letter-spacing:-.015em;color:var(--tinta);
   background:none;border:0;cursor:pointer;padding:0}
 .marca span{color:var(--oro)}
 .menu{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
 .menu button{
-  background:none;border:0;padding:8px 13px;border-radius:7px;cursor:pointer;
+  background:none;border:0;padding:8px 11px;border-radius:7px;cursor:pointer;
   color:var(--tinta-2);font-size:14.5px;font-weight:500;
 }
 .menu button:hover{background:var(--fondo-2);color:var(--tinta)}
@@ -266,7 +266,7 @@ select.control{font-family:var(--texto);cursor:pointer}
   text-transform:uppercase;letter-spacing:.07em;font-weight:600}
 .detalle-lista dd{margin:0;font-family:var(--cifra);font-size:15px;font-weight:600}
 
-.bloque{background:var(--papel);border:1px solid var(--borde);border-radius:13px;
+.bloque{background:var(--papel);border:1px solid var(--borde);border-radius:13px;overflow-x:auto;
   padding:20px 22px;margin-top:18px}
 .bloque h4{font-size:15.5px;margin-bottom:11px;font-family:var(--texto);font-weight:700}
 .formula-caja{
@@ -476,7 +476,7 @@ select.control{font-family:var(--texto);cursor:pointer}
   background:var(--inversion-tenue);border:1px solid var(--inversion-borde);border-radius:11px;
   padding:18px 20px;margin-top:18px;font-size:16px;color:#07463D;
 }
-.respuesta-ej .rotulo{color:var(--inversion);margin-bottom:6px}
+.respuesta-ej .rotulo{display:block;color:var(--inversion);margin-bottom:6px}
 
 /* ---------- Interacciones con IA ---------- */
 .tarjeta-ia{
@@ -520,6 +520,124 @@ select.control{font-family:var(--texto);cursor:pointer}
 .enlace-ia{font-size:15px;font-weight:600;text-decoration:none}
 .enlace-ia:hover{text-decoration:underline}
 
+/* ==================================================================
+   SEGUNDO CORTE — tasas y anualidades
+   ================================================================== */
+:root{
+  --tasas:#5B3E8C;
+  --tasas-tenue:#F0EBF8;
+  --tasas-borde:#CDBFE6;
+}
+
+/* Componente de tasa con nombre y apellidos (compartido) */
+.caja-tasa{
+  border:1.5px solid var(--borde);border-radius:13px;background:var(--papel);
+  padding:18px 18px 16px;
+}
+.caja-tasa.destino{border-style:dashed}
+.caja-tasa .cab-tasa{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.caja-tasa .cab-tasa h4{font-family:var(--texto);font-size:15px;font-weight:700}
+.sigla-viva{
+  font-family:var(--cifra);font-size:13px;font-weight:700;color:var(--tasas);
+  background:var(--tasas-tenue);border:1px solid var(--tasas-borde);border-radius:20px;
+  padding:3px 11px;
+}
+.nombre-vivo{font-size:13px;color:var(--tinta-3);flex-basis:100%}
+.segmento{display:flex;background:var(--fondo-2);border-radius:9px;padding:3px;gap:3px}
+.segmento button{
+  flex:1;border:0;background:none;border-radius:7px;padding:9px 8px;cursor:pointer;
+  font-size:13.5px;font-weight:600;color:var(--tinta-2);
+}
+.segmento button[aria-pressed="true"]{background:var(--papel);color:var(--tinta);
+  box-shadow:0 1px 2px rgba(19,28,51,.12)}
+.campos-tasa{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:13px}
+
+/* Calculadora de tasas */
+.calc-rejilla{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch}
+.calc-flecha{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px}
+.btn-girar{
+  width:44px;height:44px;border-radius:50%;border:1.5px solid var(--borde-fuerte);
+  background:var(--papel);cursor:pointer;font-size:18px;color:var(--tinta-2);
+}
+.btn-girar:hover{border-color:var(--tasas);color:var(--tasas)}
+.resultado-principal.tasas{background:linear-gradient(135deg,#432C6B,#5B3E8C)}
+.resultado-principal .redondeo{font-family:var(--cifra);font-size:15px;color:rgba(255,255,255,.8)}
+#zona-tasa-comp:not(:empty){margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid var(--borde)}
+.equivalencias{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--borde);border:1px solid var(--borde);border-radius:12px;overflow:hidden;margin-top:12px}
+.equivalencias div{background:var(--papel);padding:12px 15px}
+.equivalencias b{display:block;font-family:var(--cifra);font-size:12px;color:var(--tasas);margin-bottom:2px}
+.equivalencias span{font-family:var(--cifra);font-size:15px;font-weight:600}
+
+/* La casita */
+.casita-svg{display:block;width:100%;max-width:520px;height:auto;margin:6px auto 0}
+.paso-casita{
+  display:grid;grid-template-columns:34px 1fr;gap:12px;padding:13px 0;border-top:1px solid var(--borde);
+}
+.paso-casita:first-child{border-top:0}
+.paso-casita .n{
+  width:28px;height:28px;border-radius:8px;background:var(--tasas-tenue);color:var(--tasas);
+  border:1px solid var(--tasas-borde);display:grid;place-items:center;font-family:var(--cifra);
+  font-size:13px;font-weight:700;
+}
+.paso-casita>div{min-width:0}
+.paso-casita b{display:block;font-size:15px;margin-bottom:3px}
+.paso-casita .cuenta{font-family:var(--cifra);font-size:14px;color:var(--tinta-2);overflow-x:auto;
+  white-space:nowrap}
+.paso-casita .por-que{font-size:13.5px;color:var(--tinta-3);margin-top:3px}
+
+/* Anualidades */
+.adicionales{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.adicional{
+  display:grid;grid-template-columns:34px 1.4fr 1.2fr .8fr 1.2fr 38px;gap:10px;align-items:end;
+  padding:13px;border:1px solid var(--borde);border-radius:11px;background:var(--papel);
+}
+.adicional.es-x{border-color:var(--oro);background:var(--oro-tenue)}
+.adicional .campo label{font-size:12px}
+.adicional .control{padding:9px 11px;font-size:14.5px}
+.vacio-adic{font-size:14px;color:var(--tinta-3);padding:12px 14px;border:1px dashed var(--borde-fuerte);
+  border-radius:10px;margin-bottom:12px}
+.comparacion-mod{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}
+.comparacion-mod .mini.activa{border-color:var(--tinta);box-shadow:var(--sombra)}
+.puente{
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px;padding:14px 16px;
+  background:var(--tasas-tenue);border:1px solid var(--tasas-borde);border-radius:11px;font-size:14.5px;
+}
+.puente .btn{padding:8px 14px;font-size:13.5px}
+.nota-regimen{
+  grid-column:1/-1;background:var(--fondo);border:1px solid var(--borde);border-left:3px solid var(--acento);
+  border-radius:9px;padding:11px 14px;font-size:13.5px;color:var(--tinta-2);
+}
+.nota-regimen b{color:var(--tinta)}
+.nota-regimen.conversion{border-left-color:var(--tasas)}
+
+/* Índice de educación por cortes */
+.tarjetas-rapidas.cuatro{grid-template-columns:repeat(3,1fr)}
+.tarjeta-rapida.nuevo .formula{color:var(--tasas)}
+.etiqueta-corte{
+  display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--tasas);background:var(--tasas-tenue);border:1px solid var(--tasas-borde);
+  border-radius:20px;padding:2px 9px;margin-bottom:8px;
+}
+.cab-leccion.tasas{background:linear-gradient(135deg,#432C6B,#5B3E8C)}
+.cab-leccion.vencida{background:linear-gradient(135deg,#7A5A0A,#B27C10)}
+.cab-leccion.anticipada{background:linear-gradient(135deg,#1F4A57,#2D6E80)}
+.titulo-grupo{display:flex;align-items:baseline;gap:12px;margin:40px 0 14px;flex-wrap:wrap}
+.titulo-grupo h3{font-size:21px}
+.titulo-grupo p{margin:0;color:var(--tinta-3);font-size:14.5px}
+.conexion{
+  background:var(--fondo);border:1px solid var(--borde);border-left:4px solid var(--tasas);
+  border-radius:11px;padding:16px 19px;margin-top:14px;
+}
+.conexion>b{display:block;margin-bottom:4px;color:var(--tasas)}
+.conexion p{margin:0;font-size:15px}
+
+/* Interacciones por corte */
+.grupo-ia{display:flex;align-items:baseline;gap:12px;margin:10px 0 16px;flex-wrap:wrap}
+.grupo-ia h3{font-size:22px}
+.grupo-ia p{margin:0;color:var(--tinta-3);font-size:14.5px}
+.campo-ia.pendiente{color:var(--alerta);font-style:italic;border-style:dashed;background:var(--alerta-fondo)}
+
 /* ---------- Responsive ---------- */
 @media (max-width:860px){
   .glosario{grid-template-columns:1fr}
@@ -531,6 +649,12 @@ select.control{font-family:var(--texto);cursor:pointer}
   .opciones.tres,.opciones.seis{grid-template-columns:1fr 1fr}
   .flujo{grid-template-columns:1fr 1fr;gap:11px}
   .flujo-num{grid-column:1/-1;margin-bottom:0}
+  .calc-rejilla,.comparacion-mod,.tarjetas-rapidas.cuatro{grid-template-columns:1fr}
+  .equivalencias{grid-template-columns:1fr 1fr}
+  .calc-flecha{flex-direction:row}
+  .adicional{grid-template-columns:1fr 1fr;gap:11px}
+  .adicional .flujo-num,.adicional .quitar{grid-column:1/-1}
+  .adicional .quitar{width:100%}
   .quitar{grid-column:1/-1;width:100%}
   .barra-int{height:auto;padding:10px 0;flex-wrap:wrap;gap:10px}
   .menu{margin-left:0;width:100%}
@@ -553,14 +677,13 @@ select.control{font-family:var(--texto);cursor:pointer}
       <button data-ir="inicio">Inicio</button>
       <button data-ir="educacion">Educación financiera</button>
       <button data-ir="simulacion">Simulación</button>
+      <button data-ir="tasas">Tasas</button>
+      <button data-ir="anualidades">Anualidades</button>
       <button data-ir="interacciones">Interacciones</button>
       <button data-ir="acerca">Acerca de</button>
       <span class="separador-menu" aria-hidden="true"></span>
       <button class="proximamente" disabled
-        title="Disponible en el segundo corte">Conversión de tasas y anualidades
-        <span class="chip">Próximamente</span></button>
-      <button class="proximamente" disabled
-        title="Disponible en el tercer corte">Gradientes, perpetuidades y amortización
+        title="Gradientes, perpetuidades y amortización: disponible en el tercer corte">Tercer corte
         <span class="chip">Próximamente</span></button>
     </nav>
   </div>
@@ -575,14 +698,38 @@ select.control{font-family:var(--texto);cursor:pointer}
     <p class="lema">Entiende tu dinero. Simula tus decisiones.</p>
     <p class="portada-texto">
       Una herramienta de educación financiera para entender cómo el tiempo, las tasas
-      y el dinero cambian el valor de una decisión.
+      y el dinero cambian el valor de una decisión. Ahora también traduce cualquier tasa
+      a cualquier otra y simula series de cuotas.
     </p>
     <div class="acciones">
       <button class="btn btn-principal btn-grande" data-ir="educacion">Quiero aprender</button>
       <button class="btn btn-secundario btn-grande" data-ir="simulacion">Quiero simular</button>
     </div>
 
-    <div class="tarjetas-rapidas">
+    <div class="titulo-grupo"><h3>Segundo corte</h3><p>Tasas con nombre y apellido, y pagos periódicos.</p></div>
+    <div class="tarjetas-rapidas" style="margin-top:0">
+      <button class="tarjeta-rapida nuevo" data-ir="tasas">
+        <span class="etiqueta-corte">Calculadora</span>
+        <h3>Conversión de tasas</h3>
+        <span class="formula">(1 + i)<sup>ny/nx</sup> − 1</span>
+        <p>Escribe la tasa que tienes, elige la que necesitas y mira el camino completo.</p>
+      </button>
+      <button class="tarjeta-rapida nuevo" data-ir="anualidades" data-modalidad="vencida">
+        <span class="etiqueta-corte">Simulador</span>
+        <h3>Anualidades vencidas</h3>
+        <span class="formula">VP = A·[(1+i)<sup>n</sup>−1] / [i(1+i)<sup>n</sup>]</span>
+        <p>Cuotas iguales al final de cada período: créditos, ahorro programado.</p>
+      </button>
+      <button class="tarjeta-rapida nuevo" data-ir="anualidades" data-modalidad="anticipada">
+        <span class="etiqueta-corte">Simulador</span>
+        <h3>Anualidades anticipadas</h3>
+        <span class="formula">VP = A·[…]·(1 + i)</span>
+        <p>Cuotas iguales al inicio de cada período: arriendos, matrículas, seguros.</p>
+      </button>
+    </div>
+
+    <div class="titulo-grupo"><h3>Primer corte</h3><p>Cómo cambia el valor de un solo pago en el tiempo.</p></div>
+    <div class="tarjetas-rapidas" style="margin-top:0">
       <button class="tarjeta-rapida" data-leccion="simple">
         <h3>Interés simple</h3>
         <span class="formula">VF = VP (1 + i·n)</span>
@@ -609,12 +756,19 @@ select.control{font-family:var(--texto);cursor:pointer}
     <div id="edu-indice">
       <div class="encabezado-seccion">
         <p class="rotulo">Educación financiera</p>
-        <h2>Tres formas de que el dinero cambie con el tiempo</h2>
-        <p>La diferencia entre las tres está en una sola pregunta: ¿los intereses ganados se
-           vuelven a invertir, y cada cuánto? Elige una para ver la explicación completa.</p>
+        <h2>Del valor del dinero en el tiempo a las tasas y las cuotas</h2>
+        <p>Primero, las tres formas en que un pago cambia de valor con el tiempo. Después, cómo
+           traducir cualquier tasa y cómo manejar series de cuotas, que se construyen sobre el
+           interés compuesto. Elige un tema para ver la explicación completa.</p>
       </div>
 
-      <div class="tarjetas-rapidas" id="edu-tarjetas"></div>
+      <div class="titulo-grupo" style="margin-top:0"><h3>Primer corte</h3>
+        <p>¿Los intereses ganados se vuelven a invertir, y cada cuánto?</p></div>
+      <div class="tarjetas-rapidas" id="edu-tarjetas" style="margin-top:0"></div>
+
+      <div class="titulo-grupo"><h3>Segundo corte</h3>
+        <p>Tasas con nombre y apellido, y pagos periódicos. Todo sobre interés compuesto.</p></div>
+      <div class="tarjetas-rapidas" id="edu-tarjetas-2" style="margin-top:0"></div>
 
       <div class="tarjeta" style="margin-top:44px">
         <h3 style="font-size:20px;margin-bottom:6px">Las tres curvas, una al lado de la otra</h3>
@@ -693,6 +847,7 @@ select.control{font-family:var(--texto);cursor:pointer}
     <div class="paso">
       <div class="paso-cab"><span class="paso-num">4</span><h3>Datos del ejercicio</h3></div>
       <div class="tarjeta">
+        <div id="zona-tasa-comp"></div>
         <div class="campos" id="campos-generales"></div>
         <div id="zona-flujos"></div>
       </div>
@@ -710,13 +865,98 @@ select.control{font-family:var(--texto);cursor:pointer}
   </div>
 </section>
 
+<!-- ===================== CONVERSIÓN DE TASAS ===================== -->
+<section id="pantalla-tasas" class="pantalla">
+  <div class="envoltura">
+    <div class="encabezado-seccion">
+      <p class="rotulo">Calculadora · Segundo corte</p>
+      <h2>Convierte cualquier tasa en cualquier otra</h2>
+      <p>Toda tasa tiene nombre y dos apellidos: si es nominal o efectiva, cada cuánto
+         capitaliza y si se paga vencida o anticipada. Define la que tienes y la que
+         necesitas; la calculadora recorre "la casita" por ti y te muestra cada paso.</p>
+    </div>
+
+    <div class="calc-rejilla">
+      <div id="calc-entrada"></div>
+      <div class="calc-flecha">
+        <span class="rotulo" style="margin:0">a</span>
+        <button class="btn-girar" id="calc-girar" type="button"
+          title="Intercambiar: la tasa resultante pasa a ser la de entrada"
+          aria-label="Intercambiar la tasa de entrada y la de salida">⇄</button>
+      </div>
+      <div id="calc-salida"></div>
+    </div>
+
+    <div class="acciones" style="margin-top:20px">
+      <button class="btn btn-principal" id="calc-btn">Convertir</button>
+      <button class="btn btn-secundario" id="calc-ejemplo">Cargar un ejemplo</button>
+    </div>
+
+    <div id="calc-resultado" style="margin-top:26px"></div>
+  </div>
+</section>
+
+<!-- ========================= ANUALIDADES ========================= -->
+<section id="pantalla-anualidades" class="pantalla">
+  <div class="envoltura">
+    <div class="encabezado-seccion">
+      <p class="rotulo">Simulador · Segundo corte</p>
+      <h2>Simula una serie de cuotas</h2>
+      <p>Cuotas iguales cada cierto tiempo, con pagos extra si los hay. Escribe la tasa
+         como te la den: el simulador la convierte a la efectiva vencida del período de
+         las cuotas antes de calcular, como exige la fórmula.</p>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">1</span><h3>¿Qué operación es?</h3></div>
+      <div class="opciones dos" id="an-operacion"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">2</span><h3>¿Cuándo se paga cada cuota?</h3></div>
+      <div class="opciones dos" id="an-modalidad"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">3</span><h3>¿Qué quieres averiguar?</h3></div>
+      <div class="opciones tres" id="an-incognita"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">4</span><h3>Datos de las cuotas</h3></div>
+      <div class="tarjeta"><div class="campos" id="an-campos"></div></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">5</span><h3>Tasa de interés</h3></div>
+      <div id="an-tasa"></div>
+    </div>
+
+    <div class="paso">
+      <div class="paso-cab"><span class="paso-num">6</span><h3>Pagos adicionales (opcional)</h3></div>
+      <div class="tarjeta"><div id="an-adicionales"></div></div>
+    </div>
+
+    <div id="an-linea"></div>
+
+    <div class="acciones">
+      <button class="btn btn-principal" id="an-calcular">Calcular</button>
+      <button class="btn btn-secundario" id="an-limpiar">Limpiar</button>
+      <button class="btn btn-secundario" id="an-ejemplo">Cargar un ejemplo</button>
+    </div>
+
+    <div id="an-resultado" style="margin-top:26px"></div>
+  </div>
+</section>
+
 <!-- ==================== INTERACCIONES CON IA ==================== -->
 <section id="pantalla-interacciones" class="pantalla">
   <div class="envoltura">
     <div class="encabezado-seccion">
       <p class="rotulo">Interacciones</p>
       <h2>Interacciones con IA</h2>
-      <p>Cómo construimos y mejoramos FinanClic con inteligencia artificial.</p>
+      <p>Cómo construimos y mejoramos FinanClic con inteligencia artificial, corte a corte:
+         qué le pedimos, qué hizo mal y cómo lo corregimos.</p>
     </div>
     <div id="tarjetas-ia"></div>
   </div>
@@ -734,13 +974,20 @@ select.control{font-family:var(--texto);cursor:pointer}
       <li><b>Nombre del proyecto</b><span>FinanClic — Entiende tu dinero. Simula tus decisiones.</span></li>
       <li><b>Qué es</b><span>Una herramienta digital de educación financiera para aprender y
         simular el valor del dinero en el tiempo.</span></li>
-      <li><b>Contexto académico</b><span>Proyecto de la asignatura Matemáticas Financieras,
-        primer corte.</span></li>
+      <li><b>Contexto académico</b><span>Proyecto acumulativo de la asignatura Matemáticas
+        Financieras. Versión del segundo corte, 2026-2.</span></li>
       <li><b>Construcción</b><span>Construido con inteligencia artificial.</span></li>
-      <li><b>Herramienta de IA utilizada</b><span>Claude, de Anthropic.</span></li>
+      <li><b>Herramienta de IA utilizada</b><span>Claude, de Anthropic (en el primer corte también
+        se exploraron ChatGPT y Bolt.new; ver Interacciones).</span></li>
       <li><b>Alcance del primer corte</b><span>Interés simple, compuesto y continuo, ecuaciones
-        de valor con varios flujos y fecha focal. No incluye conversión de tasas, anualidades,
-        gradientes ni amortización: eso llega en los cortes siguientes.</span></li>
+        de valor con varios flujos y fecha focal. Todo sigue funcionando igual.</span></li>
+      <li><b>Alcance del segundo corte</b><span>Calculadora de conversión de tasas (nominal o
+        efectiva, vencida o anticipada, de diaria a anual, cada N meses o cada N días), anualidades vencidas y
+        anticipadas con pagos adicionales, y simulador de interés compuesto que convierte la tasa
+        por su cuenta. Simple y continuo conservan la restricción del primer corte. Los gradientes
+        no hacen parte de este corte.</span></li>
+      <li><b>Convenciones</b><span>Año de 365 días y 52 semanas. Formato colombiano: punto para
+        miles y coma para decimales.</span></li>
       <li><b>Funcionamiento</b><span>Todos los cálculos ocurren en el navegador. No requiere
         internet, cuenta de usuario ni servidor.</span></li>
     </ul>
@@ -750,8 +997,10 @@ select.control{font-family:var(--texto);cursor:pointer}
         El motor de cálculo no redondea por dentro: trabaja con toda la precisión disponible y
         solo redondea al mostrar los resultados, a dos decimales para dinero. Por eso puede haber
         diferencias de centavos frente a un ejercicio resuelto a mano donde se redondearon los
-        pasos intermedios. Está verificado contra 134 casos de prueba, incluidos los ejercicios
-        resueltos en clase.
+        pasos intermedios. Está verificado contra 197 casos de prueba: los 73 del primer corte y
+        124 del segundo, entre ellos las 61 conversiones, los 10 ejercicios de anualidades y las
+        5 preguntas de interés compuesto con conversión de los talleres, todos con la respuesta
+        oficial del profesor.
       </p>
     </div>
   </div>
@@ -761,7 +1010,8 @@ select.control{font-family:var(--texto);cursor:pointer}
 
 <footer class="pie">
   <div class="envoltura">
-    FinanClic · Matemáticas Financieras · Primer corte · Los cálculos se ejecutan en tu navegador.
+    FinanClic · Matemáticas Financieras · Segundo corte 2026-2 · Construido con Claude, de Anthropic ·
+    Los cálculos se ejecutan en tu navegador.
   </div>
 </footer>
 
@@ -798,6 +1048,115 @@ select.control{font-family:var(--texto);cursor:pointer}
    Los campos vacíos se muestran como "Pendiente de completar", así
    que la sección funciona igual mientras se termina de llenar.
    ================================================================== */
+
+/* ==================================================================
+   INTERACCIONES DEL SEGUNDO CORTE  (mínimo 3, al menos una con error)
+   Mismos campos que las del primer corte. Los campos obligatorios que
+   queden vacíos se ven en la página como "Pendiente de completar",
+   para que no se entregue nada incompleto.
+   ================================================================== */
+var INTERACCIONES_IA_CORTE2 = [
+
+  /* ---------------------- TARJETA 1 ---------------------- */
+  {
+    titulo: 'Análisis del caso del segundo corte y plan por fases',
+    promptOriginal: 'Hola calude, lee al detalle el archivo de caso Aplicado Segundo Corte, analisalo, para que ' +
+      'podamos seguir con el proyectyo que ya habiamos trabajado (index.html) los archivos estan en el contexto, ' +
+      'dime si necesitas algo mas. prepara el plan para hacerlos por fases',
+    primeraRespuesta: 'Claude leyó el caso, el index.html del primer corte y las presentaciones de conversión de ' +
+      'tasas y anualidades. Resumió los requisitos, señaló lo que había que cambiar del primer corte (el botón ' +
+      '"Próximamente", los textos de "Acerca de", la lección de compuesto que decía que i y n debían coincidir) ' +
+      'y propuso un plan en 8 fases: red de pruebas contra regresión, motor de tasas, motor de anualidades, ' +
+      'compuesto con conversión, interfaz, educación, interacciones y una fase 7 de apoyo para el PDF y el video.',
+    problemaDetectado: 'El plan incluía trabajo que en este corte no nos correspondía (la fase 7 de PDF y video) ' +
+      'y no tenía con qué verificar los resultados de la calculadora contra el profesor.',
+    correccionRealizada: 'Le aclaramos que solo debíamos construir la página y le entregamos el pruebas.js del ' +
+      'primer corte y el documento con las respuestas oficiales de los talleres del segundo corte, para que ' +
+      'verificara contra ellas.',
+    promptCorreccion: 'Perfecto claude, ya te adjunto todo, sin embargo en esta ocasion nosotros solo tenemos que ' +
+      'hacer la pagina. Para el proceso que se deb hacer ten encuenta los pdf que explican y muestran el como se calculan',
+    resultadoFinal: 'Plan acotado a la página y una batería de pruebas con las 61 conversiones, los 10 ejercicios ' +
+      'de anualidades y las 5 preguntas de compuesto con conversión de los talleres, todas con la respuesta oficial.',
+    parteVisible: 'El menú con las secciones nuevas "Tasas" y "Anualidades", y la nota de precisión de "Acerca de" ' +
+      'con el número de casos verificados.',
+    enlaceConversacion: 'https://claude.ai/share/8257c701-460f-4d65-822c-e853caff3793',
+    documentaError: false
+  },
+
+  /* ---------------------- TARJETA 2 ---------------------- */
+  {
+    titulo: 'Construcción de la calculadora de tasas y del simulador de anualidades',
+    promptOriginal: 'Perfecto claude, ya te adjunto todo, sin embargo en esta ocasion nosotros solo tenemos que ' +
+      'hacer la pagina. Para el proceso que se deb hacer ten encuenta los pdf que explican y muestran el como se ' +
+      'calculan (con el pruebas.js del primer corte y el documento de soluciones de los talleres adjuntos)',
+    primeraRespuesta: 'Claude programó el módulo de tasas siguiendo "la casita" del profesor (nominal → periódica ' +
+      '→ vencida → cambio de período → anticipada → nominal) y el de anualidades vencidas y anticipadas con pagos ' +
+      'adicionales. En la primera corrida de pruebas pasaron 114 de 116 casos.',
+    problemaDetectado: 'Uno de los dos casos que fallaron era el ejemplo de la casa de las diapositivas de anualidades ' +
+      'vencidas: el profesor obtiene adicionales de $ 120.000.000 y la herramienta daba $ 120.083.417,60. Había que ' +
+      'saber si el error era de la herramienta o del ejemplo.',
+    correccionRealizada: 'Se repitió el cálculo con la tasa bimestral redondeada a 0,95 %, como en la diapositiva, y ' +
+      'dio $ 120.000.000. La fórmula estaba bien; la diferencia sale del redondeo intermedio del ejemplo (la tasa ' +
+      'exacta es 0,9505 %). Se dejaron las dos pruebas, con la tasa redondeada y con la exacta, y se agregó la ' +
+      'versión anticipada del mismo ejemplo, que sí coincide al centavo ($ 120.654.388,83).',
+    resultadoFinal: 'Calculadora y simulador verificados contra las respuestas oficiales: las 61 conversiones, los 10 ' +
+      'ejercicios de anualidades y las preguntas 61 a 64 de compuesto coinciden. La pregunta 65 se resolvió en la ' +
+      'interacción siguiente.',
+    parteVisible: 'Las secciones "Tasas" (calculadora con el camino por la casita y la comprobación de efectiva ' +
+      'anual) y "Anualidades" (simulador con pagos adicionales, línea de tiempo y comparación vencida/anticipada).',
+    enlaceConversacion: 'https://claude.ai/share/8257c701-460f-4d65-822c-e853caff3793',
+    documentaError: false
+  },
+
+  /* ------- TARJETA 3: error de la IA detectado con un ejercicio del taller ------- */
+  {
+    titulo: 'El despeje del momento de un flujo no encontraba la respuesta de Juan Diego',
+    promptOriginal: '(Mismo prompt de la tarjeta 2: verificar la herramienta contra las respuestas oficiales de ' +
+      'los talleres.)',
+    primeraRespuesta: 'Al probar la pregunta 65 del taller (Juan Diego: 27,42 % NAQA, desembolsos de MXN 82.000 y ' +
+      'MXN 102.000, crédito de 3 años, total MXN 373.288,70, ¿en qué trimestre llegó el segundo desembolso?), el ' +
+      'simulador que la IA había programado en el primer corte respondía: "No hay un momento entre el mes 0 y el ' +
+      'mes 12 que produzca ese resultado".',
+    problemaDetectado: 'El despeje numérico buscaba el momento desconocido solo hasta 12 meses después del último ' +
+      'flujo conocido. Como el único flujo conocido estaba en el mes 0, nunca buscaba más allá del mes 12, aunque ' +
+      'la fecha focal estuviera en el mes 36.',
+    correccionRealizada: 'Se amplió el rango de búsqueda hasta la fecha focal cuando esta es un momento específico, ' +
+      'y se agregó la pregunta 65 como prueba automática.',
+    resultadoFinal: 'El simulador encuentra 4,4379 trimestres (13,31 meses), que redondeado da 4,44, la respuesta ' +
+      'oficial. Las 73 pruebas del primer corte siguen pasando.',
+    parteVisible: 'Simulación → Interés compuesto → "Momento de un flujo".',
+    enlaceConversacion: 'https://claude.ai/share/8257c701-460f-4d65-822c-e853caff3793',
+    documentaError: true,
+    valorEquivocado: 'Sin solución ("No hay un momento entre el mes 0 y el mes 12")',
+    valorCorrecto: '4,44 trimestres (13,31 meses)',
+    razonDelError: 'El rango de búsqueda dependía solo de los flujos conocidos y no de la fecha focal; la respuesta ' +
+      'correcta (mes 13,31) quedaba por fuera del rango.'
+  },
+
+  /* ---------------------- TARJETA 4 ---------------------- */
+  {
+    titulo: 'Tasas que capitalizan cada N días',
+    promptOriginal: 'Claudio, mi equipo me pregunta esto: sabes como puedo poner que una tasa capitaliza cada 12 ' +
+      'dias? es posible en nuestro progrma o toca hacerle algun cambio?',
+    primeraRespuesta: 'Claude revisó el código y confirmó que no se podía hacer bien: la herramienta solo aceptaba ' +
+      'períodos personalizados en meses ("cada N meses"). Doce días son 144/365 = 0,3945… meses, un número que no ' +
+      'se puede escribir exacto, así que cualquier aproximación cambiaba el resultado.',
+    problemaDetectado: 'La calculadora, que debía resolver "cualquier combinación", no admitía capitalizaciones en ' +
+      'días distintas de la diaria. Además del motor había que tocar los tres lugares donde se escribe una tasa ' +
+      '(calculadora, compuesto y anualidades) para que siguieran funcionando como un solo sistema.',
+    correccionRealizada: 'Se agregó al motor el período "cada N días", que capitaliza 365 ÷ N veces al año ' +
+      '(convención del curso), y la opción en el componente de tasa compartido. Se añadieron 6 pruebas: cada 12 ' +
+      'días = 30,4167 capitalizaciones al año, cada 1 día igual a diaria, conversión de ida y vuelta, y operaciones ' +
+      'de compuesto y anualidades en períodos de 12 días.',
+    resultadoFinal: '24 % nominal anual con capitalización cada 12 días equivale a 27,0052 % EA, igual que el cálculo ' +
+      'a mano (1 + 24 % ÷ 30,4167)^30,4167 − 1. 30 cuotas de $ 100.000 cada 12 días con esa tasa acumulan ' +
+      '$ 3.369.913,22. Las 197 pruebas pasan.',
+    parteVisible: 'La opción "Cada N días · otro número" en el selector de capitalización de Tasas, Simulación ' +
+      '(interés compuesto) y Anualidades.',
+    enlaceConversacion: 'https://claude.ai/share/8257c701-460f-4d65-822c-e853caff3793',
+    documentaError: false
+  }
+];
 
 var INTERACCIONES_IA = [
 
@@ -858,24 +1217,27 @@ var INTERACCIONES_IA = [
 
 </script>
 
-<!-- Motor de cálculo financiero (fases 1 y 2) -->
+<!-- Motor de cálculo financiero (primer y segundo corte) -->
 <script>
 /* =====================================================================
    FinanClic — motor.js
-   Motor de cálculo puro para Matemáticas Financieras, Primer Corte.
-   Sin interfaz, sin DOM, sin dependencias.
+   Motor de cálculo puro para Matemáticas Financieras.
+   Primer corte + segundo corte. Sin interfaz, sin DOM, sin dependencias.
 
    Convenciones tomadas de los apuntes y ejercicios del profesor:
-     - La periodicidad de la tasa manda sobre el tiempo.
-       Tasa trimestral -> el resultado sale en trimestres.
+     - Simple y continuo: la periodicidad de la tasa manda sobre el
+       tiempo y NO se convierte la tasa (restriccion que se conserva).
+     - Compuesto y anualidades (segundo corte): la tasa se convierte a
+       efectiva vencida del periodo de la operacion con el modulo Tasas.
      - Todo se pasa primero a meses, luego se divide entre los meses
        que tenga el periodo. Se permiten periodos fraccionarios.
      - En interes continuo el tiempo SIEMPRE va en anios.
+     - Anio de 365 dias y 52 semanas.
      - Sin redondeo interno. Se redondea solo al mostrar.
-     - Prohibida la conversion de tasas entre periodicidades en este corte.
 
    Modulos expuestos:
-     Periodicidad, Tiempo, Simple, Compuesto, Continuo, Traslado, Formato
+     Periodicidad, Tiempo, Simple, Compuesto, Continuo, Traslado, Formato,
+     Numerico, Flujos, Ecuacion, Tasas, Anualidades
    ===================================================================== */
 
 (function (raiz, fabrica) {
@@ -1724,9 +2086,17 @@ var INTERACCIONES_IA = [
       if (['simple', 'compuesto', 'continuo'].indexOf(regimen) === -1) {
         throw ErrorMotor('Régimen no reconocido: usa simple, compuesto o continuo');
       }
-      var mpp = (regimen === 'continuo')
-        ? 12
-        : Periodicidad.mesesPorPeriodo(cfg.periodicidad || 'mensual', cfg.mesesPersonalizados);
+      var mpp;
+      if (regimen === 'continuo') {
+        mpp = 12;
+      } else if (regimen === 'compuesto' && esNumeroFinito(cfg.mesesPorPeriodo)) {
+        // Segundo corte: el compuesto puede operar en cualquier periodo
+        // (diario, semanal, quincenal...). La tasa ya llega convertida.
+        if (cfg.mesesPorPeriodo <= 0) throw ErrorMotor(Errores.NO_POSITIVO, 'mesesPorPeriodo');
+        mpp = cfg.mesesPorPeriodo;
+      } else {
+        mpp = Periodicidad.mesesPorPeriodo(cfg.periodicidad || 'mensual', cfg.mesesPersonalizados);
+      }
 
       if (cfg.tasa !== undefined && cfg.tasa !== null) {
         exigirNumero(cfg.tasa, 'tasa');
@@ -1891,7 +2261,7 @@ var INTERACCIONES_IA = [
     despejarTasa: function (cfg) {
       var base = Ecuacion.validarEntrada(
         { regimen: cfg.regimen, periodicidad: cfg.periodicidad,
-          mesesPersonalizados: cfg.mesesPersonalizados });
+          mesesPersonalizados: cfg.mesesPersonalizados, mesesPorPeriodo: cfg.mesesPorPeriodo });
       exigirNumero(cfg.objetivo, 'objetivo');
       Flujos.normalizarLista(cfg.flujos);
 
@@ -1905,7 +2275,7 @@ var INTERACCIONES_IA = [
       var f = function (i) {
         var r = Ecuacion.resolver({
           flujos: cfg.flujos, regimen: base.regimen, tasa: i,
-          periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados,
+          periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados, mesesPorPeriodo: cfg.mesesPorPeriodo,
           focal: cfg.focal, operacion: cfg.operacion
         });
         var obtenido = (modo === 'gananciaNeta') ? r.gananciaNeta : r.valorFocal;
@@ -1944,6 +2314,12 @@ var INTERACCIONES_IA = [
       }
 
       var horizonte = Flujos.horizonte(flujos);
+      // Si la fecha focal es un mes especifico, el flujo puede estar en
+      // cualquier punto antes de ella: se amplia el horizonte de busqueda.
+      if (cfg.focal && typeof cfg.focal === 'object') {
+        var mf = (cfg.focal.meses !== undefined) ? cfg.focal.meses : cfg.focal.momento;
+        if (esNumeroFinito(mf) && mf > horizonte) horizonte = mf;
+      }
       var min = (cfg.momentoMinimo === undefined) ? 0 : cfg.momentoMinimo;
       var max = (cfg.momentoMaximo === undefined)
         ? Math.max(horizonte * Flujos.MARGEN_HORIZONTE, horizonte + 12, 12)
@@ -1963,7 +2339,7 @@ var INTERACCIONES_IA = [
         });
         var r = Ecuacion.resolver({
           flujos: lista, regimen: base.regimen, tasa: cfg.tasa,
-          periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados,
+          periodicidad: cfg.periodicidad, mesesPersonalizados: cfg.mesesPersonalizados, mesesPorPeriodo: cfg.mesesPorPeriodo,
           focal: focalFija, operacion: cfg.operacion
         });
         var obtenido = (modo === 'gananciaNeta') ? r.gananciaNeta : r.valorFocal;
@@ -1995,6 +2371,448 @@ var INTERACCIONES_IA = [
     }
   };
 
+  /* ===================================================================
+     11. MODULO TASAS  (segundo corte)
+     Conversion de cualquier tasa a cualquier otra, siguiendo "la casita"
+     del profesor:
+
+        Nominal vencida  --÷nc-->  Efectiva vencida  <--(1+i)^(ny/nx)-1-->  otra efectiva vencida
+        Nominal anticip. --÷nc-->  Efectiva anticip. --ia/(1-ia)--> Efectiva vencida
+        y el camino de vuelta: ×nc  y  iv/(1+iv)
+
+     Toda tasa tiene nombre y dos apellidos:
+       tipo       'nominal' | 'efectiva'   (efectiva = periodica)
+       periodo    cada cuanto capitaliza: diario, semanal, quincenal,
+                  mensual, bimestral, trimestral, cuatrimestral,
+                  quintumestral, semestral, anual, o cada N meses
+       modalidad  'vencida' | 'anticipada'  (si no se dice, es vencida)
+
+     La regla de oro: anticipada <-> vencida y el cambio de periodo
+     SOLO se hacen sobre tasas periodicas (efectivas), nunca sobre la
+     nominal.
+
+     Convencion del curso: el anio tiene 365 dias y 52 semanas.
+     =================================================================== */
+
+  var PERIODOS_TASA = {
+    diario:        { nc: 365, adj: 'diaria',        uno: 'día',          varios: 'días',          sigla: 'D' },
+    semanal:       { nc: 52,  adj: 'semanal',       uno: 'semana',       varios: 'semanas',       sigla: 'Sem' },
+    quincenal:     { nc: 24,  adj: 'quincenal',     uno: 'quincena',     varios: 'quincenas',     sigla: 'Q15' },
+    mensual:       { nc: 12,  adj: 'mensual',       uno: 'mes',          varios: 'meses',         sigla: 'M' },
+    bimestral:     { nc: 6,   adj: 'bimestral',     uno: 'bimestre',     varios: 'bimestres',     sigla: 'B' },
+    trimestral:    { nc: 4,   adj: 'trimestral',    uno: 'trimestre',    varios: 'trimestres',    sigla: 'T' },
+    cuatrimestral: { nc: 3,   adj: 'cuatrimestral', uno: 'cuatrimestre', varios: 'cuatrimestres', sigla: 'C' },
+    quintumestral: { nc: 12 / 5, adj: 'quintumestral', uno: 'quintumestre', varios: 'quintumestres', sigla: 'Q' },
+    semestral:     { nc: 2,   adj: 'semestral',     uno: 'semestre',     varios: 'semestres',     sigla: 'S' },
+    anual:         { nc: 1,   adj: 'anual',         uno: 'año',          varios: 'años',          sigla: 'A' }
+  };
+
+  // Nombres que usa el profesor para periodos no convencionales.
+  var NOMBRES_N_MESES = {
+    1: 'mensual', 2: 'bimestral', 3: 'trimestral', 4: 'cuatrimestral', 5: 'quintumestral',
+    6: 'semestral', 7: 'septimestral', 8: 'octumestral', 9: 'novemestral',
+    10: 'decamestral', 11: 'undecamestral', 12: 'anual'
+  };
+
+  var Tasas = {
+
+    ORDEN: ['diario', 'semanal', 'quincenal', 'mensual', 'bimestral', 'trimestral',
+            'cuatrimestral', 'quintumestral', 'semestral', 'anual', 'cadaNMeses', 'cadaNDias'],
+
+    /**
+     * Describe un periodo de capitalizacion.
+     * Devuelve { clave, nc, mesesPorPeriodo, adj, uno, varios, sigla }
+     * nc = cuantas veces capitaliza en un anio.
+     */
+    periodo: function (clave, nMeses) {
+      if (typeof clave !== 'string') throw ErrorMotor('Elige cada cuánto capitaliza la tasa', 'periodo');
+      var k = clave.trim();
+      if (k === 'cadaNMeses' || k === 'personalizada') {
+        if (!esNumeroFinito(nMeses) || nMeses <= 0) {
+          throw ErrorMotor('Indica cada cuántos meses capitaliza la tasa: un número mayor que cero', 'mesesN');
+        }
+        var adj = (Math.floor(nMeses) === nMeses && NOMBRES_N_MESES[nMeses])
+          ? NOMBRES_N_MESES[nMeses] : null;
+        var texto = (nMeses === 1) ? '1 mes' : (String(nMeses).replace('.', ',') + ' meses');
+        return {
+          clave: 'cadaNMeses', mesesN: nMeses, nc: 12 / nMeses, mesesPorPeriodo: nMeses,
+          adj: adj ? adj + ' (cada ' + texto + ')' : 'cada ' + texto,
+          uno: 'período de ' + texto, varios: 'períodos de ' + texto,
+          sigla: null
+        };
+      }
+      // Periodos expresados en dias (cada 12 dias, cada 45 dias...).
+      // Con el anio de 365 dias del curso, capitaliza 365 / N veces al anio.
+      if (k === 'cadaNDias') {
+        if (!esNumeroFinito(nMeses) || nMeses <= 0) {
+          throw ErrorMotor('Indica cada cuántos días capitaliza la tasa: un número mayor que cero', 'mesesN');
+        }
+        var textoD = (nMeses === 1) ? '1 día' : (String(nMeses).replace('.', ',') + ' días');
+        return {
+          clave: 'cadaNDias', mesesN: nMeses, nc: 365 / nMeses, mesesPorPeriodo: 12 * nMeses / 365,
+          adj: 'cada ' + textoD, uno: 'período de ' + textoD, varios: 'períodos de ' + textoD,
+          sigla: null
+        };
+      }
+      var p = PERIODOS_TASA[k];
+      if (!p) throw ErrorMotor('No reconozco ese período de capitalización: "' + clave + '"', 'periodo');
+      return {
+        clave: k, mesesN: null, nc: p.nc, mesesPorPeriodo: 12 / p.nc,
+        adj: p.adj, uno: p.uno, varios: p.varios, sigla: p.sigla
+      };
+    },
+
+    /** Valida una tasa y la deja con todos sus campos. valor en decimal. */
+    normalizar: function (t, rotulo) {
+      var r = rotulo || 'la tasa';
+      if (!t || typeof t !== 'object') throw ErrorMotor('Falta ' + r);
+      if (!esNumeroFinito(t.valor)) throw ErrorMotor('Falta el valor de ' + r + ' o no es un número válido', 'valor');
+      if (t.valor < 0) throw ErrorMotor('La tasa no puede ser negativa', 'valor');
+      var tipo = (t.tipo || 'efectiva').toLowerCase();
+      if (tipo === 'periodica' || tipo === 'periódica') tipo = 'efectiva';
+      if (tipo !== 'nominal' && tipo !== 'efectiva') throw ErrorMotor('El tipo de tasa debe ser nominal o efectiva', 'tipo');
+      var modalidad = (t.modalidad || 'vencida').toLowerCase();
+      if (modalidad !== 'vencida' && modalidad !== 'anticipada') {
+        throw ErrorMotor('La modalidad debe ser vencida o anticipada', 'modalidad');
+      }
+      var per = Tasas.periodo(t.periodo, t.mesesN);
+      return { valor: t.valor, tipo: tipo, modalidad: modalidad, periodo: per.clave,
+               mesesN: per.mesesN, info: per };
+    },
+
+    /** Sigla al estilo del curso: NAM, NATA, EA, EMA, NA cada 7 meses A... */
+    sigla: function (t) {
+      var n = Tasas.normalizar(t);
+      var ant = n.modalidad === 'anticipada';
+      var p = n.info;
+      if (n.tipo === 'efectiva') {
+        if (p.sigla === null) return 'Efectiva ' + p.adj + (ant ? ' anticipada' : '');
+        if (p.clave === 'semanal' || p.clave === 'quincenal') {
+          return 'Efectiva ' + p.adj + (ant ? ' anticipada' : '');
+        }
+        return 'E' + p.sigla + (ant ? 'A' : '');
+      }
+      // nominal anual con capitalizacion anual es la misma efectiva anual
+      if (p.clave === 'anual') return ant ? 'EAA' : 'EA';
+      if (p.sigla === null || p.clave === 'semanal' || p.clave === 'quincenal') {
+        return 'NA ' + p.adj + (ant ? ' anticipada' : '');
+      }
+      return 'NA' + p.sigla + (ant ? 'A' : '');
+    },
+
+    /** Nombre completo en palabras. */
+    nombre: function (t) {
+      var n = Tasas.normalizar(t);
+      var ant = n.modalidad === 'anticipada';
+      if (n.tipo === 'efectiva') {
+        return 'Efectiva ' + n.info.adj + ' ' + (ant ? 'anticipada' : 'vencida');
+      }
+      if (n.info.clave === 'anual') return 'Efectiva anual ' + (ant ? 'anticipada' : 'vencida');
+      return 'Nominal anual con capitalización ' + n.info.adj + ' ' + (ant ? 'anticipada' : 'vencida');
+    },
+
+    /* -------- las cuatro operaciones de la casita, una por una -------- */
+
+    nominalAPeriodica: function (nominal, nc) { return nominal / nc; },
+    periodicaANominal: function (periodica, nc) { return periodica * nc; },
+
+    anticipadaAVencida: function (ia) {
+      if (ia >= 1) throw ErrorMotor('Una tasa anticipada de 100 % o más por período no tiene equivalente vencida ' +
+        '(se descontaría todo el dinero por adelantado)', 'valor');
+      return ia / (1 - ia);
+    },
+
+    vencidaAAnticipada: function (iv) { return iv / (1 + iv); },
+
+    /** (1 + iy)^(ny/nx) - 1 : cambia el periodo de una efectiva vencida. */
+    equivalente: function (iy, ny, nx) {
+      if (1 + iy <= 0) throw ErrorMotor(Errores.BASE_INVALIDA, 'valor');
+      return Math.pow(1 + iy, ny / nx) - 1;
+    },
+
+    /**
+     * Convierte la tasa "entrada" a la forma pedida en "salida".
+     * entrada: { valor, tipo, modalidad, periodo, mesesN }
+     * salida:  { tipo, modalidad, periodo, mesesN }   (sin valor)
+     *
+     * Devuelve { valor, entrada, salida, pasos, efectivaVencidaEntrada,
+     *            efectivaVencidaSalida, efectivaAnual }
+     * Cada paso: { tipo, de, a, nc | ny,nx, desc }
+     */
+    convertir: function (entrada, salida) {
+      var e = Tasas.normalizar(entrada, 'la tasa que tienes');
+      var s = Tasas.normalizar({ valor: 0, tipo: salida.tipo, modalidad: salida.modalidad,
+                                 periodo: salida.periodo, mesesN: salida.mesesN }, 'la tasa que quieres');
+      var pasos = [];
+      var x = e.valor;
+
+      // 1. Nominal -> periodica (de la misma modalidad)
+      if (e.tipo === 'nominal') {
+        var p1 = Tasas.nominalAPeriodica(x, e.info.nc);
+        pasos.push({ tipo: 'nominalAPeriodica', de: x, a: p1, nc: e.info.nc,
+                     modalidad: e.modalidad, periodo: e.info });
+        x = p1;
+      }
+      // 2. Anticipada -> vencida
+      if (e.modalidad === 'anticipada') {
+        var p2 = Tasas.anticipadaAVencida(x);
+        pasos.push({ tipo: 'anticipadaAVencida', de: x, a: p2, periodo: e.info });
+        x = p2;
+      }
+      var evEntrada = x;
+
+      // 3. Cambio de periodo entre efectivas vencidas
+      if (Math.abs(e.info.nc - s.info.nc) > 1e-12) {
+        var p3 = Tasas.equivalente(x, e.info.nc, s.info.nc);
+        pasos.push({ tipo: 'equivalente', de: x, a: p3, ny: e.info.nc, nx: s.info.nc,
+                     periodoDe: e.info, periodoA: s.info });
+        x = p3;
+      }
+      var evSalida = x;
+
+      // 4. Vencida -> anticipada
+      if (s.modalidad === 'anticipada') {
+        var p4 = Tasas.vencidaAAnticipada(x);
+        pasos.push({ tipo: 'vencidaAAnticipada', de: x, a: p4, periodo: s.info });
+        x = p4;
+      }
+      // 5. Periodica -> nominal
+      if (s.tipo === 'nominal') {
+        var p5 = Tasas.periodicaANominal(x, s.info.nc);
+        pasos.push({ tipo: 'periodicaANominal', de: x, a: p5, nc: s.info.nc,
+                     modalidad: s.modalidad, periodo: s.info });
+        x = p5;
+      }
+
+      return {
+        valor: x,
+        entrada: e,
+        salida: { valor: x, tipo: s.tipo, modalidad: s.modalidad, periodo: s.periodo,
+                  mesesN: s.mesesN, info: s.info },
+        pasos: pasos,
+        efectivaVencidaEntrada: evEntrada,
+        efectivaVencidaSalida: evSalida,
+        efectivaAnual: Math.pow(1 + evEntrada, e.info.nc) - 1
+      };
+    },
+
+    /** Atajo: la efectiva vencida del periodo pedido. Es la que entra a las formulas. */
+    aEfectivaVencida: function (entrada, periodo, mesesN) {
+      return Tasas.convertir(entrada, { tipo: 'efectiva', modalidad: 'vencida',
+                                        periodo: periodo, mesesN: mesesN });
+    },
+
+    /** Lista de periodos para poblar selectores. */
+    listar: function () {
+      return Tasas.ORDEN.filter(function (k) { return k !== 'cadaNMeses' && k !== 'cadaNDias'; }).map(function (k) {
+        var p = PERIODOS_TASA[k];
+        return { clave: k, nc: p.nc, adj: p.adj, uno: p.uno, varios: p.varios };
+      });
+    }
+  };
+
+  /* ===================================================================
+     12. MODULO ANUALIDADES  (segundo corte)
+
+     Reglas no negociables del enunciado:
+       - Se calculan con INTERES COMPUESTO.
+       - La tasa que entra a la formula es SIEMPRE efectiva vencida del
+         periodo de las cuotas (la conversion la hace el modulo Tasas).
+       - n e i nunca son la incognita.
+
+     Linea de tiempo (en periodos de cuota):
+       vencida     cuotas en 1, 2, ..., n
+       anticipada  cuotas en 0, 1, ..., n-1
+       VP vive en 0, VF vive en n.
+
+     Formulas del profesor:
+       VP vencida    = A [(1+i)^n - 1] / [i (1+i)^n]
+       VP anticipada = A [(1+i)^n - 1] / [i (1+i)^n] · (1+i)
+       VF vencida    = A [(1+i)^n - 1] / i
+       VF anticipada = A [(1+i)^(n+1) - (1+i)] / i
+
+     Pagos adicionales: NO entran a la formula. Se trasladan uno por
+     uno a la fecha focal con interes compuesto:
+       a VP:  Adic / (1+i)^k        a VF:  Adic · (1+i)^(n-k)
+     =================================================================== */
+
+  var Anualidades = {
+
+    validarModalidad: function (m) {
+      var x = (m || 'vencida').toLowerCase();
+      if (x !== 'vencida' && x !== 'anticipada') throw ErrorMotor('Elige si la anualidad es vencida o anticipada');
+      return x;
+    },
+
+    validarBase: function (i, n) {
+      if (!esNumeroFinito(i)) throw ErrorMotor('Falta la tasa de interés', 'tasa');
+      if (i < 0) throw ErrorMotor('La tasa no puede ser negativa', 'tasa');
+      if (!esNumeroFinito(n)) throw ErrorMotor('Falta el número de cuotas', 'n');
+      if (n <= 0) throw ErrorMotor('El número de cuotas debe ser mayor que cero', 'n');
+      if (Math.floor(n) !== n) throw ErrorMotor('El número de cuotas debe ser un número entero', 'n');
+    },
+
+    /** Factor que multiplica a la cuota para obtener el VP. */
+    factorVP: function (i, n, modalidad) {
+      var m = Anualidades.validarModalidad(modalidad);
+      Anualidades.validarBase(i, n);
+      var f = (i === 0) ? n : (Math.pow(1 + i, n) - 1) / (i * Math.pow(1 + i, n));
+      return (m === 'anticipada') ? f * (1 + i) : f;
+    },
+
+    /** Factor que multiplica a la cuota para obtener el VF. */
+    factorVF: function (i, n, modalidad) {
+      var m = Anualidades.validarModalidad(modalidad);
+      Anualidades.validarBase(i, n);
+      if (i === 0) return n;
+      return (m === 'anticipada')
+        ? (Math.pow(1 + i, n + 1) - (1 + i)) / i
+        : (Math.pow(1 + i, n) - 1) / i;
+    },
+
+    vp: function (A, i, n, modalidad) { exigirNumero(A, 'cuota'); return A * Anualidades.factorVP(i, n, modalidad); },
+    vf: function (A, i, n, modalidad) { exigirNumero(A, 'cuota'); return A * Anualidades.factorVF(i, n, modalidad); },
+    cuotaDesdeVP: function (vp, i, n, modalidad) { exigirNumero(vp, 'vp'); return vp / Anualidades.factorVP(i, n, modalidad); },
+    cuotaDesdeVF: function (vf, i, n, modalidad) { exigirNumero(vf, 'vf'); return vf / Anualidades.factorVF(i, n, modalidad); },
+
+    /** Periodos en los que cae cada cuota. */
+    momentosCuotas: function (n, modalidad) {
+      var m = Anualidades.validarModalidad(modalidad), r = [], k;
+      for (k = 1; k <= n; k++) r.push(m === 'anticipada' ? k - 1 : k);
+      return r;
+    },
+
+    /** "Junto con la cuota k" -> periodo en la linea de tiempo. */
+    periodoDeCuota: function (k, modalidad) {
+      return Anualidades.validarModalidad(modalidad) === 'anticipada' ? k - 1 : k;
+    },
+
+    /** Normaliza la lista de pagos adicionales. */
+    normalizarAdicionales: function (lista, n) {
+      if (!lista) return [];
+      if (!Array.isArray(lista)) throw ErrorMotor('Los pagos adicionales deben venir en una lista');
+      return lista.map(function (a, idx) {
+        var et = 'pago adicional ' + (idx + 1);
+        if (!esNumeroFinito(a.periodo)) throw ErrorMotor('Falta el momento del ' + et, 'periodo');
+        if (a.periodo < 0) throw ErrorMotor('El momento del ' + et + ' no puede ser negativo', 'periodo');
+        if (a.periodo > n) throw ErrorMotor('El ' + et + ' ocurre en el período ' + a.periodo +
+          ', después de que termina la anualidad (período ' + n + ')', 'periodo');
+        var sentido = (a.sentido === 'contrario') ? -1 : 1;
+        if (a.esIncognita) {
+          var c = (a.coeficiente === undefined || a.coeficiente === null) ? 1 : a.coeficiente;
+          if (!esNumeroFinito(c) || c <= 0) throw ErrorMotor('El coeficiente del ' + et + ' debe ser mayor que cero');
+          return { numero: idx + 1, periodo: a.periodo, monto: 0, coeficiente: c, esIncognita: true,
+                   signo: sentido, descripcion: a.descripcion || '' };
+        }
+        if (!esNumeroFinito(a.monto)) throw ErrorMotor('Falta el valor del ' + et, 'monto');
+        if (a.monto < 0) throw ErrorMotor('El valor del ' + et + ' no puede ser negativo', 'monto');
+        return { numero: idx + 1, periodo: a.periodo, monto: a.monto, coeficiente: 0, esIncognita: false,
+                 signo: sentido, descripcion: a.descripcion || '' };
+      });
+    },
+
+    /** Factor para llevar un pago del periodo k a la focal (0 = VP, n = VF). */
+    factorTraslado: function (i, k, focal) {
+      return Math.pow(1 + i, focal - k);
+    },
+
+    /**
+     * Calculo completo.
+     * cfg = {
+     *   modalidad: 'vencida' | 'anticipada',
+     *   i: efectiva vencida del periodo de la cuota (decimal),
+     *   n: numero de cuotas,
+     *   calcular: 'vp' | 'vf' | 'cuota' | 'adicional',
+     *   referencia: 'vp' | 'vf'       (para cuota y adicional),
+     *   cuota: A                      (para vp, vf y adicional),
+     *   objetivo: VP o VF conocido    (para cuota y adicional),
+     *   adicionales: [{ monto, periodo, sentido, esIncognita, coeficiente }]
+     * }
+     */
+    calcular: function (cfg) {
+      var m = Anualidades.validarModalidad(cfg.modalidad);
+      var i = cfg.i, n = cfg.n;
+      Anualidades.validarBase(i, n);
+      var que = cfg.calcular;
+      if (['vp', 'vf', 'cuota', 'adicional'].indexOf(que) === -1) {
+        throw ErrorMotor('Elige qué quieres calcular');
+      }
+      var focalClave = (que === 'vp' || que === 'vf') ? que : (cfg.referencia || 'vp');
+      if (focalClave !== 'vp' && focalClave !== 'vf') throw ErrorMotor('Indica si el dato conocido es el valor presente o el valor futuro');
+      var focal = (focalClave === 'vp') ? 0 : n;
+
+      var adic = Anualidades.normalizarAdicionales(cfg.adicionales, n);
+      var hayX = adic.some(function (a) { return a.esIncognita; });
+      if (que === 'adicional' && !hayX) throw ErrorMotor('Marca cuál pago adicional es el desconocido');
+      if (que !== 'adicional' && hayX) throw ErrorMotor('Hay un pago adicional marcado como desconocido. ' +
+        'Para hallarlo elige "Valor de un pago adicional"');
+
+      var F = (focalClave === 'vp') ? Anualidades.factorVP(i, n, m) : Anualidades.factorVF(i, n, m);
+
+      var sumaConocidos = 0, sumaCoef = 0;
+      var detalle = adic.map(function (a) {
+        var f = Anualidades.factorTraslado(i, a.periodo, focal);
+        sumaConocidos += a.signo * a.monto * f;
+        sumaCoef += a.signo * a.coeficiente * f;
+        return { numero: a.numero, periodo: a.periodo, monto: a.monto, coeficiente: a.coeficiente,
+                 esIncognita: a.esIncognita, signo: a.signo, factor: f,
+                 exponente: focal - a.periodo, descripcion: a.descripcion };
+      });
+
+      var A, X = null, valorFocal;
+      if (que === 'vp' || que === 'vf') {
+        exigirNumero(cfg.cuota, 'cuota');
+        if (cfg.cuota <= 0) throw ErrorMotor('El valor de la cuota debe ser mayor que cero', 'cuota');
+        A = cfg.cuota;
+        valorFocal = A * F + sumaConocidos;
+      } else if (que === 'cuota') {
+        exigirNumero(cfg.objetivo, 'objetivo');
+        if (cfg.objetivo <= 0) throw ErrorMotor('El valor conocido debe ser mayor que cero', 'objetivo');
+        valorFocal = cfg.objetivo;
+        A = (valorFocal - sumaConocidos) / F;
+        if (A <= 0) throw ErrorMotor('Con esos pagos adicionales no queda nada por cubrir con cuotas: ' +
+          'la cuota saldría cero o negativa. Revisa los montos o los momentos de los adicionales');
+      } else {
+        exigirNumero(cfg.objetivo, 'objetivo');
+        exigirNumero(cfg.cuota, 'cuota');
+        if (cfg.objetivo <= 0) throw ErrorMotor('El valor conocido debe ser mayor que cero', 'objetivo');
+        if (cfg.cuota <= 0) throw ErrorMotor('El valor de la cuota debe ser mayor que cero', 'cuota');
+        A = cfg.cuota;
+        valorFocal = cfg.objetivo;
+        if (Math.abs(sumaCoef) < 1e-15) throw ErrorMotor(Errores.DENOMINADOR_CERO);
+        X = (valorFocal - A * F - sumaConocidos) / sumaCoef;
+        if (X <= 0) throw ErrorMotor('Con esa cuota el pago adicional saldría cero o negativo: ' +
+          'las cuotas ya cubren (o superan) el valor indicado');
+      }
+
+      // Valores resueltos de cada adicional
+      detalle.forEach(function (d) {
+        d.valor = d.esIncognita ? d.coeficiente * X : d.monto;
+        d.valorEnFocal = d.signo * d.valor * d.factor;
+      });
+
+      var valorCuotasEnFocal = A * F;
+      var vp = (focal === 0) ? valorFocal : valorFocal / Math.pow(1 + i, n);
+      var vf = (focal === n) ? valorFocal : valorFocal * Math.pow(1 + i, n);
+      var sumaAdic = detalle.reduce(function (s, d) { return s + d.signo * d.valor; }, 0);
+      var totalNominal = A * n + sumaAdic;
+
+      return {
+        modalidad: m, i: i, n: n, calcular: que, referencia: focalClave, focal: focal,
+        cuota: A, X: X, factor: F,
+        valorCuotasEnFocal: valorCuotasEnFocal,
+        adicionales: detalle,
+        valorFocal: valorFocal, vp: vp, vf: vf,
+        totalCuotas: A * n, sumaAdicionales: sumaAdic, totalNominal: totalNominal,
+        // Inversion: lo que se gano por encima de lo aportado (medido al final).
+        interesesInversion: vf - totalNominal,
+        // Credito: lo que se pago por encima de lo prestado (medido en valores nominales).
+        interesesCredito: totalNominal - vp,
+        momentosCuotas: Anualidades.momentosCuotas(n, m)
+      };
+    }
+  };
+
   /* =================================================================== */
 
   return {
@@ -2008,8 +2826,10 @@ var INTERACCIONES_IA = [
     Numerico: Numerico,
     Flujos: Flujos,
     Ecuacion: Ecuacion,
+    Tasas: Tasas,
+    Anualidades: Anualidades,
     Errores: Errores,
-    version: '2.1.0-corte1'
+    version: '3.0.0-corte2'
   };
 });
 
@@ -2120,11 +2940,10 @@ var Fmt = {
    ================================================================== */
 var Nav = {
   ir: function (id) {
-    // al salir de una lección se vuelve al índice, para no dejarla abierta al regresar
-    if (id !== 'educacion') {
-      var det = $('#edu-detalle');
-      if (det && !det.classList.contains('oculto')) Edu.volver();
-    }
+    // al navegar se cierra la lección abierta: el menú "Educación financiera" siempre
+    // lleva al índice (quien abre una lección llama a Edu.abrir después de Nav.ir)
+    var det = $('#edu-detalle');
+    if (det && !det.classList.contains('oculto')) Edu.volver();
     $$('.pantalla').forEach(function (p) { p.classList.remove('activa'); });
     var destino = $('#pantalla-' + id);
     if (destino) destino.classList.add('activa');
@@ -2489,6 +3308,12 @@ var Edu = {
     Edu.glosario('la misma unidad que tenga la tasa') +
     Edu.iContraI() +
     Edu.mismaUnidad(
+      '<div class="conexion"><b>Novedad del segundo corte</b><p>En interés compuesto la tasa y el ' +
+      'tiempo ya no tienen que venir en la misma unidad desde el enunciado: si no coinciden, se ' +
+      '<b>convierte la tasa</b> a la efectiva vencida del período de la operación con la fórmula ' +
+      '(1 + i)^(ny/nx) − 1, y el simulador lo hace solo. Lo que no cambia es que <b>dentro de la fórmula</b> ' +
+      'i y n siguen hablando el mismo idioma. En interés simple y continuo la regla de esta sección se ' +
+      'mantiene tal cual.</p></div>' +
       '<p style="margin-top:12px">En interés compuesto n significa además <b>cuántas veces se ' +
       'capitaliza</b>, es decir cuántas veces los intereses se reinvierten. Por eso equivocar la ' +
       'unidad cambia el resultado mucho más que en el interés simple: con 28 períodos en vez de ' +
@@ -2673,6 +3498,408 @@ var Edu = {
   },
 
   /* ------------------------------------------------------------------
+     SEGUNDO CORTE — piezas reutilizables
+     ------------------------------------------------------------------ */
+  cab: function (clase, titulo, bajada, formula) {
+    return '<div class="cab-leccion ' + clase + '"><p class="rotulo">Educación financiera · Segundo corte</p>' +
+      '<h2>' + titulo + '</h2><p class="bajada">' + bajada + '</p><div class="formula-cab">' + formula + '</div></div>';
+  },
+
+  b: function (titulo, html, clase) {
+    return '<div class="bloque-edu' + (clase ? ' ' + clase : '') + '"><h3>' + titulo + '</h3>' + html + '</div>';
+  },
+
+  conexion: function (texto) {
+    return '<div class="conexion"><b>Conexión con el primer corte</b><p>' + texto + '</p></div>';
+  },
+
+  variables: function (lista) {
+    return '<div class="glosario" style="margin-top:14px">' + lista.map(function (v) {
+      return '<div><span class="letra-g">' + v[0] + '</span><b>' + v[1] + '</b><p>' + v[2] + '</p></div>';
+    }).join('') + '</div>';
+  },
+
+  /* ------------------------------------------------------------------
+     CONVERSIÓN DE TASAS
+     ------------------------------------------------------------------ */
+  tasas: function () {
+    var T = M.Tasas, t = function (x, d) { return Fmt.tasa(x, d === undefined ? 2 : d); };
+    var ea = function (valor, periodo, mod) {
+      return T.convertir({ valor: valor, tipo: 'nominal', periodo: periodo, modalidad: mod || 'vencida' },
+        { tipo: 'efectiva', periodo: 'anual', modalidad: 'vencida' }).valor;
+    };
+    var ejA = T.convertir({ valor: 0.22, tipo: 'nominal', periodo: 'mensual', modalidad: 'anticipada' },
+      { tipo: 'efectiva', periodo: 'anual', modalidad: 'vencida' });
+    var demo = T.convertir({ valor: 0.2354, tipo: 'nominal', periodo: 'cuatrimestral', modalidad: 'anticipada' },
+      { tipo: 'nominal', periodo: 'semestral', modalidad: 'anticipada' });
+
+    return Edu.cab('tasas', 'Conversión de tasas de interés',
+      'Una misma tasa se puede escribir de muchas maneras. Convertir es traducirla a otra forma que valga ' +
+      'exactamente lo mismo.', '(1 + i<sub>y</sub>)<sup>ny/nx</sup> − 1 = i<sub>x</sub>') +
+
+    Edu.b('Explicación sencilla', '<div class="cuento">' +
+      '<p>Imagina que te dicen que una tasa es del <b>12 % nominal anual con capitalización mensual</b>. Suena ' +
+      'complicado, pero lo único que significa es esto: el banco parte ese 12 % en 12 pedacitos, uno por mes, ' +
+      'y cada mes te cobra <b>el 1 %</b>.</p>' +
+      '<p>Como cada mes ese 1 % se suma a lo que ya debes, el mes siguiente el 1 % se calcula sobre un poquito ' +
+      'más. Al final del año no terminas pagando 12 %, sino <b>' + t(ea(0.12, 'mensual')) + '</b>.</p>' +
+      '<p>Ese "poquito más" tiene nombre: es la <b>tasa efectiva</b>. La nominal es como la etiqueta del ' +
+      'paquete; la efectiva es lo que de verdad hay adentro.</p>' +
+      '<p class="cierre">Convertir una tasa es cambiarle la etiqueta sin cambiar lo que hay adentro.</p></div>') +
+
+    Edu.b('¿Qué es? Las tasas tienen nombre y dos apellidos',
+      '<p>Toda tasa de interés queda descrita por tres cosas. Si falta una, la tasa está incompleta y no se ' +
+      'puede comparar con otra.</p>' +
+      '<div class="rejilla-3" style="margin-top:14px">' +
+      '<div class="destaque" style="border-color:var(--tasas)"><b>Nombre: nominal o efectiva</b><p>¿Es una ' +
+      'referencia anual o es lo que de verdad se cobra en cada período? A la efectiva también se le dice ' +
+      '<b>periódica</b>.</p></div>' +
+      '<div class="destaque" style="border-color:var(--tasas)"><b>Primer apellido: capitalización</b><p>¿Cada ' +
+      'cuánto se suman los intereses al capital? Diario, mensual, trimestral, cada 7 meses…</p></div>' +
+      '<div class="destaque" style="border-color:var(--tasas)"><b>Segundo apellido: vencida o anticipada</b>' +
+      '<p>¿Los intereses se pagan al final del período o se descuentan al inicio? Si no se dice, es vencida.</p></div>' +
+      '</div>' +
+      '<p style="margin-top:14px">Así se leen las siglas del curso: <b>NAMA</b> = Nominal Anual, capitalización ' +
+      'Mensual, Anticipada. <b>EA</b> = Efectiva Anual (vencida, porque no dice lo contrario). <b>ET</b> = ' +
+      'Efectiva Trimestral.</p>') +
+
+    Edu.b('Tasa nominal y tasa efectiva',
+      '<div class="rejilla-2">' +
+      '<div class="destaque"><b>Nominal: la referencia</b><p>Es una tasa anual "de vitrina". Sirve para ' +
+      'anunciar y para pactar, pero no dice cuánto pagas de verdad, porque no tiene en cuenta que los intereses ' +
+      'se reinvierten. El profesor la llama la tasa "pizca de sal": orienta, pero no mide.</p></div>' +
+      '<div class="destaque"><b>Efectiva: el costo real</b><p>Es lo que de verdad crece el dinero en un ' +
+      'período. Es la única que puede entrar en las fórmulas de interés compuesto y de anualidades, y la única ' +
+      'que permite comparar dos ofertas.</p></div></div>' +
+      '<p style="margin-top:14px"><b>¿Por qué existen las dos?</b> Porque la nominal es fácil de anunciar y de ' +
+      'repartir (12 % entre 12 meses = 1 %), y la efectiva es la que dice la verdad. Los bancos en Colombia ' +
+      'publican ambas; para decidir, siempre se compara la <b>efectiva anual (EA)</b>.</p>') +
+
+    Edu.b('Capitalización: ¿qué pasa si se capitaliza más seguido?',
+      '<p>Capitalizar es sumar los intereses al capital para que empiecen a generar intereses. Una tasa que ' +
+      'capitaliza mensual lo hace 12 veces al año; trimestral, 4 veces; semestral, 2 veces. Con la misma tasa ' +
+      'nominal, <b>mientras más seguido se capitaliza, más alta es la tasa efectiva</b>, porque los intereses ' +
+      'empiezan a trabajar antes.</p>' +
+      '<table class="tabla-simple"><thead><tr><th>24 % nominal anual que capitaliza…</th><th>Veces al año (nc)</th>' +
+      '<th>Tasa por período</th><th>Equivale a</th></tr></thead><tbody>' +
+      [['anual', 'Una vez al año', 1], ['semestral', 'Cada semestre', 2], ['trimestral', 'Cada trimestre', 4],
+       ['mensual', 'Cada mes', 12], ['diario', 'Cada día', 365]].map(function (f) {
+        return '<tr><td>' + f[1] + '</td><td>' + f[2] + '</td><td>' + t(0.24 / f[2], 4) + '</td><td><b>' +
+          t(ea(0.24, f[0])) + ' EA</b></td></tr>';
+      }).join('') + '</tbody></table>' +
+      '<p style="margin-top:12px">Por eso 24 % NAM y 24 % NAT <b>no</b> son iguales aunque digan "24 %": la ' +
+      'mensual rinde más. Y cuando el período no cierra exacto en el año, se divide: una tasa que capitaliza ' +
+      'cada 7 meses lo hace 12 ÷ 7 = ' + Fmt.numero(12 / 7, 4) + ' veces al año. El año tiene 365 días y 52 semanas.</p>') +
+
+    Edu.b('Tasa vencida y tasa anticipada',
+      '<p>Pides prestados ' + Fmt.dinero(10000000, 'COP') + ' al 5 %.</p>' +
+      '<div class="rejilla-2" style="margin-top:12px">' +
+      '<div class="destaque"><b>Vencida: pagas los intereses al final</b><p>Recibes ' +
+      Fmt.dinero(10000000, 'COP') + ' y al final devuelves ' + Fmt.dinero(10500000, 'COP') + '. Pagaste ' +
+      '500.000 por usar 10.000.000: el 5 %.</p></div>' +
+      '<div class="destaque"><b>Anticipada: te descuentan los intereses al inicio</b><p>El banco te descuenta ' +
+      'los 500.000 de una vez y recibes ' + Fmt.dinero(9500000, 'COP') + '. Al final devuelves 10.000.000. ' +
+      'Pagaste 500.000 por usar solo 9.500.000: en realidad fue el <b>' + t(0.05 / 0.95) + '</b>.</p></div></div>' +
+      '<p style="margin-top:14px"><b>¿Dónde se usa cada una?</b> La vencida es la más común: CDT, cuentas de ' +
+      'ahorro, créditos de vivienda y de consumo. La anticipada aparece cuando el que presta cobra primero: ' +
+      'descuento de facturas y pagarés (factoring), algunos créditos comerciales y de libranza en los que el ' +
+      'interés se descuenta al desembolsar.</p>' +
+      '<p><b>Ojo:</b> una tasa anticipada no es lo mismo que una anualidad anticipada. En la tasa, lo que se ' +
+      'adelanta son los <b>intereses</b>; en la anualidad, lo que se adelanta son las <b>cuotas</b>.</p>') +
+
+    Edu.b('El proceso de conversión: la casita',
+      '<p>No hay que memorizar una fórmula por cada combinación. Hay una sola lógica, que el profesor dibuja ' +
+      'como una casita: abajo están los cuatro tipos de tasa y el techo es el único lugar donde se cambia el ' +
+      'período.</p>' +
+      '<ol class="lista-pasos">' +
+      '<li><b>¿Es nominal?</b> Divídela entre las veces que capitaliza en un año (nc). Ahora es periódica.</li>' +
+      '<li><b>¿Es anticipada?</b> Pásala a vencida con iv = ia ÷ (1 − ia).</li>' +
+      '<li><b>¿Necesitas otro período?</b> Sube al techo: ix = (1 + iy)^(ny/nx) − 1.</li>' +
+      '<li><b>¿La quieres anticipada?</b> Bájala con ia = iv ÷ (1 + iv).</li>' +
+      '<li><b>¿La quieres nominal?</b> Multiplícala por las veces que capitaliza en un año.</li></ol>' +
+      '<p>Ejemplo de clase: 23,54 % NACA a NASA. El camino resaltado es el que se recorre:</p>' +
+      TasaUI.casita(demo) + '<div style="margin-top:8px">' + TasaUI.pasosHTML(demo) + '</div>' +
+      '<div class="error-comun"><h4>La regla de oro: nada se convierte mientras sea nominal</h4>' +
+      '<p>Pasar de anticipada a vencida, o cambiar el período, solo se hace con tasas efectivas. Y la nominal ' +
+      'se divide entre las veces que capitaliza en el año, no entre los meses del período.</p>' +
+      '<div class="mal-bien"><div class="mal"><span class="etiqueta-mb">Incorrecto</span>' +
+      '<span class="tachado">12 % NAT → 12 % ÷ 3 = 4 % ET</span><br><span class="tachado">12 % NATA → 12 % ÷ (1 − 12 %) = 13,64 %</span></div>' +
+      '<div class="bien"><span class="etiqueta-mb">Correcto</span>12 % NAT → 12 % ÷ 4 = 3 % ET<br>' +
+      '12 % NATA → 3 % ETA → 3 % ÷ 97 % = ' + t(0.03 / 0.97) + ' ET → × 4 = ' + t(4 * 0.03 / 0.97) + ' NAT</div></div></div>') +
+
+    Edu.b('Las fórmulas, con cada letra explicada',
+      '<div class="rejilla-2"><div><p class="rotulo">Nominal ↔ periódica</p>' +
+      '<div class="formula-caja">ip = NA ÷ nc</div><div class="formula-caja" style="margin-top:9px">NA = ip × nc</div>' +
+      '<p class="rotulo" style="margin-top:16px">Vencida ↔ anticipada</p>' +
+      '<div class="formula-caja">iv = ia ÷ (1 − ia)</div><div class="formula-caja" style="margin-top:9px">ia = iv ÷ (1 + iv)</div></div>' +
+      '<div><p class="rotulo">Cambio de período (tasas equivalentes)</p>' +
+      '<div class="formula-caja">ix = (1 + iy)^(ny ÷ nx) − 1</div>' +
+      '<p style="font-size:14.5px;margin-top:12px">Se usa una potencia, no una división, porque entre períodos ' +
+      'los intereses se reinvierten: es <b>interés compuesto</b>. Por eso 2 % mensual no es 24 % anual, sino ' +
+      t(Math.pow(1.02, 12) - 1) + '.</p></div></div>' +
+      Edu.variables([
+        ['NA', 'Tasa nominal anual', 'La tasa de referencia, la de la etiqueta.'],
+        ['ip', 'Tasa periódica (efectiva)', 'Lo que se cobra en un período de capitalización.'],
+        ['nc', 'Capitalizaciones en un año', '12 si es mensual, 4 si es trimestral, 365 si es diaria, 12 ÷ N si es cada N meses.'],
+        ['iv · ia', 'Vencida · anticipada', 'La misma tasa periódica, cobrada al final o al inicio.'],
+        ['iy · ny', 'La tasa que tienes', 'Efectiva vencida y las veces que capitaliza en un año.'],
+        ['ix · nx', 'La tasa que quieres', 'Efectiva vencida equivalente y sus capitalizaciones al año.']
+      ])) +
+
+    Edu.b('Un ejemplo práctico resuelto', '<div class="enunciado"><b>Enunciado.</b> Necesitas un crédito de libre ' +
+      'inversión. El banco A te ofrece <b>22 % NAMA</b> y el banco B, <b>24 % EA</b>. A primera vista A parece ' +
+      'más barato. ¿Lo es?</div><ol class="pasos-ej">' +
+      '<li><b>Identifica las tasas.</b> A es nominal, mensual y anticipada. B ya es efectiva anual vencida, así ' +
+      'que no hay que tocarla.</li>' +
+      '<li><b>A: de nominal a periódica.</b><br>22 % ÷ 12 = <b>' + t(ejA.pasos[0].a, 4) + ' mensual anticipada</b></li>' +
+      '<li><b>A: de anticipada a vencida.</b><br>' + t(ejA.pasos[0].a, 4) + ' ÷ (1 − ' + t(ejA.pasos[0].a, 4) +
+      ') = <b>' + t(ejA.pasos[1].a, 4) + ' mensual vencida</b></li>' +
+      '<li><b>A: de mensual a anual.</b><br>(1 + ' + t(ejA.pasos[1].a, 4) + ')^(12 ÷ 1) − 1 = <b>' +
+      t(ejA.valor, 2) + ' EA</b></li>' +
+      '<li><b>Compara en la misma unidad.</b><br>A cobra ' + t(ejA.valor, 2) + ' EA; B cobra 24,00 % EA.</li>' +
+      '</ol><div class="respuesta-ej"><span class="rotulo">Respuesta</span>El banco <b>B</b> es más barato. ' +
+      'El "22 %" de A era solo la etiqueta: por ser mensual y anticipada, en realidad cobra ' + t(ejA.valor, 2) +
+      ' efectivo anual, ' + t(ejA.valor - 0.24, 2) + ' más que B.</div>') +
+
+    Edu.b('¿En qué se diferencia de lo que ya conocías?',
+      '<table class="tabla-simple"><thead><tr><th>Concepto</th><th>Una</th><th>La otra</th></tr></thead><tbody>' +
+      '<tr><td>Nominal vs. efectiva</td><td>Nominal: referencia anual, no mide el costo real</td><td>Efectiva: lo que de verdad se paga en cada período</td></tr>' +
+      '<tr><td>Vencida vs. anticipada</td><td>Vencida: intereses al final</td><td>Anticipada: intereses descontados al inicio; es más cara con el mismo número</td></tr>' +
+      '<tr><td>Proporcional vs. equivalente</td><td>Interés simple: 2 % mensual = 24 % anual (se multiplica)</td><td>Interés compuesto: 2 % mensual = ' + t(Math.pow(1.02, 12) - 1) + ' EA (se eleva)</td></tr>' +
+      '</tbody></table>' +
+      Edu.conexion('En el primer corte ajustábamos el <b>tiempo</b> a la tasa: si la tasa era trimestral, ' +
+        'contábamos trimestres. Ahora podemos ajustar la <b>tasa</b> al tiempo. Pero esto solo vale para el ' +
+        '<b>interés compuesto</b>, porque la fórmula de equivalencia nace de reinvertir los intereses. En interés ' +
+        'simple las tasas son proporcionales, y en interés continuo la tasa es de otra naturaleza: en esos dos, ' +
+        'FinanClic mantiene la regla del primer corte y no convierte.')) +
+
+    '';
+  },
+
+  /* ------------------------------------------------------------------
+     ANUALIDADES VENCIDAS
+     ------------------------------------------------------------------ */
+  vencidas: function () {
+    var A = M.Anualidades, d = function (v) { return Fmt.dinero(v, 'COP'); };
+    var i = 0.022, n = 12, vp = 3200000;
+    var cuota = A.cuotaDesdeVP(vp, i, n, 'vencida');
+    var fac = A.factorVP(i, n, 'vencida');
+    var rAb = A.calcular({ modalidad: 'vencida', i: i, n: n, calcular: 'cuota', referencia: 'vp', objetivo: vp,
+      adicionales: [{ monto: 500000, periodo: 6 }] });
+    var iAh = M.Tasas.aEfectivaVencida({ valor: 0.10, tipo: 'efectiva', periodo: 'anual' }, 'mensual').valor;
+
+    return Edu.cab('vencida', 'Anualidades vencidas',
+      'Una serie de pagos iguales, cada cierto tiempo, que se hacen al final de cada período.',
+      'VP = A · [(1 + i)<sup>n</sup> − 1] / [i · (1 + i)<sup>n</sup>]') +
+
+    Edu.b('Explicación sencilla', '<div class="cuento">' +
+      '<p>Tienes una alcancía. Cada viernes, cuando te dan tu mesada, le echas <b>la misma moneda</b>. No un ' +
+      'día cualquiera: siempre el viernes, al terminar la semana.</p>' +
+      '<p>Esa fila de monedas iguales, puestas cada cierto tiempo, es una <b>anualidad</b>. Y como la echas ' +
+      'cuando la semana ya terminó, se llama <b>vencida</b>.</p>' +
+      '<p>Si la alcancía fuera mágica y cada moneda ganara un poquito por cada semana que pasa adentro, la ' +
+      'primera moneda ganaría más que la última, porque lleva más tiempo guardada.</p>' +
+      '<p class="cierre">Una anualidad vencida es eso: pagos iguales, siempre al final de cada período, y cada ' +
+      'uno crece según el tiempo que le queda.</p></div>') +
+
+    Edu.b('¿Qué es una anualidad?',
+      '<p>Es el nombre técnico de las <b>cuotas</b>: una serie de pagos iguales a intervalos regulares. No ' +
+      'tiene que ser anual; puede ser mensual, bimestral o cada 7 meses. Para ser anualidad debe cumplir ' +
+      'cuatro condiciones:</p>' +
+      '<div class="rejilla-2" style="margin-top:12px">' +
+      '<div class="destaque"><b>1. Pagos iguales</b><p>Todas las cuotas valen lo mismo.</p></div>' +
+      '<div class="destaque"><b>2. Pagos periódicos</b><p>Separados siempre por el mismo tiempo.</p></div>' +
+      '<div class="destaque"><b>3. Tantos pagos como períodos</b><p>Un pago por período, sin saltos.</p></div>' +
+      '<div class="destaque"><b>4. La misma tasa para todos</b><p>Una sola tasa durante todo el plazo.</p></div></div>' +
+      '<p style="margin-top:14px"><b>Ejemplos reales:</b> las cuotas mensuales de un crédito de vehículo o de ' +
+      'vivienda, los aportes mensuales a un fondo de pensiones voluntarias o a una cajita de ahorro, el pago ' +
+      'de una suscripción. Un pago que no cumpla las cuatro condiciones (un abono extra, una prima) no es ' +
+      'parte de la anualidad: es un <b>pago adicional</b>.</p>' +
+      '<p><b>¿Por qué "vencida"?</b> Porque cada cuota se paga al <b>final</b> del período. Si sacas un ' +
+      'crédito hoy, la primera cuota llega dentro de un mes, no hoy. En la línea de tiempo, las cuotas caen ' +
+      'en los períodos 1, 2, …, n.</p>') +
+
+    Edu.b('¿Cómo funciona y por qué es importante?',
+      '<p>Una anualidad no es una fórmula nueva: es <b>interés compuesto aplicado muchas veces</b>. Cada cuota ' +
+      'se trae al presente (o se lleva al futuro) con (1 + i)^k, exactamente como un flujo del primer corte. La ' +
+      'fórmula solo suma todo eso de un golpe.</p>' +
+      '<table class="tabla-simple"><thead><tr><th>Cuota</th><th>Período</th><th>Traída a hoy</th></tr></thead><tbody>' +
+      [1, 2, 3].map(function (k) {
+        return '<tr><td>' + Fmt.dinero(1000, 'COP') + '</td><td>' + k + '</td><td>1.000 ÷ (1,05)^' + k + ' = ' +
+          Fmt.numero(1000 / Math.pow(1.05, k)) + '</td></tr>';
+      }).join('') + '<tr style="background:var(--oro-tenue)"><td><b>Total</b></td><td></td><td><b>' +
+      Fmt.numero(A.vp(1000, 0.05, 3, 'vencida')) + '</b> = la fórmula de VP</td></tr></tbody></table>' +
+      '<p style="margin-top:12px">Con 3 cuotas se puede sumar a mano; con 360 (una hipoteca a 30 años) no. ' +
+      'Para eso sirve la fórmula. Y es importante porque responde las dos preguntas que más se hace un ' +
+      'cliente: <b>¿cuánto puedo pedir prestado si puedo pagar tanto al mes?</b> (valor presente) y ' +
+      '<b>¿cuánto tendré si ahorro tanto al mes?</b> (valor futuro).</p>') +
+
+    Edu.b('Fórmulas', '<div class="rejilla-2"><div>' +
+      '<p class="rotulo">Valor presente: cuánto vale hoy la serie</p><div class="formula-caja">VP = A · [(1 + i)ⁿ − 1] / [i · (1 + i)ⁿ]</div>' +
+      '<p class="rotulo" style="margin-top:16px">Valor futuro: cuánto tendré al final</p><div class="formula-caja">VF = A · [(1 + i)ⁿ − 1] / i</div></div>' +
+      '<div><p class="rotulo">La cuota, despejada</p><div class="formula-caja">A = VP · [i · (1 + i)ⁿ] / [(1 + i)ⁿ − 1]</div>' +
+      '<div class="formula-caja" style="margin-top:9px">A = VF · i / [(1 + i)ⁿ − 1]</div>' +
+      '<p class="rotulo" style="margin-top:16px">Con pagos adicionales</p>' +
+      '<div class="formula-caja">VP = A·[…] + Adicional ÷ (1 + i)^k</div>' +
+      '<div class="formula-caja" style="margin-top:9px">VF = A·[…] + Adicional · (1 + i)^(n − k)</div></div></div>' +
+      Edu.variables([
+        ['A', 'Anualidad o cuota', 'El valor de cada pago, igual en todos los períodos.'],
+        ['i', 'Tasa efectiva vencida del período de la cuota', 'Si las cuotas son mensuales, la tasa es mensual. Nunca nominal, nunca anticipada.'],
+        ['n', 'Número de cuotas', 'Cuántos pagos hay. Es igual al número de períodos.'],
+        ['k', 'Momento de un pago adicional', 'El período en que ocurre, contado desde hoy (0).']
+      ]) +
+      '<div class="error-comun"><h4>La tasa tiene que hacer "match" con las cuotas</h4><p>Si las cuotas son ' +
+      'mensuales y te dan 25 % NAT, no puedes meter 25 % ni 6,25 % en la fórmula. Primero se convierte a ' +
+      'efectiva mensual vencida.</p><div class="mal-bien"><div class="mal"><span class="etiqueta-mb">Incorrecto</span>' +
+      '<span class="tachado">i = 25 % o i = 6,25 % con cuotas mensuales</span></div><div class="bien">' +
+      '<span class="etiqueta-mb">Correcto</span>6,25 % ET → (1,0625)^(4/12) − 1 = ' +
+      Fmt.tasa(Math.pow(1.0625, 1 / 3) - 1, 4) + ' EM</div></div></div>') +
+
+    Edu.b('Pagos adicionales extraordinarios',
+      '<p>¿Y si además de las cuotas haces un abono extra con la prima de diciembre? Ese pago no cumple las ' +
+      'condiciones de una anualidad, así que <b>no entra en la fórmula</b>. Se maneja aparte, como un flujo ' +
+      'del primer corte: se lleva a la misma fecha focal que la anualidad y se suma.</p>' +
+      '<ul class="lista-pasos"><li>Si buscas el <b>valor presente</b>, el adicional se trae a hoy: Adicional ÷ (1 + i)^k.</li>' +
+      '<li>Si buscas el <b>valor futuro</b>, se lleva al final: Adicional · (1 + i)^(n − k).</li>' +
+      '<li>Si lo que no conoces es el adicional, se despeja de la misma ecuación: todo lo conocido a un lado, ' +
+      'el adicional al otro.</li></ul>') +
+
+    Edu.b('Un ejemplo práctico resuelto', '<div class="enunciado"><b>Enunciado.</b> Compras una nevera de ' +
+      d(vp) + ' con tu tarjeta de crédito a <b>12 cuotas mensuales</b>. La tarjeta cobra <b>26,4 % NAMV</b>. ' +
+      '¿De cuánto es cada cuota? ¿Y si en el mes 6 abonas ' + d(500000) + ' con la prima?</div><ol class="pasos-ej">' +
+      '<li><b>Ajusta la tasa a las cuotas.</b> Las cuotas son mensuales; la tasa es nominal mensual vencida.<br>' +
+      '26,4 % ÷ 12 = <b>' + Fmt.tasa(i, 2) + ' efectiva mensual vencida</b></li>' +
+      '<li><b>Calcula el factor de valor presente.</b><br>[(1,022)^12 − 1] / [0,022 × (1,022)^12] = <b>' +
+      Fmt.numero(fac, 6) + '</b></li>' +
+      '<li><b>Despeja la cuota.</b><br>A = ' + Fmt.numero(vp, 0) + ' ÷ ' + Fmt.numero(fac, 6) + ' = <b>' + d(cuota) + '</b></li>' +
+      '<li><b>Ahora con el abono.</b> Se trae a hoy: 500.000 ÷ (1,022)^6 = ' + Fmt.numero(500000 / Math.pow(1 + i, 6)) +
+      '. Lo que falta cubrir con cuotas es ' + Fmt.numero(vp - 500000 / Math.pow(1 + i, 6)) + '.</li>' +
+      '<li><b>Nueva cuota.</b><br>A = ' + Fmt.numero(vp - 500000 / Math.pow(1 + i, 6)) + ' ÷ ' + Fmt.numero(fac, 6) +
+      ' = <b>' + d(rAb.cuota) + '</b></li></ol>' +
+      '<div class="respuesta-ej"><span class="rotulo">Respuesta</span>Sin abono pagas 12 cuotas de <b>' + d(cuota) +
+      '</b> (' + d(cuota * 12) + ' en total, ' + d(cuota * 12 - vp) + ' de intereses). Con el abono de la prima, la ' +
+      'cuota baja a <b>' + d(rAb.cuota) + '</b>.</div>' +
+      '<p style="margin-top:14px">Y el valor futuro: si en vez de deber, <b>ahorras</b> ' + d(300000) + ' cada mes ' +
+      'durante 24 meses en una cuenta al 10 % EA (' + Fmt.tasa(iAh, 4) + ' EM), al final tendrás <b>' +
+      d(A.vf(300000, iAh, 24, 'vencida')) + '</b>, de los cuales ' + d(7200000) + ' salieron de tu bolsillo.</p>') +
+
+    Edu.b('¿En qué se diferencia de lo que ya conocías?',
+      '<table class="tabla-simple"><thead><tr><th></th><th>Pago único (primer corte)</th><th>Anualidad</th></tr></thead><tbody>' +
+      '<tr><td>Cuántos pagos</td><td>Uno, o pocos de valores distintos</td><td>Muchos, todos iguales</td></tr>' +
+      '<tr><td>Cómo se calcula</td><td>VF = VP · (1 + i)ⁿ, flujo por flujo</td><td>Una fórmula que suma todos los traslados</td></tr>' +
+      '<tr><td>Pregunta típica</td><td>¿Cuánto vale este pago dentro de 2 años?</td><td>¿Cuánto vale esta serie de cuotas hoy?</td></tr>' +
+      '</tbody></table>' +
+      Edu.conexion('Las anualidades <b>se calculan con interés compuesto</b>: no es un supuesto, es de donde sale ' +
+        'la fórmula. Cada cuota es un flujo del primer corte trasladado con (1 + i)^k. Por eso la tasa debe ser ' +
+        '<b>efectiva vencida del período de la cuota</b>, que es justo lo que entrega la conversión de tasas. En ' +
+        'el simulador de anualidades puedes pulsar "Ver como flujos en interés compuesto" y comprobar que el ' +
+        'simulador del primer corte da el mismo resultado.')) +
+
+    '';
+  },
+
+  /* ------------------------------------------------------------------
+     ANUALIDADES ANTICIPADAS
+     ------------------------------------------------------------------ */
+  anticipadas: function () {
+    var A = M.Anualidades, d = function (v) { return Fmt.dinero(v, 'COP'); };
+    var vp = 9000000, n = 6;
+    var im = M.Tasas.aEfectivaVencida({ valor: 0.18, tipo: 'efectiva', periodo: 'anual' }, 'mensual').valor;
+    var fv = A.factorVP(im, n, 'vencida'), fa = A.factorVP(im, n, 'anticipada');
+    var ca = vp / fa, cv = vp / fv;
+
+    return Edu.cab('anticipada', 'Anualidades anticipadas',
+      'Los mismos pagos iguales y periódicos, pero cada uno se hace al inicio del período.',
+      'VP = A · [(1 + i)<sup>n</sup> − 1] / [i · (1 + i)<sup>n</sup>] · (1 + i)') +
+
+    Edu.b('Explicación sencilla', '<div class="cuento">' +
+      '<p>Vas a la heladería todos los sábados. En una heladería pagas <b>después</b> de comerte el helado. ' +
+      'En otra, pagas <b>antes</b>, apenas llegas, y luego te lo comes.</p>' +
+      '<p>Es el mismo helado y el mismo precio. Lo único que cambia es el momento: en la segunda, cada moneda ' +
+      'sale de tu bolsillo un ratito antes.</p>' +
+      '<p>Si esas monedas estuvieran en una alcancía mágica que las hace crecer, las que pagaste antes ' +
+      'alcanzaron a crecer un período más.</p>' +
+      '<p class="cierre">Una anualidad anticipada es pagar antes de usar: la cuota llega al principio de cada período.</p></div>') +
+
+    Edu.b('¿Qué significa "anticipada"?',
+      '<p>Las cuatro condiciones de una anualidad se mantienen intactas. Lo único que cambia es que <b>cada ' +
+      'pago se hace al inicio del período</b>. La primera cuota cae hoy, en el período 0, y la última en el ' +
+      'período n − 1. Al final del plazo ya no queda ninguna cuota por pagar.</p>' +
+      '<div class="rejilla-2" style="margin-top:12px">' +
+      '<div class="destaque"><b>Vencida</b><p>Cuotas en 1, 2, 3, …, n. Primero usas, después pagas.</p></div>' +
+      '<div class="destaque"><b>Anticipada</b><p>Cuotas en 0, 1, 2, …, n − 1. Primero pagas, después usas.</p></div></div>' +
+      '<p style="margin-top:14px"><b>Situaciones reales:</b> el <b>arriendo</b> (se paga el mes antes de vivirlo), ' +
+      'el <b>leasing</b> habitacional o de vehículo, las <b>matrículas</b> universitarias y los colegios, las ' +
+      '<b>pólizas de seguro</b>, la mensualidad del gimnasio o de una plataforma de streaming.</p>') +
+
+    Edu.b('¿Por qué cambia el resultado y hacia dónde?',
+      '<p>Con los mismos datos, cada cuota anticipada ocurre <b>un período antes</b> que su gemela vencida. Eso ' +
+      'tiene dos consecuencias, y las dos van en la misma dirección:</p>' +
+      '<ul class="lista-pasos"><li><b>El valor presente y el valor futuro suben</b>, exactamente en el factor ' +
+      '(1 + i). Traída a hoy, cada cuota se descuenta un período menos; llevada al final, se capitaliza un ' +
+      'período más.</li>' +
+      '<li><b>La cuota baja</b> si lo que está fijo es el VP o el VF. Como cada pago trabaja un período más, ' +
+      'se necesita menos dinero por cuota para cubrir lo mismo.</li></ul>' +
+      '<table class="tabla-simple"><thead><tr><th>3 cuotas de $ 1.000 al 5 %</th><th>Vencida</th><th>Anticipada</th></tr></thead><tbody>' +
+      '<tr><td>Valor presente</td><td>' + Fmt.numero(A.vp(1000, 0.05, 3, 'vencida')) + '</td><td>' +
+      Fmt.numero(A.vp(1000, 0.05, 3, 'anticipada')) + ' (× 1,05)</td></tr>' +
+      '<tr><td>Valor futuro</td><td>' + Fmt.numero(A.vf(1000, 0.05, 3, 'vencida')) + '</td><td>' +
+      Fmt.numero(A.vf(1000, 0.05, 3, 'anticipada')) + ' (× 1,05)</td></tr></tbody></table>') +
+
+    Edu.b('Fórmulas', '<div class="rejilla-2"><div>' +
+      '<p class="rotulo">Valor presente</p><div class="formula-caja">VP = A · [(1 + i)ⁿ − 1] / [i · (1 + i)ⁿ] · (1 + i)</div>' +
+      '<p class="rotulo" style="margin-top:16px">Valor futuro</p><div class="formula-caja">VF = A · [(1 + i)ⁿ⁺¹ − (1 + i)] / i</div></div>' +
+      '<div><p class="rotulo">La cuota, despejada</p>' +
+      '<div class="formula-caja">A = VP ÷ { [(1 + i)ⁿ − 1] / [i · (1 + i)ⁿ] · (1 + i) }</div>' +
+      '<div class="formula-caja" style="margin-top:9px">A = VF · i ÷ [(1 + i)ⁿ⁺¹ − (1 + i)]</div>' +
+      '<p style="font-size:14.5px;margin-top:12px">Son las fórmulas de la vencida multiplicadas por (1 + i): ' +
+      'ese factor es el período extra que gana cada cuota.</p></div></div>' +
+      Edu.variables([
+        ['A', 'Cuota anticipada', 'El pago que se hace al inicio de cada período.'],
+        ['i', 'Tasa efectiva VENCIDA del período de la cuota', 'Aunque la anualidad sea anticipada, la tasa siempre entra vencida.'],
+        ['n', 'Número de cuotas', 'La primera en el período 0, la última en el n − 1.'],
+        ['(1 + i)', 'El período extra', 'Lo que diferencia esta fórmula de la vencida.']
+      ]) +
+      '<div class="error-comun"><h4>No es lo mismo tasa anticipada que anualidad anticipada</h4>' +
+      '<p>En la anualidad anticipada se adelantan las <b>cuotas</b>; en la tasa anticipada se adelantan los ' +
+      '<b>intereses</b>. Son cosas distintas: aunque la anualidad sea anticipada, en la fórmula entra una tasa ' +
+      'efectiva <b>vencida</b>. Si te dan una tasa anticipada (por ejemplo 30 % NAMA), primero se pasa a vencida.</p>' +
+      '<div class="mal-bien"><div class="mal"><span class="etiqueta-mb">Incorrecto</span><span class="tachado">' +
+      'Cuotas mensuales anticipadas al 30 % NAMA → i = 2,5 %</span></div><div class="bien"><span class="etiqueta-mb">' +
+      'Correcto</span>30 % ÷ 12 = 2,5 % EMA → 2,5 % ÷ 97,5 % = ' + Fmt.tasa(0.025 / 0.975, 4) + ' EM</div></div></div>' +
+      '<p style="margin-top:14px">Los pagos adicionales funcionan igual que en la vencida: se llevan aparte a ' +
+      'la fecha focal. Solo hay que cuidar el lenguaje: "junto con la cuota 17" en una anticipada es el ' +
+      '<b>período 16</b>, porque la cuota 1 cae en el período 0.</p>') +
+
+    Edu.b('Un ejemplo práctico resuelto', '<div class="enunciado"><b>Enunciado.</b> La universidad te deja pagar ' +
+      'la matrícula de ' + d(vp) + ' en <b>6 cuotas mensuales anticipadas</b>, la primera el día de la ' +
+      'matrícula, con una tasa del <b>18 % EA</b>. ¿De cuánto es cada cuota?</div><ol class="pasos-ej">' +
+      '<li><b>Ajusta la tasa a las cuotas.</b> Las cuotas son mensuales; la tasa es efectiva anual.<br>' +
+      '(1 + 18 %)^(1/12) − 1 = <b>' + Fmt.tasa(im, 4) + ' efectiva mensual vencida</b></li>' +
+      '<li><b>Calcula el factor de la anticipada.</b><br>[(1 + i)^6 − 1] / [i · (1 + i)^6] × (1 + i) = ' +
+      Fmt.numero(fv, 6) + ' × ' + Fmt.numero(1 + im, 6) + ' = <b>' + Fmt.numero(fa, 6) + '</b></li>' +
+      '<li><b>Despeja la cuota.</b><br>A = ' + Fmt.numero(vp, 0) + ' ÷ ' + Fmt.numero(fa, 6) + ' = <b>' + d(ca) + '</b></li>' +
+      '<li><b>Compara con la vencida.</b> Si la primera cuota fuera dentro de un mes: A = ' + Fmt.numero(vp, 0) +
+      ' ÷ ' + Fmt.numero(fv, 6) + ' = ' + d(cv) + '.</li></ol>' +
+      '<div class="respuesta-ej"><span class="rotulo">Respuesta</span>Cada cuota anticipada es de <b>' + d(ca) +
+      '</b>, ' + d(cv - ca) + ' menos que si fuera vencida. Pagar antes sale un poco más barato por cuota, a ' +
+      'cambio de desembolsar la primera hoy mismo.</div>') +
+
+    Edu.b('¿En qué se diferencia de lo que ya conocías?',
+      '<table class="tabla-simple"><thead><tr><th></th><th>Anualidad vencida</th><th>Anualidad anticipada</th></tr></thead><tbody>' +
+      '<tr><td>Primera cuota</td><td>Período 1</td><td>Período 0 (hoy)</td></tr>' +
+      '<tr><td>VP y VF con la misma cuota</td><td>Menores</td><td>Mayores, × (1 + i)</td></tr>' +
+      '<tr><td>Cuota con el mismo VP o VF</td><td>Mayor</td><td>Menor, ÷ (1 + i)</td></tr>' +
+      '<tr><td>Tasa que entra a la fórmula</td><td>Efectiva vencida</td><td>Efectiva vencida (también)</td></tr>' +
+      '</tbody></table>' +
+      Edu.conexion('La anticipada también es <b>interés compuesto</b> del primer corte: cada cuota se traslada ' +
+        'con (1 + i)^k, solo que todas están corridas un período hacia la izquierda en la línea de tiempo. Y su ' +
+        'tasa se prepara con la conversión de tasas, igual que en la vencida.')) +
+
+    '';
+  },
+
+  /* ------------------------------------------------------------------
      Índice y navegación interna
      ------------------------------------------------------------------ */
   TARJETAS: [
@@ -2687,20 +3914,38 @@ var Edu = {
              'va en años.' }
   ],
 
+  TARJETAS_2: [
+    { id: 'tasas', titulo: 'Conversión de tasas', formula: '(1 + i)<sup>ny/nx</sup> − 1',
+      texto: 'Nominal o efectiva, vencida o anticipada, cada cuánto capitaliza. Cómo pasar de cualquier ' +
+             'tasa a cualquier otra.' },
+    { id: 'vencidas', titulo: 'Anualidades vencidas', formula: 'VF = A·[(1+i)<sup>n</sup> − 1] / i',
+      texto: 'Cuotas iguales al final de cada período: créditos, ahorro programado. Con pagos extra.' },
+    { id: 'anticipadas', titulo: 'Anualidades anticipadas', formula: 'VP = A·[…]·(1 + i)',
+      texto: 'Cuotas iguales al inicio de cada período: arriendos, matrículas, seguros.' }
+  ],
+
   abrir: function (clave) {
     var cont = $('#edu-detalle');
     if (!Edu[clave]) return;
     cont.innerHTML = '<button class="btn btn-suave" id="btn-volver-edu">← Volver a educación ' +
       'financiera</button>' + Edu[clave]() +
       '<div class="acciones" style="margin-top:26px">' +
-      '<button class="btn btn-principal" data-ir="simulacion">Simular un caso como este</button>' +
+      '<button class="btn btn-principal" data-ir="' + ({ tasas: 'tasas', vencidas: 'anualidades',
+        anticipadas: 'anualidades' }[clave] || 'simulacion') + '">' + (clave === 'tasas' ? 'Convertir una tasa'
+        : 'Simular un caso como este') + '</button>' +
       '<button class="btn btn-secundario" id="btn-volver-edu-2">Volver</button></div>';
     $('#edu-indice').classList.add('oculto');
     cont.classList.remove('oculto');
     $('#btn-volver-edu').addEventListener('click', Edu.volver);
     $('#btn-volver-edu-2').addEventListener('click', Edu.volver);
     $$('[data-ir]', cont).forEach(function (b) {
-      b.addEventListener('click', function () { Nav.ir(b.dataset.ir); });
+      b.addEventListener('click', function () {
+        if (b.dataset.ir === 'anualidades') {
+          var mod = b.dataset.modalidad || (clave === 'anticipadas' ? 'anticipada' : 'vencida');
+          Anu.estado.modalidad = mod; Anu.pintarTodo();
+        }
+        Nav.ir(b.dataset.ir);
+      });
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   },
@@ -2713,15 +3958,17 @@ var Edu = {
   },
 
   iniciar: function () {
-    var cont = $('#edu-tarjetas');
-    cont.innerHTML = '';
-    Edu.TARJETAS.forEach(function (t) {
-      var b = el('button', { 'class': 'tarjeta-rapida', 'data-abrir': t.id },
-        '<h3>' + t.titulo + '</h3><span class="formula">' + t.formula + '</span>' +
-        '<p>' + t.texto + '</p>' +
-        '<span class="ver-mas">Ver la explicación completa →</span>');
-      b.addEventListener('click', function () { Edu.abrir(t.id); });
-      cont.appendChild(b);
+    [['#edu-tarjetas', Edu.TARJETAS, ''], ['#edu-tarjetas-2', Edu.TARJETAS_2, ' nuevo']].forEach(function (g) {
+      var cont = $(g[0]);
+      cont.innerHTML = '';
+      g[1].forEach(function (t) {
+        var b = el('button', { 'class': 'tarjeta-rapida' + g[2], 'data-abrir': t.id },
+          '<h3>' + t.titulo + '</h3><span class="formula">' + t.formula + '</span>' +
+          '<p>' + t.texto + '</p>' +
+          '<span class="ver-mas">Ver la explicación completa →</span>');
+        b.addEventListener('click', function () { Edu.abrir(t.id); });
+        cont.appendChild(b);
+      });
     });
 
     var comp = $('#edu-comparativa');
@@ -2792,7 +4039,7 @@ var Linea = {
            'fill="#48546F" font-family="ui-monospace,Menlo,monospace">' + Fmt.periodos(m) + '</text>';
     });
     s += '<text x="' + x0 + '" y="' + (ejeY + 38) + '" text-anchor="middle" font-size="10" ' +
-         'fill="#7A849B">mes</text>';
+         'fill="#7A849B">' + Linea.escapar(o.unidad || 'mes') + '</text>';
 
     /* fecha focal */
     var xf = ex(focalMes);
@@ -2873,8 +4120,175 @@ var Sim = {
       periodicidad: 'mensual', mesesN: '5', moneda: 'COP',
       tasa: '', anios: '', meses: '', objetivo: '', modo: 'valorFocal',
       focalTipo: 'futuro', focalMes: '', vp: '', vf: '',
-      flujos: [{ valor: '', momento: '0', tipo: 'entrada', clase: 'conocido', coeficiente: '1' }]
+      flujos: [{ valor: '', momento: '0', tipo: 'entrada', clase: 'conocido', coeficiente: '1' }],
+      // Segundo corte: solo el interés compuesto acepta cualquier tasa y la convierte.
+      tasaC: TasaUI.nueva({ valor: '', tipo: 'efectiva', periodo: 'mensual', modalidad: 'vencida' }),
+      opPeriodo: 'igual', opMesesN: '7', unidadMomentos: 'meses',
+      salidaC: TasaUI.nueva({ tipo: 'efectiva', periodo: 'mensual', modalidad: 'vencida' })
     };
+  },
+
+  /* ---------- Segundo corte: compuesto con conversión automática ---------- */
+
+  esConversion: function () { return Sim.estado.regimen === 'compuesto'; },
+
+  /** Período en el que se hace la operación de compuesto (el de la tasa si es "igual"). */
+  opInfo: function () {
+    var E = Sim.estado;
+    var clave = E.opPeriodo, n = E.opMesesN;
+    if (clave === 'igual') {
+      if (E.incognita === 'tasa') clave = 'mensual';
+      else { clave = E.tasaC.periodo; n = E.tasaC.mesesN; }
+    }
+    return M.Tasas.periodo(clave, TasaUI.esN(clave) ? Fmt.parsear(n) : undefined);
+  },
+
+  /** Lee la tasa del compuesto y la convierte a efectiva vencida del período de la operación. */
+  tasaCompuesta: function () {
+    var info = Sim.opInfo();
+    var t = TasaUI.leer(Sim.estado.tasaC, true);
+    var conv = M.Tasas.aEfectivaVencida(t, info.clave, info.mesesN);
+    return { i: conv.valor, conv: conv, info: info, original: t };
+  },
+
+  /** Cuántos meses vale una unidad de los momentos que escribe el usuario. */
+  factorMomento: function () {
+    var E = Sim.estado;
+    if (!Sim.esConversion() || E.unidadMomentos !== 'periodos') return 1;
+    try { return Sim.opInfo().mesesPorPeriodo; } catch (e) { return 1; }
+  },
+
+  nombreMomento: function () {
+    var E = Sim.estado;
+    if (!Sim.esConversion() || E.unidadMomentos !== 'periodos') return { uno: 'mes', varios: 'meses', titulo: 'Mes' };
+    try {
+      var info = Sim.opInfo();
+      return { uno: info.uno, varios: info.varios, titulo: info.uno.charAt(0).toUpperCase() + info.uno.slice(1) };
+    } catch (e) { return { uno: 'período', varios: 'períodos', titulo: 'Período' }; }
+  },
+
+  pintarTasaCompuesta: function () {
+    var E = Sim.estado, z = $('#zona-tasa-comp');
+    if (!Sim.esConversion()) {
+      z.innerHTML = '';
+      return;
+    }
+    var h = '<div id="tasa-comp-caja"></div>';
+    h += '<div class="campos" style="margin-top:16px">';
+    h += '<div class="campo"><label for="f-op">¿En qué período se hace la operación?</label>' +
+      '<select class="control" id="f-op" data-c="opPeriodo">' +
+      (E.incognita === 'tasa' ? '' : '<option value="igual"' + (E.opPeriodo === 'igual' ? ' selected' : '') +
+        '>El mismo de la tasa</option>') +
+      TasaUI.PERIODOS.map(function (p) {
+        var txt = p[1].replace(/ · .*$/, '');
+        if (p[0] === 'quintumestral') txt = 'Quintumestral (cada 5 meses)';
+        if (p[0] === 'cadaNMeses') txt = 'Cada N meses';
+        if (p[0] === 'cadaNDias') txt = 'Cada N días';
+        return '<option value="' + p[0] + '"' + (E.opPeriodo === p[0] ? ' selected' : '') + '>' + txt + '</option>';
+      }).join('') + '</select><span class="pista">' + (E.incognita === 'tasa'
+        ? 'La tasa se despeja en este período y luego se expresa como pidas.'
+        : 'La tasa se convierte a la efectiva vencida de este período antes de calcular.') + '</span></div>';
+    if (TasaUI.esN(E.opPeriodo)) {
+      h += '<div class="campo"><label for="f-opN">¿Cada cuántos ' + TasaUI.unidadN(E.opPeriodo) +
+        '?</label><input type="text" inputmode="decimal" ' +
+        'class="control" id="f-opN" data-c="opMesesN" value="' + Linea.escapar(E.opMesesN) + '"></div>';
+    }
+    if (Sim.usaFlujos()) {
+      var nomOp; try { nomOp = Sim.opInfo().varios; } catch (e) { nomOp = 'períodos'; }
+      h += '<div class="campo"><label for="f-unidadM">Los momentos de los flujos están en…</label>' +
+        '<select class="control" id="f-unidadM" data-c="unidadMomentos">' +
+        '<option value="meses"' + (E.unidadMomentos !== 'periodos' ? ' selected' : '') + '>Meses</option>' +
+        '<option value="periodos"' + (E.unidadMomentos === 'periodos' ? ' selected' : '') + '>' +
+        Linea.escapar(nomOp.charAt(0).toUpperCase() + nomOp.slice(1)) + ' (período de la operación)</option>' +
+        '</select><span class="pista">Año de 365 días y 52 semanas.</span></div>';
+    }
+    h += '</div>';
+    if (E.incognita === 'tasa') h += '<div id="tasa-comp-salida" style="margin-top:16px"></div>';
+    z.innerHTML = h;
+
+    if (E.incognita !== 'tasa') {
+      TasaUI.render($('#tasa-comp-caja'), E.tasaC, {
+        titulo: 'La tasa que te dan', idp: 'sc', onCambio: function (st) {
+          if (E.opPeriodo === 'igual') { Sim.pintarTasaCompuesta(); }
+          else Sim.vistaTasaCompuesta();
+        }, nota: ''
+      });
+      Sim.vistaTasaCompuesta();
+    } else {
+      $('#tasa-comp-caja').innerHTML = '<div class="nota-regimen conversion">La tasa es la incógnita: FinanClic ' +
+        'la despeja como efectiva vencida del período de la operación y después la expresa en la forma que elijas abajo.</div>';
+      TasaUI.render($('#tasa-comp-salida'), E.salidaC, {
+        titulo: '¿Cómo quieres ver la tasa resultante?', idp: 'so', conValor: false, destino: true
+      });
+    }
+    $$('[data-c]', z).forEach(function (n) {
+      n.addEventListener(n.tagName === 'SELECT' ? 'change' : 'input', function () {
+        E[n.dataset.c] = n.value;
+        if (n.tagName === 'SELECT') Sim.pintarTodo();
+        else { Sim.vistaTasaCompuesta(); Sim.pintarLinea(); }
+      });
+    });
+  },
+
+  /** Muestra en vivo a qué tasa se va a convertir. */
+  vistaTasaCompuesta: function () {
+    var cont = $('#tasa-comp-caja');
+    if (!cont) return;
+    var txt;
+    try {
+      var r = Sim.tasaCompuesta();
+      txt = '<b style="color:var(--tasas)">Tasa que entra a la fórmula:</b> <span class="cifra">' + Fmt.tasa(r.i, 4) +
+        '</span> efectiva ' + r.info.adj + ' vencida. ' + (r.conv.pasos.length
+          ? 'FinanClic la convierte por ti; el paso a paso aparece con el resultado.'
+          : 'Ya está en el período de la operación: no hace falta convertirla.');
+    } catch (e) {
+      txt = 'En interés compuesto puedes escribir la tasa como te la den (nominal o efectiva, vencida o anticipada, ' +
+        'con cualquier capitalización). Antes de calcular se convierte a la efectiva vencida del período de la operación.';
+    }
+    TasaUI.nota(cont, txt);
+  },
+
+  /** La calculadora de tasas le pasa una tasa al simulador. */
+  recibirTasa: function (t) {
+    var E = Sim.estado;
+    E.regimen = 'compuesto';
+    if (E.incognita === 'tasa') { E.incognita = 'vf'; Sim.ajustarPorIncognita(); }
+    E.tasaC = TasaUI.copiar(t);
+    Nav.ir('simulacion');
+    Sim.pintarTodo();
+  },
+
+  /** El simulador de anualidades le pasa su serie de cuotas como flujos sueltos. */
+  recibirAnualidad: function (EA, r, l) {
+    var E = Sim.inicial();
+    E.operacion = EA.operacion;
+    E.regimen = 'compuesto';
+    E.incognita = r.referencia === 'vp' ? 'vp' : 'vf';
+    E.moneda = EA.moneda;
+    E.tasaC = TasaUI.copiar(EA.tasa);
+    E.opPeriodo = l.info.clave;
+    E.opMesesN = l.info.mesesN ? String(l.info.mesesN) : '7';
+    E.unidadMomentos = 'periodos';
+    E.focalTipo = r.referencia === 'vp' ? 'presente' : 'especifico';
+    E.focalMes = String(r.n);
+    E.flujos = r.momentosCuotas.map(function (m, k) {
+      return { valor: Fmt.numero(r.cuota, 2), momento: String(m), tipo: 'entrada', clase: 'conocido',
+               coeficiente: '1', descripcion: 'Cuota ' + (k + 1) };
+    });
+    r.adicionales.forEach(function (a) {
+      if (a.signo < 0) return;
+      E.flujos.push({ valor: Fmt.numero(a.valor, 2), momento: String(a.periodo), tipo: 'entrada',
+        clase: 'conocido', coeficiente: '1', descripcion: 'Pago adicional ' + a.numero });
+    });
+    r.adicionales.forEach(function (a) {
+      if (a.signo > 0) return;
+      E.flujos.push({ valor: Fmt.numero(a.valor, 2), momento: String(a.periodo), tipo: 'salida',
+        clase: 'conocido', coeficiente: '1', descripcion: 'Pago adicional ' + a.numero });
+    });
+    Sim.estado = E;
+    Nav.ir('simulacion');
+    Sim.pintarTodo();
+    Sim.calcular();
   },
 
   /* ---------- Render de los selectores ---------- */
@@ -2889,6 +4303,7 @@ var Sim = {
         }, (o.icono ? '<span class="icono">' + o.icono + '</span>' : '') +
            '<span><strong>' + o.titulo + '</strong><small>' + o.sub + '</small></span>');
         b.addEventListener('click', function () {
+          if (campo === 'regimen' && E.regimen !== o.id) Sim.sincronizarTasa(E.regimen, o.id);
           E[campo] = o.id;
           if (campo === 'incognita') Sim.ajustarPorIncognita();
           Sim.pintarTodo();
@@ -2920,6 +4335,20 @@ var Sim = {
     }
   },
 
+  /** Al cambiar de régimen se conserva el valor de la tasa que ya se escribió. */
+  sincronizarTasa: function (de, a) {
+    var E = Sim.estado;
+    if (a === 'compuesto' && String(E.tasaC.valor).trim() === '' && String(E.tasa).trim() !== '') {
+      E.tasaC.valor = E.tasa;
+      if (de === 'simple') {
+        E.tasaC.tipo = 'efectiva'; E.tasaC.modalidad = 'vencida';
+        E.tasaC.periodo = E.periodicidad; E.tasaC.mesesN = E.mesesN;
+      }
+    } else if (de === 'compuesto' && String(E.tasa).trim() === '' && String(E.tasaC.valor).trim() !== '') {
+      E.tasa = E.tasaC.valor;
+    }
+  },
+
   usaFlujos: function () {
     return Sim.estado.incognita !== 'tiempo';
   },
@@ -2938,7 +4367,18 @@ var Sim = {
       }).join('') + '</select>' +
       '<span class="pista">Solo indica la unidad. No se convierte entre monedas.</span></div>';
 
-    if (!esContinuo) {
+    if (E.regimen === 'simple') {
+      h += '<div class="nota-regimen"><b>En interés simple la tasa no se convierte.</b> La tasa y el tiempo deben ' +
+        'estar en la misma unidad: elige la periodicidad de la tasa y el tiempo se contará en esa unidad. ' +
+        'Como el interés simple no capitaliza, sus tasas son proporcionales, no equivalentes: aplicarle la ' +
+        'conversión del compuesto daría un resultado incorrecto.</div>';
+    } else if (esContinuo) {
+      h += '<div class="nota-regimen"><b>En interés continuo la tasa no se convierte.</b> Es una tasa continua ' +
+        'anual, de naturaleza distinta a las nominales y efectivas, y el tiempo siempre va en años. La ' +
+        'conversión de tasas aplica solo al interés compuesto.</div>';
+    }
+
+    if (!esContinuo && !Sim.esConversion()) {
       h += '<div class="campo"><label for="f-periodicidad">Periodicidad de la tasa</label>' +
         '<select class="control" id="f-periodicidad" data-e="periodicidad">' +
         [['mensual', 'Mensual'], ['bimestral', 'Bimestral'], ['trimestral', 'Trimestral'],
@@ -2955,7 +4395,7 @@ var Sim = {
       }
     }
 
-    if (E.incognita !== 'tasa') {
+    if (E.incognita !== 'tasa' && !Sim.esConversion()) {
       h += '<div class="campo"><label for="f-tasa">Tasa de interés' +
         (esContinuo ? ' continua anual' : '') + '</label>' +
         '<div class="con-simbolo"><input type="text" inputmode="decimal" class="control" ' +
@@ -2970,24 +4410,25 @@ var Sim = {
     }
 
     if (Sim.usaFlujos()) {
+      var nm = Sim.nombreMomento();
       var etqFocal = esContinuo ? 'Fecha focal (en meses)' : 'Fecha focal';
       h += '<div class="campo"><label for="f-focal">' + etqFocal + '</label>' +
         '<select class="control" id="f-focal" data-e="focalTipo"' +
         (E.incognita === 'vp' ? ' disabled' : '') + '>' +
-        [['presente', 'El presente (mes 0)'], ['futuro', 'El último flujo'],
+        [['presente', 'El presente (' + nm.uno + ' 0)'], ['futuro', 'El último flujo'],
          ['especifico', 'Un momento específico']].map(function (p) {
           return '<option value="' + p[0] + '"' + (E.focalTipo === p[0] ? ' selected' : '') +
                  '>' + p[1] + '</option>';
         }).join('') + '</select>' +
         (E.incognita === 'vp'
-          ? '<span class="pista">Para hallar el valor presente la focal es el mes 0.</span>'
+          ? '<span class="pista">Para hallar el valor presente la focal es el ' + nm.uno + ' 0.</span>'
           : '<span class="pista">El momento al que se llevan todos los flujos.</span>') + '</div>';
 
       if (E.focalTipo === 'especifico') {
-        h += '<div class="campo"><label for="f-focalMes">Mes de la fecha focal</label>' +
+        h += '<div class="campo"><label for="f-focalMes">' + nm.titulo + ' de la fecha focal</label>' +
           '<input type="text" inputmode="decimal" class="control" id="f-focalMes" data-e="focalMes" ' +
           'placeholder="30" value="' + E.focalMes + '">' +
-          '<span class="pista">Contado desde el origen, en meses.</span></div>';
+          '<span class="pista">Contado desde el origen, en ' + nm.varios + '.</span></div>';
       }
     }
 
@@ -3062,7 +4503,8 @@ var Sim = {
 
     var h = '<div style="margin:22px 0 12px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">' +
       '<p class="rotulo" style="margin:0">Flujos del ejercicio</p>' +
-      '<span class="pista">Cada movimiento de dinero, con el mes en que ocurre.</span></div>' +
+      '<span class="pista">Cada movimiento de dinero, con el ' + Sim.nombreMomento().uno +
+      ' en que ocurre.</span></div>' +
       '<div class="flujos">';
 
     E.flujos.forEach(function (f, k) {
@@ -3078,7 +4520,7 @@ var Sim = {
               '<input type="text" inputmode="decimal" class="control" data-f="valor" data-dinero="1" ' +
               'placeholder="1.000.000" value="' + (f.valor || '') + '"></div>') +
         '</div>' +
-        '<div class="campo"><label>Mes</label>' +
+        '<div class="campo"><label>' + Sim.nombreMomento().titulo + '</label>' +
           (esM
             ? '<input type="text" class="control" value="?" disabled style="text-align:center">'
             : '<input type="text" inputmode="decimal" class="control" data-f="momento" ' +
@@ -3187,12 +4629,14 @@ var Sim = {
                tipo: f.tipo, etiqueta: f.etiqueta };
     });
     var focal = Sim.focalEnMeses(fl);
+    var fac = Sim.factorMomento();
+    var arcosU = arcos ? arcos.map(function (a) { return { momento: a.momento / fac, factor: a.factor }; }) : arcos;
     z.innerHTML = '<p class="rotulo" style="margin-bottom:10px">Línea de tiempo</p>' +
-      Linea.dibujar(conocidos, focal, { arcos: arcos });
+      Linea.dibujar(conocidos, focal, { arcos: arcosU, unidad: Sim.nombreMomento().uno });
   },
 
   pintarTodo: function () {
-    Sim.pintarOpciones(); Sim.pintarCampos(); Sim.pintarFlujos(); Sim.pintarLinea();
+    Sim.pintarOpciones(); Sim.pintarTasaCompuesta(); Sim.pintarCampos(); Sim.pintarFlujos(); Sim.pintarLinea();
   },
 
   /* ---------- Recolección de datos ---------- */
@@ -3207,9 +4651,11 @@ var Sim = {
       if (f.momentoDesconocido) { iX = k; base.momento = 0; }
       else {
         var m = Fmt.parsear(f.momento);
-        if (!isFinite(m)) throw new Error('Falta el mes del flujo ' + (k + 1) +
-          '. Escribe en qué mes ocurre, contado desde el origen.');
-        base.momento = m;
+        var nm = Sim.nombreMomento();
+        if (!isFinite(m)) throw new Error('Falta el ' + nm.uno + ' del flujo ' + (k + 1) +
+          '. Escribe en qué ' + nm.uno + ' ocurre, contado desde el origen.');
+        if (m < 0) throw new Error('El momento del flujo ' + (k + 1) + ' no puede ser negativo.');
+        base.momento = m * Sim.factorMomento();
       }
       if (E.incognita === 'valorFlujo' && f.clase === 'incognita') {
         base.clase = 'incognita';
@@ -3228,9 +4674,11 @@ var Sim = {
   },
 
   leerTasa: function () {
+    if (Sim.esConversion()) return Sim.tasaCompuesta().i;
     var t = Fmt.parsear(Sim.estado.tasa);
     if (!isFinite(t)) throw new Error('Falta la tasa de interés. Escríbela en porcentaje, ' +
       'por ejemplo 2,5 para 2,5 %.');
+    if (t < 0) throw new Error('La tasa de interés no puede ser negativa.');
     return t / 100;
   },
 
@@ -3245,14 +4693,22 @@ var Sim = {
     if (E.focalTipo === 'especifico') {
       var m = Fmt.parsear(E.focalMes);
       if (!isFinite(m)) throw new Error('Elegiste una fecha focal específica pero no escribiste ' +
-        'en qué mes cae.');
-      return { tipo: 'especifico', meses: m };
+        'en qué ' + Sim.nombreMomento().uno + ' cae.');
+      if (m < 0) throw new Error('La fecha focal no puede ser negativa.');
+      return { tipo: 'especifico', meses: m * Sim.factorMomento() };
     }
     return E.focalTipo;
   },
 
   baseConfig: function () {
     var E = Sim.estado;
+    if (Sim.esConversion()) {
+      var info = Sim.opInfo();
+      return {
+        regimen: 'compuesto', periodicidad: info.clave, mesesPersonalizados: info.mesesN,
+        mesesPorPeriodo: info.mesesPorPeriodo, operacion: E.operacion
+      };
+    }
     return {
       regimen: E.regimen,
       periodicidad: E.regimen === 'continuo' ? 'anual' : E.periodicidad,
@@ -3267,6 +4723,13 @@ var Sim = {
     try {
       var salida = Sim.despachar();
       z.innerHTML = Res.pintar(salida);
+      $$('[data-abrir-calc]', z).forEach(function (b) {
+        b.addEventListener('click', function () {
+          var info = Sim.opInfo();
+          Calc.abrirCon(Sim.estado.tasaC, { tipo: 'efectiva', periodo: info.clave,
+            mesesN: info.mesesN ? String(info.mesesN) : '7', modalidad: 'vencida' });
+        });
+      });
       Sim.pintarLinea(salida.arcos);
       z.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (e) {
@@ -3307,6 +4770,18 @@ var Sim = {
       emp.esTasa = true;
       emp.principalTexto = Fmt.tasa(rt.tasa, 4) + ' ' +
         (E.regimen === 'continuo' ? 'continuo anual' : Sim.nombrePeriodicidad(E.periodicidad));
+      if (Sim.esConversion()) {
+        // La tasa se despejó como efectiva vencida del período de la operación.
+        // Ahora se expresa en la forma que pidió el usuario.
+        var info = Sim.opInfo();
+        var halla = { valor: rt.tasa, tipo: 'efectiva', modalidad: 'vencida', periodo: info.clave, mesesN: info.mesesN };
+        var conv = M.Tasas.convertir(halla, TasaUI.leer(E.salidaC, false));
+        emp.convSalida = conv;
+        emp.principalTexto = Fmt.tasa(conv.valor, 4) + ' ' + M.Tasas.sigla(conv.salida);
+        emp.subPrincipal = M.Tasas.nombre(conv.salida) + ' (redondeada: ' + Fmt.tasa(conv.valor, 2) + ') · equivale a ' + Fmt.tasa(rt.tasa, 4) +
+          ' efectiva ' + info.adj + ' vencida';
+        emp.tasaTexto = emp.principalTexto;
+      }
       return emp;
     }
 
@@ -3346,6 +4821,11 @@ var Sim = {
       e3.esMomento = true;
       e3.principalTexto = Fmt.periodos(rm.momentoMeses) + ' meses';
       e3.subPrincipal = rm.momentoAniosMeses;
+      if (Sim.esConversion()) {
+        var opI = Sim.opInfo();
+        e3.principalTexto = Fmt.periodos(rm.momentoMeses / opI.mesesPorPeriodo) + ' ' + opI.varios;
+        e3.subPrincipal = Fmt.periodos(rm.momentoMeses) + ' meses · ' + rm.momentoAniosMeses;
+      }
       return e3;
     }
 
@@ -3364,6 +4844,13 @@ var Sim = {
       pasos.push('t = Ln(' + Fmt.numero(vf) + ' / ' + Fmt.numero(vp) + ') / ' + Fmt.tasa(i, 4));
       pasos.push('t = ' + Fmt.numero(Math.log(vf / vp), 8) + ' / ' + Fmt.numero(i, 8));
       pasos.push('t = ' + Fmt.periodos(n) + ' años = ' + Fmt.periodos(n * 12) + ' meses');
+    } else if (Sim.esConversion()) {
+      var tc = Sim.tasaCompuesta();
+      mpp = tc.info.mesesPorPeriodo; unidad = tc.info.varios;
+      n = M.Compuesto.periodos(vp, vf, i);
+      formula = 'n = Log(VF / VP) / Log(1 + i),  con i efectiva ' + tc.info.adj + ' vencida';
+      pasos.push('n = Log(' + Fmt.numero(vf) + ' / ' + Fmt.numero(vp) + ') / Log(1 + ' + Fmt.tasa(i, 6) + ')');
+      pasos.push('n = ' + Fmt.periodos(n) + ' ' + unidad);
     } else {
       mpp = M.Periodicidad.mesesPorPeriodo(base.periodicidad, base.mesesPersonalizados);
       unidad = Fmt.unidad(base.periodicidad, base.mesesPersonalizados);
@@ -3380,8 +4867,11 @@ var Sim = {
       }
       pasos.push('n = ' + Fmt.periodos(n) + ' ' + unidad);
     }
+    if (!(vp > 0) || !(vf > 0)) throw new Error('El valor presente y el valor futuro deben ser mayores que cero.');
     var meses = (E.regimen === 'continuo') ? n * 12 : n * mpp;
+    var extra = Sim.extraCompuesto();
     return {
+      conv: extra.conv, unidadTexto: extra.unidadTexto, tasaEtiqueta: extra.tasaEtiqueta,
       titulo: 'Tiempo', principal: n,
       principalTexto: Fmt.periodos(n) + ' ' + unidad,
       subPrincipal: Fmt.tiempoTexto(meses),
@@ -3392,6 +4882,15 @@ var Sim = {
       detalleFlujos: null, dependeDeFocal: false, aviso: null, arcos: null,
       etiquetaGanancia: M.Ecuacion.etiquetaGanancia(E.operacion)
     };
+  },
+
+  /** Datos del compuesto con conversión que la vista de resultados necesita. */
+  extraCompuesto: function () {
+    if (!Sim.esConversion()) return { conv: null, unidadTexto: null, tasaEtiqueta: null };
+    var info = Sim.opInfo();
+    var conv = null;
+    if (Sim.estado.incognita !== 'tasa') { try { conv = Sim.tasaCompuesta().conv; } catch (e) { conv = null; } }
+    return { conv: conv, unidadTexto: info.varios, tasaEtiqueta: 'efectiva ' + info.adj + ' vencida' };
   },
 
   nombrePeriodicidad: function (p) {
@@ -3406,7 +4905,10 @@ var Sim = {
     var E = Sim.estado;
     var mesesTotales = r.focalMeses;
     var suma = r.sumaNominal;
+    var extra = Sim.extraCompuesto();
     return {
+      conv: extra.conv, unidadTexto: extra.unidadTexto, tasaEtiqueta: extra.tasaEtiqueta,
+      factorMomento: Sim.factorMomento(), nombreMomento: Sim.nombreMomento(),
       titulo: titulo, principal: principal,
       principalTexto: null,
       vf: r.valorFocal, vp: suma, interes: r.gananciaNeta, tasa: r.tasa,
@@ -3432,7 +4934,9 @@ var Sim = {
   pasosDe: function (r) {
     var E = Sim.estado, p = [];
     var unidad = r.regimen === 'continuo' ? 'años'
+      : Sim.esConversion() ? Sim.opInfo().varios
       : Fmt.unidad(r.periodicidad, r.mesesPorPeriodo);
+    var fac = Sim.factorMomento(), nm = Sim.nombreMomento();
     r.detalle.forEach(function (d) {
       var signo = d.tipo === 'salida' ? '−' : '+';
       var op;
@@ -3447,7 +4951,7 @@ var Sim = {
       } else {
         op = Fmt.numero(d.valor) + ' × (1 + ' + Fmt.tasa(r.tasa, 4) + ')^' + Fmt.periodos(d.delta);
       }
-      p.push(signo + ' Flujo ' + d.numero + ' (mes ' + Fmt.periodos(d.momento) + ', Δ = ' +
+      p.push(signo + ' Flujo ' + d.numero + ' (' + nm.uno + ' ' + Fmt.periodos(d.momento / fac) + ', Δ = ' +
         Fmt.periodos(d.delta) + ' ' + unidad + '):  ' + op + ' = ' +
         Fmt.numero(Math.abs(d.valorEnFocal)));
     });
@@ -3521,21 +5025,39 @@ var Res = {
       '</div>';
 
     /* detalle */
-    var unidad = s.regimen === 'continuo' ? 'años'
-      : Fmt.unidad(s.periodicidad, Fmt.parsear(s.mesesPersonalizados));
+    var unidad = s.unidadTexto || (s.regimen === 'continuo' ? 'años'
+      : Fmt.unidad(s.periodicidad, Fmt.parsear(s.mesesPersonalizados)));
+    var fac = s.factorMomento || 1;
+    var tituloMom = s.nombreMomento ? s.nombreMomento.titulo : 'Mes';
     var nombreReg = { simple: 'Interés simple', compuesto: 'Interés compuesto',
                       continuo: 'Interés continuo' }[s.regimen];
     var tiempoTexto = Fmt.tiempoTexto(s.mesesTotales);
 
     h += '<dl class="detalle-lista">' +
       '<div><dt>Régimen</dt><dd style="font-family:var(--texto)">' + nombreReg + '</dd></div>' +
-      '<div><dt>Tasa</dt><dd>' + Fmt.tasa(s.tasa, 4) + ' ' +
-        (s.regimen === 'continuo' ? 'continua' : Sim.nombrePeriodicidad(s.periodicidad)) +
+      '<div><dt>Tasa' + (s.tasaEtiqueta ? ' en la fórmula' : '') + '</dt><dd>' + Fmt.tasa(s.tasa, 4) + ' ' +
+        (s.tasaEtiqueta || (s.regimen === 'continuo' ? 'continua' : Sim.nombrePeriodicidad(s.periodicidad))) +
         '</dd></div>' +
       '<div><dt>Tiempo</dt><dd style="font-family:var(--texto)">' + tiempoTexto + '</dd></div>' +
       '<div><dt>Períodos</dt><dd>' + Fmt.periodos(s.periodos) + ' ' + unidad + '</dd></div>' +
       '<div><dt>Moneda</dt><dd>' + s.moneda + '</dd></div>' +
       '</dl>';
+
+    /* segundo corte: la conversión de la tasa en el compuesto */
+    if (s.conv) {
+      h += '<div class="bloque"><h4>La tasa que escribiste, convertida antes de calcular</h4>' +
+        '<p style="margin:0 0 6px;font-size:14.5px;color:var(--tinta-2)">Escribiste ' +
+        Fmt.tasa(s.conv.entrada.valor, 4) + ' ' + Linea.escapar(M.Tasas.sigla(s.conv.entrada)) +
+        '. La operación se cuenta en ' + Linea.escapar(unidad) + ', así que la fórmula de interés compuesto ' +
+        'necesita la tasa <b>' + Linea.escapar(s.tasaEtiqueta) + '</b>.</p>' + TasaUI.pasosHTML(s.conv) +
+        '<div class="puente"><span>¿Quieres ver esta conversión en detalle?</span>' +
+        '<button class="btn btn-secundario" type="button" data-abrir-calc="1">Abrirla en la calculadora de tasas</button></div></div>';
+    } else if (s.convSalida) {
+      h += '<div class="bloque"><h4>De la tasa hallada a la forma que pediste</h4>' + TasaUI.pasosHTML(s.convSalida) + '</div>';
+    } else if (s.regimen === 'simple' || s.regimen === 'continuo') {
+      h += '<div class="aviso">En interés ' + s.regimen + ' la tasa se usa tal como la escribiste: no se ' +
+        'convierte entre periodicidades. Esa conversión es exclusiva del interés compuesto.</div>';
+    }
 
     /* aviso de fecha focal en interés simple */
     if (s.dependeDeFocal && s.detalleFlujos && s.detalleFlujos.length > 1) {
@@ -3546,11 +5068,11 @@ var Res = {
     /* traslado flujo por flujo */
     if (s.detalleFlujos && s.detalleFlujos.length > 1) {
       h += '<div class="bloque"><h4>Cada flujo llevado a la fecha focal</h4>' +
-        '<table class="tabla"><thead><tr><th>#</th><th>Mes</th><th>Tipo</th>' +
+        '<table class="tabla"><thead><tr><th>#</th><th>' + tituloMom + '</th><th>Tipo</th>' +
         '<th class="num">Valor</th><th class="num">Δ períodos</th><th class="num">Factor</th>' +
         '<th class="num">En la focal</th></tr></thead><tbody>';
       s.detalleFlujos.forEach(function (d) {
-        h += '<tr><td>' + d.numero + '</td><td>' + Fmt.periodos(d.momento) + '</td>' +
+        h += '<tr><td>' + d.numero + '</td><td>' + Fmt.periodos(d.momento / fac) + '</td>' +
           '<td class="' + (d.tipo === 'entrada' ? 'arriba' : 'abajo') + '" ' +
           'style="font-family:var(--texto)">' + (d.tipo === 'entrada' ? '↑ Entrada' : '↓ Salida') +
           '</td>' +
@@ -3566,10 +5088,10 @@ var Res = {
     /* valores despejados de X */
     if (s.extraX) {
       h += '<div class="bloque"><h4>Valores despejados</h4>' +
-        '<table class="tabla"><thead><tr><th>Flujo</th><th>Mes</th>' +
+        '<table class="tabla"><thead><tr><th>Flujo</th><th>' + tituloMom + '</th>' +
         '<th class="num">Valor</th></tr></thead><tbody>';
       s.extraX.valoresResueltos.forEach(function (v) {
-        h += '<tr><td>' + v.numero + '</td><td>' + Fmt.periodos(v.momento) + '</td>' +
+        h += '<tr><td>' + v.numero + '</td><td>' + Fmt.periodos(v.momento / fac) + '</td>' +
           '<td class="num">' + Fmt.dinero(v.valor, mon) + '</td></tr>';
       });
       h += '</tbody></table></div>';
@@ -3596,21 +5118,21 @@ var Res = {
 
     if (s.titulo === 'Tasa de interés') {
       return 'Para que esta operación llegue al valor que indicaste después de ' + tiempo +
-        ', la tasa tendría que ser de <strong>' + Fmt.tasa(s.tasa, 4) + '</strong> ' +
-        (s.regimen === 'continuo' ? 'continua anual' : Sim.nombrePeriodicidad(s.periodicidad)) +
+        ', la tasa tendría que ser de <strong>' + (s.tasaTexto ? Linea.escapar(s.tasaTexto) : Fmt.tasa(s.tasa, 4)) +
+        '</strong> ' + (s.tasaTexto ? '' : (s.regimen === 'continuo' ? 'continua anual' : Sim.nombrePeriodicidad(s.periodicidad))) +
         '. Con esa tasa, ' + (esCredito ? 'pagarías ' : 'ganarías ') + d(Math.abs(s.interes)) +
         ' en intereses.';
     }
     if (s.titulo === 'Tiempo') {
       return 'Manteniendo una tasa de <strong>' + Fmt.tasa(s.tasa, 4) + '</strong>, pasar de ' +
         d(s.vp) + ' a ' + d(s.vf) + ' toma <strong>' + Fmt.periodos(s.periodos) + '</strong> ' +
-        (s.regimen === 'continuo' ? 'años' :
-          Fmt.unidad(s.periodicidad, Fmt.parsear(s.mesesPersonalizados))) +
+        (s.unidadTexto || (s.regimen === 'continuo' ? 'años' :
+          Fmt.unidad(s.periodicidad, Fmt.parsear(s.mesesPersonalizados)))) +
         ', es decir ' + tiempo + '. En el camino se ' + (esCredito ? 'pagan ' : 'generan ') +
         d(Math.abs(s.interes)) + ' de intereses.';
     }
     if (s.titulo === 'Momento del flujo') {
-      return 'El flujo que buscabas ocurre en el mes <strong>' + Fmt.periodos(s.principal) +
+      return 'El flujo que buscabas ocurre en <strong>' + s.principalTexto +
         '</strong> (' + s.subPrincipal + ' desde el origen). Con ese momento, la operación cierra ' +
         'en ' + d(s.vf) + ' en la fecha focal.';
     }
@@ -3680,6 +5202,38 @@ var Inter = {
         return 'La tasa manda. 2 años y 4 meses son 28 meses, y 28 / 2 = 14 bimestres. Usar 28 ' +
           'daría ' + Fmt.dinero(M.Simple.vf(1000000, 0.0926, 28), 'COP') + ' en vez de ' +
           Fmt.dinero(M.Simple.vf(1000000, 0.0926, 14), 'COP') + '.';
+      }
+    },
+    {
+      p: 'Un banco te ofrece 24 % NAM y otro 24 % NAT. ¿Cuál cobra más por un crédito?',
+      r: ['Cobran lo mismo: los dos dicen 24 %', 'El de 24 % NAM', 'El de 24 % NAT'],
+      ok: 1,
+      exp: function () {
+        var ea = function (p) { return M.Tasas.convertir({ valor: 0.24, tipo: 'nominal', periodo: p },
+          { tipo: 'efectiva', periodo: 'anual' }).valor; };
+        return '24 % NAM equivale a ' + Fmt.tasa(ea('mensual'), 2) + ' EA y 24 % NAT a ' + Fmt.tasa(ea('trimestral'), 2) +
+          ' EA. Con la misma nominal, la que capitaliza más seguido cobra más, porque los intereses empiezan a ' +
+          'generar intereses antes.';
+      }
+    },
+    {
+      p: 'Pagas 12 cuotas mensuales y te dan la tasa en 30 % NAMA. ¿Qué tasa entra en la fórmula de anualidades?',
+      r: ['30 %', '2,5 % mensual', 'La efectiva mensual vencida: 2,5 % ÷ (1 − 2,5 %)'],
+      ok: 2,
+      exp: function () {
+        return 'En anualidades la tasa siempre es efectiva vencida del período de las cuotas. 30 % ÷ 12 = 2,5 % ' +
+          'mensual anticipada, y pasada a vencida da ' + Fmt.tasa(0.025 / 0.975, 4) + '. Usar 30 % o 2,5 % da ' +
+          'una cuota equivocada.';
+      }
+    },
+    {
+      p: 'Con la misma tasa y el mismo número de cuotas, ¿qué pasa con la cuota si la anualidad es anticipada ' +
+         'en vez de vencida, para pagar el mismo crédito?',
+      r: ['Es mayor', 'Es menor', 'Es igual'],
+      ok: 1,
+      exp: function () {
+        return 'Es menor, exactamente la vencida dividida entre (1 + i). Cada cuota anticipada se paga un período ' +
+          'antes, así que se descuenta un período menos y cubre más valor; se necesita menos por cuota.';
       }
     }
   ],
@@ -3788,72 +5342,1142 @@ var IA = {
       Linea.escapar(v).replace(/\n/g, '<br>') + '</div>';
   },
 
+  /** Una tarjeta. Con "exigir", los campos obligatorios vacíos se muestran como pendientes. */
+  tarjeta: function (x, num, exigir) {
+    var t = el('article', { 'class': 'tarjeta-ia' + (x.documentaError ? ' con-error' : '') });
+    var pend = '<div class="campo-ia pendiente">Pendiente de completar</div>';
+    var h = '<header class="cab-ia"><span class="num-ia">Interacción ' + num + '</span>' +
+      (x.documentaError ? '<span class="marca-error">Documenta un error de la IA</span>' : '') +
+      '<h3>' + (IA.vacio(x.titulo) ? 'Sin título' : Linea.escapar(x.titulo)) + '</h3></header>';
+    var obligatorios = ['promptOriginal', 'primeraRespuesta', 'problemaDetectado', 'correccionRealizada',
+                        'resultadoFinal', 'parteVisible'];
+    IA.CAMPOS.forEach(function (c) {
+      if (!IA.vacio(x[c[0]])) {
+        h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' + IA.valor(x[c[0]], c[2]) + '</div>';
+      } else if (exigir && obligatorios.indexOf(c[0]) > -1) {
+        h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' + pend + '</div>';
+      }
+    });
+    if (x.documentaError) {
+      h += '<div class="caja-error-ia"><h4>Detalle del error</h4><div class="rejilla-2">';
+      [['valorEquivocado', 'Valor equivocado que dio la IA'], ['valorCorrecto', 'Valor correcto']].forEach(function (c) {
+        if (!IA.vacio(x[c[0]])) h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' + IA.valor(x[c[0]]) + '</div>';
+        else if (exigir) h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' + pend + '</div>';
+      });
+      h += '</div>';
+      if (!IA.vacio(x.razonDelError)) {
+        h += '<div class="fila-ia"><span class="rotulo">Razón del error</span>' + IA.valor(x.razonDelError) + '</div>';
+      } else if (exigir) h += '<div class="fila-ia"><span class="rotulo">Razón del error</span>' + pend + '</div>';
+      h += '</div>';
+    }
+    if (!IA.vacio(x.enlaceConversacion)) {
+      h += '<footer class="pie-ia"><span class="rotulo">Conversación original</span>' +
+        '<a href="' + Linea.escapar(x.enlaceConversacion) + '" target="_blank" rel="noopener noreferrer" ' +
+        'class="enlace-ia">Abrir la conversación →</a></footer>';
+    } else if (exigir) {
+      h += '<footer class="pie-ia"><span class="rotulo">Conversación original</span>' + pend + '</footer>';
+    }
+    t.innerHTML = h;
+    return t;
+  },
+
   pintar: function () {
     var cont = $('#tarjetas-ia');
     cont.innerHTML = '';
-
-    var datos = window.INTERACCIONES_IA;
-    if (!Array.isArray(datos) || datos.length === 0) {
+    var c2 = window.INTERACCIONES_IA_CORTE2, c1 = window.INTERACCIONES_IA;
+    if ((!Array.isArray(c2) || !c2.length) && (!Array.isArray(c1) || !c1.length)) {
       cont.innerHTML = '<div class="error"><strong>No hay interacciones para mostrar</strong>' +
-        'Revisa el array INTERACCIONES_IA, al inicio del bloque de scripts del archivo.</div>';
+        'Revisa los arreglos INTERACCIONES_IA_CORTE2 e INTERACCIONES_IA, al inicio del bloque de scripts.</div>';
       return;
     }
-
-    datos.forEach(function (x, idx) {
-      var t = el('article', { 'class': 'tarjeta-ia' + (x.documentaError ? ' con-error' : '') });
-      var h = '';
-
-      h += '<header class="cab-ia">' +
-        '<span class="num-ia">Interacción ' + (idx + 1) + '</span>' +
-        (x.documentaError ? '<span class="marca-error">Documenta un error de la IA</span>' : '') +
-        '<h3>' + (IA.vacio(x.titulo) ? 'Sin título' : Linea.escapar(x.titulo)) + '</h3>' +
-        '</header>';
-
-      // Solo dibuja el campo si no está vacío
-      IA.CAMPOS.forEach(function (c) {
-        if (!IA.vacio(x[c[0]])) {
-          h += '<div class="fila-ia"><span class="rotulo">' + c[1] + '</span>' +
-               IA.valor(x[c[0]], c[2]) + '</div>';
-        }
-      });
-
-      if (x.documentaError) {
-        h += '<div class="caja-error-ia">' +
-          '<h4>Detalle del error</h4>' +
-          '<div class="rejilla-2">';
-        
-        if (!IA.vacio(x.valorEquivocado)) {
-          h += '<div class="fila-ia"><span class="rotulo">Valor equivocado que dio la IA</span>' +
-            IA.valor(x.valorEquivocado) + '</div>';
-        }
-        if (!IA.vacio(x.valorCorrecto)) {
-          h += '<div class="fila-ia"><span class="rotulo">Valor correcto</span>' +
-            IA.valor(x.valorCorrecto) + '</div>';
-        }
-        h += '</div>';
-
-        if (!IA.vacio(x.razonDelError)) {
-          h += '<div class="fila-ia"><span class="rotulo">Razón del error</span>' +
-            IA.valor(x.razonDelError) + '</div>';
-        }
-        h += '</div>';
-      }
-
-      // Solo muestra el pie de página si hay un enlace
-      if (!IA.vacio(x.enlaceConversacion)) {
-        h += '<footer class="pie-ia"><span class="rotulo">Conversación original</span>' +
-          '<a href="' + Linea.escapar(x.enlaceConversacion) + '" target="_blank" ' +
-          'rel="noopener noreferrer" class="enlace-ia">Abrir la conversación →</a>' +
-          '</footer>';
-      }
-
-      t.innerHTML = h;
-      cont.appendChild(t);
-    });
+    if (Array.isArray(c2) && c2.length) {
+      cont.appendChild(el('div', { 'class': 'grupo-ia' }, '<h3>Segundo corte</h3><p>Conversión de tasas y ' +
+        'anualidades. Cada interacción indica qué parte visible de FinanClic salió de ella.</p>'));
+      c2.forEach(function (x, k) { cont.appendChild(IA.tarjeta(x, k + 1, true)); });
+    }
+    if (Array.isArray(c1) && c1.length) {
+      cont.appendChild(el('div', { 'class': 'grupo-ia', style: 'margin-top:36px' }, '<h3>Primer corte</h3><p>Interés ' +
+        'simple, compuesto y continuo. Se conservan como registro del proyecto.</p>'));
+      c1.forEach(function (x, k) { cont.appendChild(IA.tarjeta(x, k + 1, false)); });
+    }
   },
 
   iniciar: function () { IA.pintar(); }
 };
+/* ==================================================================
+   8. SEGUNDO CORTE — COMPONENTE DE TASA COMPARTIDO
+   Un solo componente para escribir una tasa con nombre y apellidos.
+   Lo usan la calculadora, el simulador de compuesto y el de
+   anualidades: así los tres hablan el mismo idioma.
+   ================================================================== */
+var TasaUI = {
+
+  PERIODOS: [
+    ['diario', 'Diaria · 365 al año'], ['semanal', 'Semanal · 52 al año'],
+    ['quincenal', 'Quincenal · 24 al año'], ['mensual', 'Mensual · 12 al año'],
+    ['bimestral', 'Bimestral · 6 al año'], ['trimestral', 'Trimestral · 4 al año'],
+    ['cuatrimestral', 'Cuatrimestral · 3 al año'],
+    ['quintumestral', 'Quintumestral · cada 5 meses'],
+    ['semestral', 'Semestral · 2 al año'], ['anual', 'Anual · 1 al año'],
+    ['cadaNMeses', 'Cada N meses · otro número'],
+    ['cadaNDias', 'Cada N días · otro número']
+  ],
+
+  /** ¿Es un período personalizado que necesita el número N? */
+  esN: function (p) { return p === 'cadaNMeses' || p === 'cadaNDias'; },
+  unidadN: function (p) { return p === 'cadaNDias' ? 'días' : 'meses'; },
+
+  nueva: function (d) {
+    var t = { valor: '', tipo: 'efectiva', periodo: 'mensual', mesesN: '7', modalidad: 'vencida' };
+    if (d) for (var k in d) t[k] = d[k];
+    return t;
+  },
+
+  copiar: function (t) { return TasaUI.nueva(t); },
+
+  /** Pasa el estado (textos) al formato del motor. Lanza Error con mensaje claro. */
+  leer: function (st, conValor) {
+    var t = { tipo: st.tipo, periodo: st.periodo, modalidad: st.modalidad, valor: 0 };
+    if (TasaUI.esN(st.periodo)) {
+      var u = TasaUI.unidadN(st.periodo);
+      var n = Fmt.parsear(st.mesesN);
+      if (!isFinite(n)) throw new Error('Indica cada cuántos ' + u + ' capitaliza la tasa.');
+      if (n <= 0) throw new Error('El número de ' + u + ' del período debe ser mayor que cero.');
+      t.mesesN = n;
+    }
+    if (conValor !== false) {
+      var v = Fmt.parsear(st.valor);
+      if (!isFinite(v)) throw new Error('Falta el valor de la tasa. Escríbelo en porcentaje: 24 significa 24 %.');
+      if (v < 0) throw new Error('La tasa no puede ser negativa.');
+      t.valor = v / 100;
+    }
+    return t;
+  },
+
+  /** Sigla y nombre para mostrar mientras el usuario escribe. */
+  etiquetas: function (st) {
+    try {
+      var t = TasaUI.leer(st, false);
+      return { sigla: M.Tasas.sigla(t), nombre: M.Tasas.nombre(t) };
+    } catch (e) { return { sigla: '—', nombre: 'Completa los datos de la tasa' }; }
+  },
+
+  /** Descripción corta de un periodo del motor: "mensual", "cada 7 meses"... */
+  periodoTexto: function (info) { return info.adj; },
+
+  /** nc como texto: 12, 365, o 12/7 cuando no es entero. */
+  ncTexto: function (info) {
+    if (Math.abs(info.nc - Math.round(info.nc)) < 1e-12) return Fmt.numero(info.nc, 0);
+    if (info.clave === 'cadaNDias') return '365/' + String(info.mesesN).replace('.', ',') + ' = ' + Fmt.numero(info.nc, 4);
+    return '12/' + String(info.mesesPorPeriodo).replace('.', ',') + ' = ' + Fmt.numero(info.nc, 4);
+  },
+
+  /**
+   * Dibuja el componente dentro de "cont".
+   * op = { titulo, conValor, destino, nota, onCambio, idp }
+   */
+  render: function (cont, st, op) {
+    op = op || {};
+    var idp = op.idp || 'tasa';
+    var con = op.conValor !== false;
+    var et = TasaUI.etiquetas(st);
+    var h = '<div class="caja-tasa' + (op.destino ? ' destino' : '') + '">' +
+      '<div class="cab-tasa"><h4>' + (op.titulo || 'Tasa de interés') + '</h4>' +
+      '<span class="sigla-viva" data-viva="sigla">' + Linea.escapar(et.sigla) + '</span>' +
+      '<span class="nombre-vivo" data-viva="nombre">' + Linea.escapar(et.nombre) + '</span></div>' +
+      '<div class="campos-tasa">';
+
+    if (con) {
+      h += '<div class="campo"><label for="' + idp + '-valor">Valor</label>' +
+        '<div class="con-simbolo"><input type="text" inputmode="decimal" class="control" id="' + idp +
+        '-valor" data-t="valor" placeholder="24" value="' + Linea.escapar(st.valor) +
+        '" style="padding-left:13px"><span class="sufijo">%</span></div>' +
+        '<span class="pista">En porcentaje: 24 significa 24 %.</span></div>';
+    }
+
+    h += '<div class="campo"><label>Nombre: ¿nominal o efectiva?</label>' +
+      '<div class="segmento" role="group" aria-label="Tipo de tasa">' +
+      '<button type="button" data-tipo="nominal" aria-pressed="' + (st.tipo === 'nominal') + '">Nominal anual</button>' +
+      '<button type="button" data-tipo="efectiva" aria-pressed="' + (st.tipo === 'efectiva') + '">Efectiva (periódica)</button>' +
+      '</div><span class="pista">' + (st.tipo === 'nominal'
+        ? 'Una referencia anual que se reparte entre los períodos.'
+        : 'Lo que realmente se cobra o se paga en cada período.') + '</span></div>';
+
+    h += '<div class="campo"><label for="' + idp + '-periodo">' +
+      (st.tipo === 'nominal' ? 'Primer apellido: capitaliza' : 'Primer apellido: período de la tasa') +
+      '</label><select class="control" id="' + idp + '-periodo" data-t="periodo">' +
+      TasaUI.PERIODOS.map(function (p) {
+        return '<option value="' + p[0] + '"' + (st.periodo === p[0] ? ' selected' : '') + '>' + p[1] + '</option>';
+      }).join('') + '</select></div>';
+
+    if (TasaUI.esN(st.periodo)) {
+      var dias = st.periodo === 'cadaNDias';
+      h += '<div class="campo"><label for="' + idp + '-mesesN">¿Cada cuántos ' + TasaUI.unidadN(st.periodo) + '?</label>' +
+        '<input type="text" inputmode="decimal" class="control" id="' + idp + '-mesesN" data-t="mesesN" ' +
+        'placeholder="' + (dias ? '12' : '7') + '" value="' + Linea.escapar(st.mesesN) + '">' +
+        '<span class="pista">' + (dias ? 'Capitaliza 365 ÷ N veces al año (año de 365 días).'
+          : 'Capitaliza 12 ÷ N veces al año.') + '</span></div>';
+    }
+
+    h += '<div class="campo"><label>Segundo apellido: momento de pago</label>' +
+      '<div class="segmento" role="group" aria-label="Modalidad de la tasa">' +
+      '<button type="button" data-modalidad="vencida" aria-pressed="' + (st.modalidad === 'vencida') + '">Vencida</button>' +
+      '<button type="button" data-modalidad="anticipada" aria-pressed="' + (st.modalidad === 'anticipada') + '">Anticipada</button>' +
+      '</div><span class="pista">' + (st.modalidad === 'vencida'
+        ? 'Los intereses se pagan al final del período.'
+        : 'Los intereses se descuentan al inicio del período.') + '</span></div>';
+
+    h += '</div>' + (op.nota ? '<div class="pista" data-viva="nota" style="margin-top:12px">' + op.nota + '</div>' : '') +
+      '</div>';
+    cont.innerHTML = h;
+
+    var avisar = function (repintar) {
+      if (repintar) TasaUI.render(cont, st, op);
+      else {
+        var e2 = TasaUI.etiquetas(st);
+        $('[data-viva="sigla"]', cont).textContent = e2.sigla;
+        $('[data-viva="nombre"]', cont).textContent = e2.nombre;
+      }
+      if (op.onCambio) op.onCambio(st);
+    };
+
+    $$('[data-tipo]', cont).forEach(function (b) {
+      b.addEventListener('click', function () { st.tipo = b.dataset.tipo; avisar(true); });
+    });
+    $$('[data-modalidad]', cont).forEach(function (b) {
+      b.addEventListener('click', function () { st.modalidad = b.dataset.modalidad; avisar(true); });
+    });
+    $$('[data-t]', cont).forEach(function (n) {
+      if (n.tagName === 'SELECT') {
+        n.addEventListener('change', function () { st[n.dataset.t] = n.value; avisar(true); });
+      } else {
+        n.addEventListener('input', function () {
+          st[n.dataset.t] = n.value;
+          var v = Fmt.parsear(n.value);
+          n.classList.toggle('malo', n.value.trim() !== '' && (!isFinite(v) || v < 0 ||
+            (n.dataset.t === 'mesesN' && v <= 0)));
+          avisar(false);
+        });
+      }
+    });
+  },
+
+  /** Actualiza el texto de la nota sin repintar (para vistas previas en vivo). */
+  nota: function (cont, html) {
+    var n = $('[data-viva="nota"]', cont);
+    if (n) n.innerHTML = html;
+  },
+
+  /* ---------------- pasos de la conversión, en HTML ---------------- */
+
+  pasosHTML: function (conv) {
+    if (!conv.pasos.length) {
+      return '<p style="margin:0;color:var(--tinta-2);font-size:15px">La tasa ya estaba en la forma ' +
+        'que se necesita: no hubo que convertir nada.</p>';
+    }
+    var t = function (x) { return Fmt.tasa(x, 4); };
+    return conv.pasos.map(function (p, k) {
+      var titulo, cuenta, porque;
+      if (p.tipo === 'nominalAPeriodica') {
+        titulo = 'De nominal a periódica ' + (p.modalidad === 'anticipada' ? 'anticipada' : 'vencida');
+        cuenta = 'i = ' + t(p.de) + ' ÷ ' + TasaUI.ncTexto(p.periodo) + ' = ' + t(p.a);
+        porque = 'La nominal es solo una referencia. Se divide entre las veces que capitaliza en un año ' +
+          '(' + TasaUI.ncTexto(p.periodo) + '), no entre los meses que dura el período.';
+      } else if (p.tipo === 'anticipadaAVencida') {
+        titulo = 'De anticipada a vencida';
+        cuenta = 'iv = ia ÷ (1 − ia) = ' + t(p.de) + ' ÷ (1 − ' + t(p.de) + ') = ' + t(p.a);
+        porque = 'Si los intereses se cobran al inicio, recibes menos dinero desde el principio; por eso ' +
+          'la vencida equivalente es un poco mayor.';
+      } else if (p.tipo === 'equivalente') {
+        titulo = 'Cambio de período: de ' + p.periodoDe.adj + ' a ' + p.periodoA.adj;
+        cuenta = 'ix = (1 + iy)^(ny ÷ nx) − 1 = (1 + ' + t(p.de) + ')^(' + Fmt.periodos(p.ny) + ' ÷ ' +
+          Fmt.periodos(p.nx) + ') − 1 = ' + t(p.a);
+        porque = 'Solo entre tasas efectivas vencidas. ny = ' + Fmt.periodos(p.ny) + ' y nx = ' +
+          Fmt.periodos(p.nx) + ' son las veces que capitaliza cada una en un año. Se usa una potencia, ' +
+          'no una división, porque los intereses se reinvierten: es interés compuesto.';
+      } else if (p.tipo === 'vencidaAAnticipada') {
+        titulo = 'De vencida a anticipada';
+        cuenta = 'ia = iv ÷ (1 + iv) = ' + t(p.de) + ' ÷ (1 + ' + t(p.de) + ') = ' + t(p.a);
+        porque = 'Se cobra al inicio, así que la tasa anticipada equivalente es un poco menor.';
+      } else {
+        titulo = 'De periódica a nominal';
+        cuenta = 'NA = ' + t(p.de) + ' × ' + TasaUI.ncTexto(p.periodo) + ' = ' + t(p.a);
+        porque = 'Se multiplica por las veces que capitaliza en un año.';
+      }
+      return '<div class="paso-casita"><span class="n">' + (k + 1) + '</span><div><b>' + titulo + '</b>' +
+        '<div class="cuenta">' + Linea.escapar(cuenta) + '</div>' +
+        '<div class="por-que">' + porque + '</div></div></div>';
+    }).join('');
+  },
+
+  /* ---------------- la casita en SVG, con el camino resaltado ---------------- */
+
+  casita: function (conv) {
+    var nodo = function (tipo, mod) { return (tipo === 'nominal' ? 'N' : 'E') + (mod === 'anticipada' ? 'A' : 'V'); };
+    var usados = {}, flechas = {}, techo = false;
+    var actual = nodo(conv.entrada.tipo, conv.entrada.modalidad);
+    usados[actual] = true;
+    conv.pasos.forEach(function (p) {
+      var sig = actual;
+      if (p.tipo === 'nominalAPeriodica') sig = actual === 'NV' ? 'EV' : 'EA';
+      else if (p.tipo === 'anticipadaAVencida') sig = 'EV';
+      else if (p.tipo === 'vencidaAAnticipada') sig = 'EA';
+      else if (p.tipo === 'periodicaANominal') sig = actual === 'EV' ? 'NV' : 'NA';
+      else if (p.tipo === 'equivalente') techo = true;
+      if (sig !== actual) { flechas[[actual, sig].sort().join('-')] = true; actual = sig; usados[sig] = true; }
+    });
+    var inicio = nodo(conv.entrada.tipo, conv.entrada.modalidad);
+    var fin = nodo(conv.salida.tipo, conv.salida.modalidad);
+
+    var C = { on: '#5B3E8C', off: '#BFC8DC', txtOff: '#7A849B' };
+    var cajas = [
+      { k: 'NV', x: 22, t1: 'Nominal', t2: 'vencida' },
+      { k: 'EV', x: 150, t1: 'Efectiva', t2: 'vencida' },
+      { k: 'EA', x: 278, t1: 'Efectiva', t2: 'anticipada' },
+      { k: 'NA', x: 406, t1: 'Nominal', t2: 'anticipada' }
+    ];
+    var W = 520, y = 150, w = 92, hC = 52;
+    var s = '<svg class="casita-svg" viewBox="0 0 ' + W + ' 232" role="img" aria-label="La casita de conversión de tasas con el camino seguido">';
+    // casa
+    s += '<polygon points="10,104 260,14 510,104" fill="#F0EBF8" stroke="' + (techo ? C.on : C.off) +
+      '" stroke-width="' + (techo ? 2.4 : 1.4) + '"/>' +
+      '<rect x="10" y="104" width="500" height="118" fill="#FFFFFF" stroke="#D9DFEC" stroke-width="1.2"/>' +
+      '<text x="260" y="66" text-anchor="middle" font-size="12.5" font-weight="700" fill="' + (techo ? C.on : C.txtOff) +
+      '">Cambio de período</text>' +
+      '<text x="260" y="84" text-anchor="middle" font-size="12" font-family="ui-monospace,Menlo,monospace" fill="' +
+      (techo ? C.on : C.txtOff) + '">(1 + iy)^(ny/nx) − 1</text>';
+    // conexión del techo con la efectiva vencida
+    s += '<line x1="196" y1="' + y + '" x2="226" y2="96" stroke="' + (techo ? C.on : C.off) +
+      '" stroke-width="' + (techo ? 2.4 : 1.2) + '" stroke-dasharray="' + (techo ? '' : '4 3') + '"/>';
+    // flechas entre cajas
+    var etiq = { 'EV-NV': ['÷ nc', '× nc'], 'EA-EV': ['ia/(1−ia)', 'iv/(1+iv)'], 'EA-NA': ['÷ nc', '× nc'] };
+    [['NV', 'EV', 114], ['EV', 'EA', 242], ['EA', 'NA', 370]].forEach(function (a) {
+      var clave = [a[0], a[1]].sort().join('-');
+      var on = !!flechas[clave];
+      s += '<line x1="' + (a[2]) + '" y1="' + (y + hC / 2) + '" x2="' + (a[2] + 36) + '" y2="' + (y + hC / 2) +
+        '" stroke="' + (on ? C.on : C.off) + '" stroke-width="' + (on ? 2.6 : 1.3) + '"/>' +
+        '<text x="' + (a[2] + 18) + '" y="' + (y - 8) + '" text-anchor="middle" font-size="9.5" ' +
+        'font-family="ui-monospace,Menlo,monospace" fill="' + (on ? C.on : C.txtOff) + '">' + etiq[clave][0] + '</text>' +
+        '<text x="' + (a[2] + 18) + '" y="' + (y + hC + 16) + '" text-anchor="middle" font-size="9.5" ' +
+        'font-family="ui-monospace,Menlo,monospace" fill="' + (on ? C.on : C.txtOff) + '">' + etiq[clave][1] + '</text>';
+    });
+    cajas.forEach(function (c) {
+      var on = !!usados[c.k];
+      var esIni = c.k === inicio, esFin = c.k === fin;
+      s += '<rect x="' + c.x + '" y="' + y + '" width="' + w + '" height="' + hC + '" rx="9" fill="' +
+        (on ? '#F0EBF8' : '#FFFFFF') + '" stroke="' + (on ? C.on : C.off) + '" stroke-width="' + (on ? 2.2 : 1.2) + '"/>' +
+        '<text x="' + (c.x + w / 2) + '" y="' + (y + 22) + '" text-anchor="middle" font-size="12.5" font-weight="700" fill="' +
+        (on ? '#2E1F4A' : C.txtOff) + '">' + c.t1 + '</text>' +
+        '<text x="' + (c.x + w / 2) + '" y="' + (y + 39) + '" text-anchor="middle" font-size="11.5" fill="' +
+        (on ? '#5B3E8C' : C.txtOff) + '">' + c.t2 + '</text>';
+      if (esIni || esFin) {
+        s += '<text x="' + (c.x + w / 2) + '" y="' + (y - 22) + '" text-anchor="middle" font-size="10" font-weight="700" ' +
+          'letter-spacing=".06em" fill="#B27C10">' + (esIni && esFin ? 'INICIO Y FIN' : esIni ? 'INICIO' : 'FIN') + '</text>';
+      }
+    });
+    s += '</svg>';
+    return s;
+  }
+};
+
+/* ==================================================================
+   9. CALCULADORA DE CONVERSIÓN DE TASAS
+   ================================================================== */
+var Calc = {
+
+  entrada: null,
+  salida: null,
+  ultimo: null,
+
+  EJEMPLOS: [
+    [{ valor: '23,54', tipo: 'nominal', periodo: 'cuatrimestral', modalidad: 'anticipada' },
+     { tipo: 'nominal', periodo: 'semestral', modalidad: 'anticipada' }],
+    [{ valor: '24,32', tipo: 'efectiva', periodo: 'anual', modalidad: 'vencida' },
+     { tipo: 'nominal', periodo: 'quintumestral', modalidad: 'anticipada' }],
+    [{ valor: '2,8', tipo: 'efectiva', periodo: 'mensual', modalidad: 'vencida' },
+     { tipo: 'nominal', periodo: 'cadaNMeses', mesesN: '7', modalidad: 'anticipada' }],
+    [{ valor: '17,94', tipo: 'nominal', periodo: 'cuatrimestral', modalidad: 'anticipada' },
+     { tipo: 'nominal', periodo: 'diario', modalidad: 'vencida' }],
+    [{ valor: '19,88', tipo: 'efectiva', periodo: 'cadaNMeses', mesesN: '8', modalidad: 'anticipada' },
+     { tipo: 'efectiva', periodo: 'cadaNMeses', mesesN: '10', modalidad: 'vencida' }]
+  ],
+  iEjemplo: 0,
+
+  pintar: function () {
+    TasaUI.render($('#calc-entrada'), Calc.entrada, {
+      titulo: 'La tasa que tienes', idp: 'ce', onCambio: Calc.enVivo
+    });
+    TasaUI.render($('#calc-salida'), Calc.salida, {
+      titulo: 'La tasa que quieres', idp: 'cs', conValor: false, destino: true, onCambio: Calc.enVivo,
+      nota: 'Elige el nombre y los dos apellidos de la tasa que necesitas. El valor lo calcula la herramienta.'
+    });
+  },
+
+  /** Recalcula mientras se escribe, sin gritar errores si el campo está vacío. */
+  enVivo: function () {
+    if (String(Calc.entrada.valor).trim() === '') { $('#calc-resultado').innerHTML = ''; return; }
+    Calc.convertir(true);
+  },
+
+  convertir: function (silencioso) {
+    var z = $('#calc-resultado');
+    try {
+      var e = TasaUI.leer(Calc.entrada, true);
+      var s = TasaUI.leer(Calc.salida, false);
+      var r = M.Tasas.convertir(e, s);
+      Calc.ultimo = r;
+      z.innerHTML = Calc.resultadoHTML(r);
+      Calc.enlazarPuentes(z);
+    } catch (err) {
+      Calc.ultimo = null;
+      z.innerHTML = '<div class="error"><strong>No se pudo convertir</strong>' + Linea.escapar(err.message) + '</div>';
+    }
+  },
+
+  resultadoHTML: function (r) {
+    var siglaE = M.Tasas.sigla(r.entrada), siglaS = M.Tasas.sigla(r.salida);
+    var h = '<div class="resultado-principal tasas"><p class="rotulo">Tasa equivalente</p>' +
+      '<div class="cifra-grande">' + Fmt.tasa(r.valor, 4) + ' ' + Linea.escapar(siglaS) + '</div>' +
+      '<p class="nota">' + M.Tasas.nombre(r.salida) + '</p>' +
+      '<p class="redondeo">Redondeada a dos decimales: ' + Fmt.tasa(r.valor, 2) + '</p></div>';
+
+    h += '<div class="aviso" style="margin-top:0"><strong>¿Cómo sé que son equivalentes?</strong> ' +
+      Fmt.tasa(r.entrada.valor, 4) + ' ' + Linea.escapar(siglaE) + ' y ' + Fmt.tasa(r.valor, 4) + ' ' +
+      Linea.escapar(siglaS) + ' producen exactamente la misma efectiva anual: <b class="cifra">' +
+      Fmt.tasa(r.efectivaAnual, 4) + ' EA</b>. Un peso invertido con cualquiera de las dos termina el año ' +
+      'valiendo lo mismo.</div>';
+
+    h += '<div class="bloque"><h4>El camino por la casita</h4>' + TasaUI.casita(r) +
+      '<p style="font-size:14px;color:var(--tinta-2);margin:10px 0 4px">Regla de oro: la conversión entre ' +
+      'anticipada y vencida y el cambio de período solo se hacen con tasas <b>efectivas</b>. Por eso, si la ' +
+      'tasa es nominal, lo primero siempre es dividirla entre las veces que capitaliza.</p>' +
+      '<div style="margin-top:6px">' + TasaUI.pasosHTML(r) + '</div></div>';
+
+    var eq = [
+      ['EA', { tipo: 'efectiva', periodo: 'anual', modalidad: 'vencida' }],
+      ['EM', { tipo: 'efectiva', periodo: 'mensual', modalidad: 'vencida' }],
+      ['NAM', { tipo: 'nominal', periodo: 'mensual', modalidad: 'vencida' }],
+      ['NAMA', { tipo: 'nominal', periodo: 'mensual', modalidad: 'anticipada' }],
+      ['ET', { tipo: 'efectiva', periodo: 'trimestral', modalidad: 'vencida' }],
+      ['NAT', { tipo: 'nominal', periodo: 'trimestral', modalidad: 'vencida' }],
+      ['NATA', { tipo: 'nominal', periodo: 'trimestral', modalidad: 'anticipada' }],
+      ['ED', { tipo: 'efectiva', periodo: 'diario', modalidad: 'vencida' }]
+    ];
+    h += '<div class="bloque"><h4>La misma tasa, escrita de otras formas</h4>' +
+      '<p style="margin:0;font-size:14px;color:var(--tinta-2)">Todas estas son equivalentes a la que escribiste.</p>' +
+      '<div class="equivalencias">' + eq.map(function (x) {
+        var v;
+        try { v = Fmt.tasa(M.Tasas.convertir(r.entrada, x[1]).valor, 4); } catch (e) { v = '—'; }
+        return '<div><b>' + x[0] + '</b><span>' + v + '</span></div>';
+      }).join('') + '</div></div>';
+
+    h += '<div class="puente"><span>Esta tasa también la entienden los simuladores:</span>' +
+      '<button class="btn btn-secundario" type="button" data-puente="compuesto">Usarla en interés compuesto</button>' +
+      '<button class="btn btn-secundario" type="button" data-puente="anualidades">Usarla en anualidades</button></div>';
+    return h;
+  },
+
+  enlazarPuentes: function (z) {
+    $$('[data-puente]', z).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = TasaUI.copiar(Calc.entrada);
+        if (b.dataset.puente === 'compuesto') Sim.recibirTasa(t);
+        else Anu.recibirTasa(t);
+      });
+    });
+  },
+
+  /** Abre la calculadora con una tasa de entrada y una de salida ya puestas. */
+  abrirCon: function (entrada, salida) {
+    Calc.entrada = TasaUI.copiar(entrada);
+    Calc.salida = TasaUI.nueva(salida);
+    Nav.ir('tasas');
+    Calc.pintar();
+    Calc.convertir();
+  },
+
+  iniciar: function () {
+    Calc.entrada = TasaUI.nueva({ valor: '', tipo: 'nominal', periodo: 'trimestral', modalidad: 'vencida' });
+    Calc.salida = TasaUI.nueva({ tipo: 'efectiva', periodo: 'anual', modalidad: 'vencida' });
+    Calc.pintar();
+    $('#calc-btn').addEventListener('click', function () { Calc.convertir(); });
+    $('#calc-girar').addEventListener('click', function () {
+      var nueva = TasaUI.nueva({ tipo: Calc.salida.tipo, periodo: Calc.salida.periodo,
+        mesesN: Calc.salida.mesesN, modalidad: Calc.salida.modalidad,
+        valor: Calc.ultimo ? Fmt.numero(Calc.ultimo.valor * 100, 8).replace(/0+$/, '').replace(/,$/, '') : '' });
+      Calc.salida = TasaUI.nueva({ tipo: Calc.entrada.tipo, periodo: Calc.entrada.periodo,
+        mesesN: Calc.entrada.mesesN, modalidad: Calc.entrada.modalidad });
+      Calc.entrada = nueva;
+      Calc.pintar(); Calc.enVivo();
+    });
+    $('#calc-ejemplo').addEventListener('click', function () {
+      var ej = Calc.EJEMPLOS[Calc.iEjemplo % Calc.EJEMPLOS.length];
+      Calc.iEjemplo++;
+      Calc.entrada = TasaUI.nueva(ej[0]);
+      Calc.salida = TasaUI.nueva(ej[1]);
+      Calc.pintar(); Calc.convertir();
+    });
+  }
+};
+
+/* ==================================================================
+   10. SIMULADOR DE ANUALIDADES (vencidas y anticipadas)
+   Toda la matemática vive en M.Anualidades y M.Tasas.
+   ================================================================== */
+var Anu = {
+
+  MODALIDADES: [
+    { id: 'vencida', titulo: 'Anualidad vencida', sub: 'Cada cuota se paga al final del período: la primera cae en el período 1.' },
+    { id: 'anticipada', titulo: 'Anualidad anticipada', sub: 'Cada cuota se paga al inicio del período: la primera cae hoy, en el período 0.' }
+  ],
+
+  INCOGNITAS: [
+    { id: 'vf', titulo: 'Valor futuro', sub: 'Cuánto suman todas las cuotas al final del plazo' },
+    { id: 'vp', titulo: 'Valor presente', sub: 'Cuánto vale hoy toda la serie de cuotas' },
+    { id: 'cuota', titulo: 'Valor de la cuota', sub: 'A partir del valor presente o del valor futuro' },
+    { id: 'adicional', titulo: 'Un pago adicional', sub: 'El valor de un pago extra que no conoces' }
+  ],
+
+  estado: null,
+  iEjemplo: 0,
+
+  inicial: function () {
+    return {
+      operacion: 'credito', modalidad: 'vencida', incognita: 'vp', referencia: 'vp',
+      moneda: 'COP', periodoCuota: 'mensual', mesesNCuota: '7', n: '', cuota: '', objetivo: '',
+      tasa: TasaUI.nueva({ valor: '', tipo: 'nominal', periodo: 'mensual', modalidad: 'vencida' }),
+      adicionales: []
+    };
+  },
+
+  /* ---------- etiquetas según la operación ---------- */
+  textos: function () {
+    var c = Anu.estado.operacion === 'credito';
+    return {
+      vp: c ? 'Valor presente (el monto del crédito hoy)' : 'Valor presente (lo que vale hoy la serie de aportes)',
+      vf: c ? 'Valor futuro (lo que suman las cuotas al final)' : 'Valor futuro (lo que tendrás al final)',
+      cuota: c ? 'Valor de cada cuota' : 'Valor de cada aporte',
+      mismo: c ? 'Abono extra' : 'Aporte extra',
+      contrario: c ? 'Desembolso adicional' : 'Retiro'
+    };
+  },
+
+  infoCuota: function () {
+    var E = Anu.estado;
+    return M.Tasas.periodo(E.periodoCuota, TasaUI.esN(E.periodoCuota) ? Fmt.parsear(E.mesesNCuota) : undefined);
+  },
+
+  /* ---------- selectores ---------- */
+  pintarOpciones: function () {
+    var E = Anu.estado;
+    function grupo(cont, lista, campo) {
+      cont.innerHTML = '';
+      lista.forEach(function (o) {
+        var b = el('button', { 'class': 'opcion', type: 'button', 'data-op': o.id,
+          'aria-pressed': E[campo] === o.id ? 'true' : 'false' },
+          (o.icono ? '<span class="icono">' + o.icono + '</span>' : '') +
+          '<span><strong>' + o.titulo + '</strong><small>' + o.sub + '</small></span>');
+        b.addEventListener('click', function () {
+          E[campo] = o.id;
+          if (campo === 'incognita') Anu.ajustarPorIncognita();
+          Anu.pintarTodo();
+        });
+        cont.appendChild(b);
+      });
+    }
+    grupo($('#an-operacion'), Sim.OPERACIONES, 'operacion');
+    grupo($('#an-modalidad'), Anu.MODALIDADES, 'modalidad');
+    grupo($('#an-incognita'), Anu.INCOGNITAS, 'incognita');
+    $('#an-incognita').className = 'opciones dos';
+  },
+
+  ajustarPorIncognita: function () {
+    var E = Anu.estado;
+    if (E.incognita === 'adicional') {
+      if (!E.adicionales.length) E.adicionales.push(Anu.adicionalNuevo());
+      if (!E.adicionales.some(function (a) { return a.esX; })) E.adicionales[0].esX = true;
+    } else {
+      E.adicionales.forEach(function (a) { a.esX = false; });
+    }
+  },
+
+  adicionalNuevo: function () {
+    return { valor: '', ubicacion: 'periodo', posicion: '', sentido: 'mismo', esX: false, coeficiente: '1' };
+  },
+
+  /* ---------- campos ---------- */
+  pintarCampos: function () {
+    var E = Anu.estado, T = Anu.textos(), h = '';
+    h += '<div class="campo"><label for="an-moneda">Moneda</label><select class="control" id="an-moneda" data-a="moneda">' +
+      ['COP', 'USD', 'EUR'].map(function (m) {
+        return '<option value="' + m + '"' + (E.moneda === m ? ' selected' : '') + '>' + m + ' (' + Fmt.MONEDAS[m] + ')</option>';
+      }).join('') + '</select></div>';
+
+    h += '<div class="campo"><label for="an-periodo">¿Cada cuánto se paga una cuota?</label>' +
+      '<select class="control" id="an-periodo" data-a="periodoCuota">' +
+      TasaUI.PERIODOS.map(function (p) {
+        var txt = p[1].replace(/ · .*$/, '');
+        if (p[0] === 'quintumestral') txt = 'Quintumestral (cada 5 meses)';
+        if (p[0] === 'cadaNMeses') txt = 'Cada N meses (otro número)';
+        if (p[0] === 'cadaNDias') txt = 'Cada N días (otro número)';
+        return '<option value="' + p[0] + '"' + (E.periodoCuota === p[0] ? ' selected' : '') + '>' + txt + '</option>';
+      }).join('') + '</select><span class="pista">La tasa se convertirá a este período.</span></div>';
+
+    if (TasaUI.esN(E.periodoCuota)) {
+      h += '<div class="campo"><label for="an-mesesN">¿Cada cuántos ' + TasaUI.unidadN(E.periodoCuota) + '?</label>' +
+        '<input type="text" inputmode="decimal" class="control" id="an-mesesN" data-a="mesesNCuota" value="' +
+        Linea.escapar(E.mesesNCuota) + '" placeholder="7"></div>';
+    }
+
+    h += '<div class="campo"><label for="an-n">Número de cuotas (n)</label>' +
+      '<input type="text" inputmode="numeric" class="control" id="an-n" data-a="n" placeholder="24" value="' +
+      Linea.escapar(E.n) + '"><span class="pista">Un número entero mayor que cero.</span></div>';
+
+    if (E.incognita !== 'cuota') {
+      h += Anu.campoDinero('an-cuota', 'cuota', T.cuota, E.cuota);
+    }
+    if (E.incognita === 'cuota' || E.incognita === 'adicional') {
+      h += '<div class="campo"><label for="an-ref">El dato que conoces es…</label>' +
+        '<select class="control" id="an-ref" data-a="referencia">' +
+        '<option value="vp"' + (E.referencia === 'vp' ? ' selected' : '') + '>El valor presente (VP)</option>' +
+        '<option value="vf"' + (E.referencia === 'vf' ? ' selected' : '') + '>El valor futuro (VF)</option>' +
+        '</select></div>';
+      h += Anu.campoDinero('an-objetivo', 'objetivo', E.referencia === 'vp' ? T.vp : T.vf, E.objetivo);
+    }
+    $('#an-campos').innerHTML = h;
+    $$('[data-a]', $('#an-campos')).forEach(function (n) {
+      var ev = n.tagName === 'SELECT' ? 'change' : 'input';
+      n.addEventListener(ev, function () {
+        E[n.dataset.a] = n.value;
+        if (n.tagName === 'SELECT') { Anu.pintarTodo(); return; }
+        if (n.dataset.a === 'n' || n.dataset.a === 'mesesNCuota') { Anu.vistaTasa(); Anu.pintarLinea(); }
+        if (n.dataset.a === 'cuota') Anu.pintarLinea();
+      });
+      if (n.dataset.dinero) n.addEventListener('blur', function () { Fmt.normalizarCampo(n); E[n.dataset.a] = n.value; });
+    });
+  },
+
+  campoDinero: function (id, clave, etiqueta, valor) {
+    return '<div class="campo"><label for="' + id + '">' + etiqueta + '</label>' +
+      '<div class="con-simbolo"><span class="simbolo">' + Fmt.MONEDAS[Anu.estado.moneda] + '</span>' +
+      '<input type="text" inputmode="decimal" class="control" id="' + id + '" data-a="' + clave +
+      '" data-dinero="1" placeholder="1.000.000" value="' + Linea.escapar(valor) + '"></div></div>';
+  },
+
+  /* ---------- tasa: componente compartido + vista previa de la conversión ---------- */
+  pintarTasa: function () {
+    TasaUI.render($('#an-tasa'), Anu.estado.tasa, {
+      titulo: 'La tasa que te dan', idp: 'at', onCambio: Anu.vistaTasa, nota: ''
+    });
+    Anu.vistaTasa();
+  },
+
+  vistaTasa: function () {
+    var cont = $('#an-tasa');
+    var txt;
+    try {
+      var info = Anu.infoCuota();
+      var t = TasaUI.leer(Anu.estado.tasa, true);
+      var r = M.Tasas.aEfectivaVencida(t, info.clave, info.mesesN);
+      txt = '<b style="color:var(--tasas)">Tasa que entra a la fórmula:</b> <span class="cifra">' +
+        Fmt.tasa(r.valor, 4) + '</span> efectiva ' + info.adj + ' vencida. ' +
+        (r.pasos.length ? 'Se convierte en ' + r.pasos.length + (r.pasos.length === 1 ? ' paso' : ' pasos') +
+          '; el detalle aparece con el resultado.' : 'No hace falta convertirla.');
+    } catch (e) {
+      txt = 'Las anualidades siempre usan una tasa <b>efectiva vencida</b> del mismo período de las cuotas. ' +
+        'Escribe la tasa como te la den y FinanClic hace la conversión.';
+    }
+    TasaUI.nota(cont, txt);
+  },
+
+  /* ---------- pagos adicionales ---------- */
+  pintarAdicionales: function () {
+    var E = Anu.estado, T = Anu.textos(), z = $('#an-adicionales');
+    var modoX = E.incognita === 'adicional';
+    var h = '<p class="pista" style="margin:0 0 12px">Pagos que no son cuotas: una cuota inicial, un abono ' +
+      'extra, una prima. No entran a la fórmula de anualidades; se llevan uno por uno a la fecha focal con ' +
+      'interés compuesto. Ubícalos en el período en que ocurren (0 es hoy) o junto con una cuota.</p>';
+    if (!E.adicionales.length) h += '<div class="vacio-adic">No hay pagos adicionales. Si el ejercicio los tiene, agrégalos aquí.</div>';
+    h += '<div class="adicionales">';
+    E.adicionales.forEach(function (a, k) {
+      var esX = modoX && a.esX;
+      h += '<div class="adicional' + (esX ? ' es-x' : '') + '" data-k="' + k + '"' +
+        (modoX ? ' style="grid-template-columns:34px 1.2fr 1.1fr .7fr 1fr 1.1fr 38px"' : '') + '>' +
+        '<span class="flujo-num">' + (k + 1) + '</span>' +
+        '<div class="campo"><label>' + (esX ? 'Coeficiente × X' : 'Valor') + '</label>' +
+        (esX
+          ? '<input type="text" inputmode="decimal" class="control" data-ad="coeficiente" value="' +
+            Linea.escapar(a.coeficiente) + '" placeholder="1">'
+          : '<div class="con-simbolo"><span class="simbolo">' + Fmt.MONEDAS[E.moneda] + '</span>' +
+            '<input type="text" inputmode="decimal" class="control" data-ad="valor" data-dinero="1" value="' +
+            Linea.escapar(a.valor) + '" placeholder="1.000.000"></div>') + '</div>' +
+        '<div class="campo"><label>Ubicación</label><select class="control" data-ad="ubicacion">' +
+        '<option value="periodo"' + (a.ubicacion === 'periodo' ? ' selected' : '') + '>En el período</option>' +
+        '<option value="cuota"' + (a.ubicacion === 'cuota' ? ' selected' : '') + '>Junto con la cuota n.º</option>' +
+        '</select></div>' +
+        '<div class="campo"><label>' + (a.ubicacion === 'cuota' ? 'Cuota' : 'Período') + '</label>' +
+        '<input type="text" inputmode="decimal" class="control" data-ad="posicion" value="' +
+        Linea.escapar(a.posicion) + '" placeholder="' + (a.ubicacion === 'cuota' ? '1' : '0') + '"></div>' +
+        '<div class="campo"><label>Tipo</label><select class="control" data-ad="sentido">' +
+        '<option value="mismo"' + (a.sentido !== 'contrario' ? ' selected' : '') + '>' + T.mismo + '</option>' +
+        '<option value="contrario"' + (a.sentido === 'contrario' ? ' selected' : '') + '>' + T.contrario + '</option>' +
+        '</select></div>' +
+        (modoX ? '<div class="campo"><label>¿Lo conoces?</label><select class="control" data-ad="esX">' +
+          '<option value=""' + (!a.esX ? ' selected' : '') + '>Valor conocido</option>' +
+          '<option value="1"' + (a.esX ? ' selected' : '') + '>Desconocido (X)</option></select></div>' : '') +
+        '<button class="quitar" type="button" data-quitar-ad="' + k + '" aria-label="Eliminar el pago adicional ' +
+        (k + 1) + '">×</button></div>';
+    });
+    h += '</div><button class="btn btn-suave" type="button" id="an-agregar">+ Agregar pago adicional</button>';
+    if (modoX) {
+      h += '<p class="pista" style="margin:12px 0 0">Si hay varios desconocidos relacionados (por ejemplo, uno ' +
+        'vale el doble del otro), márcalos todos como X y usa el coeficiente: 1 para X, 2 para 2X.</p>';
+    }
+    z.innerHTML = h;
+
+    $$('[data-ad]', z).forEach(function (n) {
+      var k = +n.closest('.adicional').dataset.k;
+      var ev = n.tagName === 'SELECT' ? 'change' : 'input';
+      n.addEventListener(ev, function () {
+        var campo = n.dataset.ad;
+        if (campo === 'esX') { E.adicionales[k].esX = !!n.value; Anu.pintarAdicionales(); Anu.pintarLinea(); return; }
+        E.adicionales[k][campo] = n.value;
+        if (n.tagName === 'SELECT') { Anu.pintarAdicionales(); }
+        Anu.pintarLinea();
+      });
+      if (n.dataset.dinero) n.addEventListener('blur', function () {
+        Fmt.normalizarCampo(n); E.adicionales[k][n.dataset.ad] = n.value; Anu.pintarLinea();
+      });
+    });
+    $$('[data-quitar-ad]', z).forEach(function (b) {
+      b.addEventListener('click', function () {
+        E.adicionales.splice(+b.dataset.quitarAd, 1);
+        if (E.incognita === 'adicional') Anu.ajustarPorIncognita();
+        Anu.pintarAdicionales(); Anu.pintarLinea();
+      });
+    });
+    $('#an-agregar').addEventListener('click', function () {
+      E.adicionales.push(Anu.adicionalNuevo()); Anu.pintarAdicionales(); Anu.pintarLinea();
+    });
+  },
+
+  /** Período en la línea de tiempo de un adicional, según cómo lo ubicó el usuario. */
+  periodoAdicional: function (a, n) {
+    var p = Fmt.parsear(a.posicion);
+    if (!isFinite(p)) return NaN;
+    return a.ubicacion === 'cuota' ? M.Anualidades.periodoDeCuota(p, Anu.estado.modalidad) : p;
+  },
+
+  /* ---------- línea de tiempo ---------- */
+  pintarLinea: function (r) {
+    var E = Anu.estado, z = $('#an-linea');
+    var n = r ? r.n : Fmt.parsear(E.n);
+    if (!isFinite(n) || n <= 0 || Math.floor(n) !== n || n > 5000) { z.innerHTML = ''; return; }
+    var credito = E.operacion === 'credito';
+    var W = 780, H = 250, eje = 140, x0 = 46, x1 = W - 34;
+    var ex = function (p) { return x0 + (x1 - x0) * (p / n); };
+    var info; try { info = Anu.infoCuota(); } catch (e) { info = { varios: 'períodos' }; }
+    var focal = r ? r.focal : ((E.incognita === 'vf' || ((E.incognita === 'cuota' || E.incognita === 'adicional') &&
+      E.referencia === 'vf')) ? n : 0);
+    var abajo = '#B3341F', arriba = '#0B7A6B';
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Línea de tiempo de la anualidad">';
+    s += '<line x1="' + x0 + '" y1="' + eje + '" x2="' + x1 + '" y2="' + eje + '" stroke="#131C33" stroke-width="1.8"/>' +
+      '<polygon points="' + (x1 + 8) + ',' + eje + ' ' + (x1 - 1) + ',' + (eje - 4.5) + ' ' + (x1 - 1) + ',' + (eje + 4.5) +
+      '" fill="#131C33"/>';
+
+    // cuotas: flechas pequeñas hacia abajo (dinero que entregas)
+    var momentos = M.Anualidades.momentosCuotas(n, E.modalidad);
+    var etqA = r ? Fmt.numero(r.cuota, 0) : (E.incognita === 'cuota' ? 'A = ?' : (Fmt.parsear(E.cuota) > 0 ? Fmt.numero(Fmt.parsear(E.cuota), 0) : 'A'));
+    if (n <= 150) {
+      momentos.forEach(function (m) {
+        var x = ex(m);
+        s += '<line x1="' + x + '" y1="' + eje + '" x2="' + x + '" y2="' + (eje + 30) + '" stroke="' + abajo +
+          '" stroke-width="' + (n > 60 ? 1 : 1.8) + '" opacity=".85"/>';
+        if (n <= 40) s += '<polygon points="' + x + ',' + (eje + 36) + ' ' + (x - 3.5) + ',' + (eje + 29) + ' ' +
+          (x + 3.5) + ',' + (eje + 29) + '" fill="' + abajo + '"/>';
+      });
+    } else {
+      s += '<rect x="' + ex(momentos[0]) + '" y="' + (eje + 4) + '" width="' + (ex(momentos[n - 1]) - ex(momentos[0])) +
+        '" height="26" fill="' + abajo + '" opacity=".22"/>';
+    }
+    var resumenCuotas = n + ' cuotas de ' + etqA + ', en los períodos ' +
+      (E.modalidad === 'anticipada' ? '0 a ' + (n - 1) : '1 a ' + n);
+
+    // pagos adicionales
+    E.adicionales.forEach(function (a, k) {
+      var p = r ? r.adicionales[k].periodo : Anu.periodoAdicional(a, n);
+      if (!isFinite(p) || p < 0 || p > n) return;
+      var x = ex(p), mismo = a.sentido !== 'contrario';
+      var col = mismo ? abajo : arriba;
+      var y2 = mismo ? eje + 78 : eje - 70;
+      var val = r ? r.adicionales[k].valor : Fmt.parsear(a.valor);
+      var etq = (E.incognita === 'adicional' && a.esX && !r) ? (a.coeficiente && a.coeficiente !== '1' ? a.coeficiente + 'X' : 'X')
+        : (isFinite(val) ? Fmt.numero(val, 0) : '?');
+      s += '<line x1="' + x + '" y1="' + eje + '" x2="' + x + '" y2="' + (mismo ? y2 - 9 : y2 + 9) + '" stroke="' + col +
+        '" stroke-width="2.6"/><polygon points="' + x + ',' + y2 + ' ' + (x - 6) + ',' + (mismo ? y2 - 10 : y2 + 10) + ' ' +
+        (x + 6) + ',' + (mismo ? y2 - 10 : y2 + 10) + '" fill="' + col + '"/>' +
+        '<text x="' + x + '" y="' + (mismo ? y2 + 15 : y2 - 7) + '" text-anchor="middle" font-size="11.5" fill="' + col +
+        '" font-family="ui-monospace,Menlo,monospace" font-weight="700">' + Linea.escapar(etq) + '</text>';
+    });
+
+    // valor presente o futuro como flecha hacia arriba
+    var etqVal = function (clave) {
+      if (r) return clave.toUpperCase() + ' = ' + Fmt.numero(clave === 'vp' ? r.vp : r.vf, 0);
+      return clave.toUpperCase();
+    };
+    var xF = ex(focal);
+    s += '<line x1="' + xF + '" y1="' + eje + '" x2="' + xF + '" y2="' + (eje - 88) + '" stroke="' + arriba +
+      '" stroke-width="2.8"/><polygon points="' + xF + ',' + (eje - 98) + ' ' + (xF - 6.5) + ',' + (eje - 86) + ' ' +
+      (xF + 6.5) + ',' + (eje - 86) + '" fill="' + arriba + '"/>' +
+      '<text x="' + Math.min(Math.max(xF, 80), W - 80) + '" y="' + (eje - 104) + '" text-anchor="middle" font-size="12.5" fill="' + arriba +
+      '" font-family="ui-monospace,Menlo,monospace" font-weight="700">' + etqVal(focal === 0 ? 'vp' : 'vf') + '</text>' +
+      '<rect x="' + (Math.min(Math.max(xF, x0 + 2), x1 - 2) - 40) + '" y="12" width="80" height="18" rx="5" fill="#FCF3DF" stroke="#B27C10"/>' +
+      '<text x="' + Math.min(Math.max(xF, x0 + 2), x1 - 2) + '" y="25" text-anchor="middle" font-size="10" fill="#8A5A00" font-weight="700">FECHA FOCAL</text>';
+
+    // marcas
+    var marcas = { 0: 1 }; marcas[n] = 1;
+    if (n <= 24) for (var q = 1; q < n; q++) marcas[q] = 1;
+    E.adicionales.forEach(function (a) { var p = Anu.periodoAdicional(a, n); if (isFinite(p) && p >= 0 && p <= n) marcas[p] = 1; });
+    Object.keys(marcas).forEach(function (m) {
+      var x = ex(+m);
+      s += '<line x1="' + x + '" y1="' + (eje - 4) + '" x2="' + x + '" y2="' + (eje + 4) + '" stroke="#131C33"/>' +
+        '<text x="' + x + '" y="' + (eje - 9) + '" text-anchor="middle" font-size="10.5" fill="#48546F" ' +
+        'font-family="ui-monospace,Menlo,monospace">' + Fmt.periodos(+m) + '</text>';
+    });
+    s += '<text x="' + x1 + '" y="' + (eje + 22) + '" text-anchor="end" font-size="10.5" fill="#7A849B">' +
+      Linea.escapar(info.varios) + '</text></svg>';
+
+    z.innerHTML = '<p class="rotulo" style="margin-bottom:10px">Línea de tiempo</p><div class="lienzo-linea">' + s +
+      '<div class="leyenda"><span style="flex-basis:100%;font-family:var(--cifra);color:' + abajo + ';font-weight:600">' +
+      Linea.escapar(resumenCuotas) + '</span><span><i class="punto" style="background:' + abajo + '"></i>Dinero que ' +
+      (credito ? 'pagas' : 'aportas') + ' (flecha abajo)</span>' +
+      '<span><i class="punto" style="background:' + arriba + '"></i>' + (credito ? 'Dinero que recibes' : 'Dinero que recibes o retiras') +
+      ' (flecha arriba)</span><span><i class="punto" style="background:#B27C10"></i>Fecha focal: ' +
+      (focal === 0 ? 'hoy, período 0 (valor presente)' : 'período ' + n + ', con la última cuota (valor futuro)') + '</span></div></div>';
+  },
+
+  pintarTodo: function () {
+    Anu.pintarOpciones(); Anu.pintarCampos(); Anu.pintarTasa(); Anu.pintarAdicionales(); Anu.pintarLinea();
+  },
+
+  /* ---------- lectura y cálculo ---------- */
+  leer: function () {
+    var E = Anu.estado;
+    var n = Fmt.parsear(E.n);
+    if (!isFinite(n)) throw new Error('Falta el número de cuotas.');
+    if (n <= 0) throw new Error('El número de cuotas debe ser mayor que cero.');
+    if (Math.floor(n) !== n) throw new Error('El número de cuotas debe ser un número entero.');
+    var info = Anu.infoCuota();
+    var t = TasaUI.leer(E.tasa, true);
+    var conv = M.Tasas.aEfectivaVencida(t, info.clave, info.mesesN);
+    var cfg = { modalidad: E.modalidad, i: conv.valor, n: n,
+      calcular: E.incognita, referencia: E.referencia, adicionales: [] };
+    if (E.incognita !== 'cuota') {
+      cfg.cuota = Fmt.parsear(E.cuota);
+      if (!isFinite(cfg.cuota)) throw new Error('Falta el valor de la cuota.');
+    }
+    if (E.incognita === 'cuota' || E.incognita === 'adicional') {
+      cfg.objetivo = Fmt.parsear(E.objetivo);
+      if (!isFinite(cfg.objetivo)) throw new Error('Falta el ' + (E.referencia === 'vp' ? 'valor presente' : 'valor futuro') + ' conocido.');
+    }
+    E.adicionales.forEach(function (a, k) {
+      var et = 'pago adicional ' + (k + 1);
+      var pos = Fmt.parsear(a.posicion);
+      if (!isFinite(pos)) throw new Error('Falta el momento del ' + et + '.');
+      if (a.ubicacion === 'cuota') {
+        if (pos < 1 || pos > n || Math.floor(pos) !== pos) throw new Error('El ' + et + ' va junto con una cuota que no existe: ' +
+          'las cuotas van de la 1 a la ' + n + '.');
+      }
+      var item = { periodo: Anu.periodoAdicional(a, n), sentido: a.sentido === 'contrario' ? 'contrario' : 'mismo',
+        descripcion: a.ubicacion === 'cuota' ? 'junto con la cuota ' + pos : '' };
+      if (E.incognita === 'adicional' && a.esX) {
+        item.esIncognita = true;
+        item.coeficiente = Fmt.parsear(a.coeficiente);
+        if (!isFinite(item.coeficiente)) throw new Error('Falta el coeficiente del ' + et + ' (1 si es X, 2 si es 2X).');
+      } else {
+        item.monto = Fmt.parsear(a.valor);
+        if (!isFinite(item.monto)) throw new Error('Falta el valor del ' + et + '.');
+      }
+      cfg.adicionales.push(item);
+    });
+    return { cfg: cfg, conv: conv, info: info, tasaUsuario: t };
+  },
+
+  calcular: function () {
+    var z = $('#an-resultado');
+    try {
+      var l = Anu.leer();
+      var r = M.Anualidades.calcular(l.cfg);
+      Anu.ultimo = { r: r, l: l };
+      z.innerHTML = Anu.resultadoHTML(r, l);
+      Anu.pintarLinea(r);
+      $$('[data-puente-an]', z).forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (b.dataset.puenteAn === 'calc') {
+            Calc.abrirCon(Anu.estado.tasa, { tipo: 'efectiva', periodo: l.info.clave, mesesN: l.info.mesesN ? String(l.info.mesesN) : '7', modalidad: 'vencida' });
+          } else Sim.recibirAnualidad(Anu.estado, r, l);
+        });
+      });
+      z.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) {
+      z.innerHTML = '<div class="error"><strong>No se pudo calcular</strong>' + Linea.escapar(e.message) + '</div>';
+      Anu.pintarLinea();
+    }
+  },
+
+  resultadoHTML: function (r, l) {
+    var E = Anu.estado, mon = E.moneda, credito = E.operacion === 'credito';
+    var d = function (v) { return Fmt.dinero(v, mon); };
+    var ant = r.modalidad === 'anticipada';
+    var unidad = l.info.varios, uno = l.info.uno;
+    var i = r.i, tasaTxt = Fmt.tasa(i, 4) + ' efectiva ' + l.info.adj + ' vencida';
+    var titulo, principal;
+    if (r.calcular === 'vp') { titulo = 'Valor presente de la anualidad'; principal = r.vp; }
+    else if (r.calcular === 'vf') { titulo = 'Valor futuro de la anualidad'; principal = r.vf; }
+    else if (r.calcular === 'cuota') { titulo = 'Valor de cada cuota'; principal = r.cuota; }
+    else {
+      var xs = r.adicionales.filter(function (a) { return a.esIncognita; });
+      titulo = xs.length > 1 ? 'Valor de X' : 'Valor del pago adicional';
+      principal = r.X;
+    }
+
+    var h = '<div class="resultado-principal ' + (credito ? 'credito' : 'inversion') + '">' +
+      '<p class="rotulo">' + titulo + ' · anualidad ' + r.modalidad + '</p>' +
+      '<div class="cifra-grande">' + d(principal) + '</div>' +
+      '<p class="nota">' + r.n + ' cuotas ' + (ant ? 'anticipadas' : 'vencidas') + ' de ' + d(r.cuota) + ', cada ' + uno +
+      ', con una tasa del ' + tasaTxt + '.</p>' +
+      '<p class="nota">' + (credito ? 'Intereses pagados por el crédito' : 'Intereses ganados') + ': <b class="cifra">' +
+      d(Math.abs(credito ? r.interesesCredito : r.interesesInversion)) + '</b></p></div>';
+
+    h += '<div class="trio">' +
+      '<div class="magnitud vf"><span class="simbolo-mag">VP</span><p class="que-es">Lo que vale hoy toda la serie' +
+      (r.adicionales.length ? ', con los adicionales' : '') + '</p><div class="valor">' + d(r.vp) + '</div></div>' +
+      '<div class="magnitud i-may"><span class="simbolo-mag">VF</span><p class="que-es">Lo que vale todo en el período ' + r.n +
+      ', con la última cuota</p><div class="valor">' + d(r.vf) + '</div></div>' +
+      '<div class="magnitud i-min"><span class="simbolo-mag">A</span><p class="que-es">Cada cuota, igual en todos los períodos</p>' +
+      '<div class="valor">' + d(r.cuota) + '</div></div></div>';
+
+    h += '<dl class="detalle-lista">' +
+      '<div><dt>Modalidad</dt><dd style="font-family:var(--texto)">' + (ant ? 'Anticipada (inicio)' : 'Vencida (final)') + '</dd></div>' +
+      '<div><dt>Tasa en la fórmula</dt><dd>' + Fmt.tasa(i, 4) + ' <span style="font-family:var(--texto);font-weight:500">efectiva ' + l.info.adj + ' vencida</span></dd></div>' +
+      '<div><dt>Cuotas</dt><dd>' + r.n + ' ' + Linea.escapar(unidad) + '</dd></div>' +
+      '<div><dt>Primera cuota</dt><dd style="font-family:var(--texto)">Período ' + (ant ? 0 : 1) + '</dd></div>' +
+      '<div><dt>Total en cuotas</dt><dd>' + d(r.totalCuotas) + '</dd></div>' +
+      (r.adicionales.length ? '<div><dt>Adicionales (neto)</dt><dd>' + d(r.sumaAdicionales) + '</dd></div>' : '') +
+      '</dl>';
+
+    // conversión de la tasa
+    h += '<div class="bloque"><h4>La tasa que entra a la fórmula</h4>' +
+      '<p style="margin:0 0 6px;font-size:14.5px;color:var(--tinta-2)">Escribiste ' +
+      Fmt.tasa(l.tasaUsuario.valor, 4) + ' ' + Linea.escapar(M.Tasas.sigla(l.tasaUsuario)) + '. Las cuotas son ' +
+      'cada ' + Linea.escapar(uno) + ', así que la fórmula necesita la tasa <b>efectiva ' + l.info.adj +
+      ' vencida</b>, aunque la anualidad sea ' + r.modalidad + '. ' + (ant ? 'Ojo: que la anualidad sea anticipada ' +
+      'no cambia la tasa; lo anticipado son las cuotas, no los intereses.' : '') + '</p>' +
+      TasaUI.pasosHTML(l.conv) +
+      '<div class="puente"><span>¿Quieres ver esta conversión en detalle?</span>' +
+      '<button class="btn btn-secundario" type="button" data-puente-an="calc">Abrirla en la calculadora de tasas</button></div></div>';
+
+    // fórmula y pasos
+    var nom = r.referencia === 'vp' ? 'VP' : 'VF';
+    var formula = r.referencia === 'vp'
+      ? (ant ? 'VP = A · [(1 + i)ⁿ − 1] / [i · (1 + i)ⁿ] · (1 + i)' : 'VP = A · [(1 + i)ⁿ − 1] / [i · (1 + i)ⁿ]')
+      : (ant ? 'VF = A · [(1 + i)ⁿ⁺¹ − (1 + i)] / i' : 'VF = A · [(1 + i)ⁿ − 1] / i');
+    var formAdic = r.referencia === 'vp' ? ' + Σ Adicional ÷ (1 + i)^k' : ' + Σ Adicional · (1 + i)^(n − k)';
+    var pasos = [];
+    pasos.push('i = ' + Fmt.tasa(i, 6) + ' efectiva ' + l.info.adj + ' vencida  ·  n = ' + r.n);
+    if (r.referencia === 'vp') {
+      pasos.push('Factor = [(1 + ' + Fmt.tasa(i, 6) + ')^' + r.n + ' − 1] / [' + Fmt.tasa(i, 6) + ' × (1 + ' +
+        Fmt.tasa(i, 6) + ')^' + r.n + ']' + (ant ? ' × (1 + ' + Fmt.tasa(i, 6) + ')' : '') + ' = ' + Fmt.numero(r.factor, 6));
+    } else {
+      pasos.push('Factor = ' + (ant ? '[(1 + ' + Fmt.tasa(i, 6) + ')^' + (r.n + 1) + ' − (1 + ' + Fmt.tasa(i, 6) + ')]'
+        : '[(1 + ' + Fmt.tasa(i, 6) + ')^' + r.n + ' − 1]') + ' / ' + Fmt.tasa(i, 6) + ' = ' + Fmt.numero(r.factor, 6));
+    }
+    r.adicionales.forEach(function (a) {
+      var etq = a.esIncognita ? (a.coeficiente === 1 ? 'X' : Fmt.periodos(a.coeficiente) + 'X') : Fmt.numero(a.valor);
+      var op = r.referencia === 'vp'
+        ? etq + ' ÷ (1 + i)^' + Fmt.periodos(a.periodo)
+        : etq + ' × (1 + i)^' + Fmt.periodos(a.exponente);
+      pasos.push((a.signo > 0 ? '+ ' : '− ') + 'Adicional ' + a.numero + ' (período ' + Fmt.periodos(a.periodo) +
+        (a.descripcion ? ', ' + a.descripcion : '') + '):  ' + op + ' = ' +
+        (a.esIncognita ? Fmt.numero(a.coeficiente * a.factor, 6) + ' X' : Fmt.numero(a.valor * a.factor)));
+    });
+    if (r.calcular === 'vp' || r.calcular === 'vf') {
+      pasos.push('Cuotas en la fecha focal = ' + Fmt.numero(r.cuota) + ' × ' + Fmt.numero(r.factor, 6) + ' = ' +
+        Fmt.numero(r.valorCuotasEnFocal));
+      pasos.push(nom + ' = ' + Fmt.numero(r.valorCuotasEnFocal) + (r.adicionales.length ? ' ± adicionales' : '') +
+        ' = ' + Fmt.numero(r.valorFocal));
+    } else if (r.calcular === 'cuota') {
+      var sumaAd = r.valorFocal - r.valorCuotasEnFocal;
+      pasos.push('A = (' + nom + ' − adicionales en la focal) ÷ factor = (' + Fmt.numero(r.valorFocal) + ' − ' +
+        Fmt.numero(sumaAd) + ') ÷ ' + Fmt.numero(r.factor, 6));
+      pasos.push('A = ' + Fmt.numero(r.cuota));
+    } else {
+      var sc = 0, sk = 0;
+      r.adicionales.forEach(function (a) {
+        if (a.esIncognita) sk += a.signo * a.coeficiente * a.factor; else sc += a.signo * a.valor * a.factor;
+      });
+      pasos.push('Cuotas en la fecha focal = ' + Fmt.numero(r.cuota) + ' × ' + Fmt.numero(r.factor, 6) + ' = ' +
+        Fmt.numero(r.valorCuotasEnFocal));
+      pasos.push('X = (' + nom + ' − cuotas − adicionales conocidos) ÷ (suma de coeficientes en la focal)');
+      pasos.push('X = (' + Fmt.numero(r.valorFocal) + ' − ' + Fmt.numero(r.valorCuotasEnFocal) + ' − ' + Fmt.numero(sc) +
+        ') ÷ ' + Fmt.numero(sk, 6) + ' = ' + Fmt.numero(r.X));
+    }
+    h += '<div class="bloque"><h4>Fórmula utilizada</h4><div class="formula-caja">' + formula +
+      (r.adicionales.length ? formAdic : '') + '</div>' +
+      '<p style="font-size:14px;color:var(--tinta-2);margin:12px 0 0">Las anualidades son <b>interés compuesto</b>: ' +
+      'la fórmula es solo un atajo para sumar todas las cuotas trasladadas con (1 + i)^k, una por una, como en el ' +
+      'primer corte. Los pagos adicionales no cumplen las condiciones de una anualidad, así que se trasladan aparte.</p>' +
+      '<h4 style="margin-top:18px">Pasos del cálculo</h4><ol class="pasos">' +
+      pasos.map(function (p) { return '<li>' + Linea.escapar(p) + '</li>'; }).join('') + '</ol></div>';
+
+    if (r.adicionales.length) {
+      h += '<div class="bloque"><h4>Pagos adicionales llevados a la fecha focal</h4><table class="tabla"><thead><tr>' +
+        '<th>#</th><th>Período</th><th>Tipo</th><th class="num">Valor</th><th class="num">Factor</th>' +
+        '<th class="num">En la focal</th></tr></thead><tbody>' +
+        r.adicionales.map(function (a) {
+          return '<tr><td>' + a.numero + '</td><td>' + Fmt.periodos(a.periodo) + '</td><td style="font-family:var(--texto)">' +
+            (a.signo > 0 ? Anu.textos().mismo : Anu.textos().contrario) + (a.esIncognita ? ' (X)' : '') + '</td>' +
+            '<td class="num">' + Fmt.numero(a.valor) + '</td><td class="num">' + Fmt.numero(a.factor, 6) + '</td>' +
+            '<td class="num">' + Fmt.numero(a.valorEnFocal) + '</td></tr>';
+        }).join('') + '</tbody></table></div>';
+    }
+
+    // vencida frente a anticipada, con los mismos datos
+    var otra = ant ? 'vencida' : 'anticipada';
+    try {
+      var cfg2 = {}; for (var k in l.cfg) cfg2[k] = l.cfg[k];
+      cfg2.modalidad = otra;
+      var r2 = M.Anualidades.calcular(cfg2);
+      var campo = (r.calcular === 'vp') ? 'vp' : (r.calcular === 'vf') ? 'vf' : (r.calcular === 'cuota') ? 'cuota' : 'X';
+      var v1 = r[campo], v2 = r2[campo];
+      var ven = ant ? v2 : v1, anti = ant ? v1 : v2;
+      var nombre = { vp: 'El valor presente', vf: 'El valor futuro', cuota: 'La cuota', X: 'El pago adicional' }[campo];
+      var porque;
+      if (campo === 'vp' || campo === 'vf') {
+        porque = 'Con la misma cuota, la anticipada vale más: cada cuota se paga un período antes, así que acumula ' +
+          'un período más de interés. Sin adicionales, la diferencia es exactamente el factor (1 + i).';
+      } else if (campo === 'cuota') {
+        porque = 'Para cubrir el mismo valor, la cuota anticipada es menor: como cada pago llega un período antes, ' +
+          'cada peso rinde un período más de interés y se necesita menos.';
+      } else {
+        porque = 'Como las cuotas anticipadas cubren más valor, el pago adicional que falta es menor.';
+      }
+      h += '<div class="bloque"><h4>¿Y si fuera ' + otra + '?</h4><p style="margin:0;font-size:14.5px;color:var(--tinta-2)">' +
+        'Mismos datos, solo cambia el momento de pago de las cuotas.</p><div class="comparacion-mod">' +
+        '<div class="mini' + (!ant ? ' activa' : '') + '"><p class="rotulo">Vencida' + (!ant ? ' · la tuya' : '') + '</p>' +
+        '<div class="v">' + d(ven) + '</div></div>' +
+        '<div class="mini' + (ant ? ' activa' : '') + '"><p class="rotulo">Anticipada' + (ant ? ' · la tuya' : '') + '</p>' +
+        '<div class="v">' + d(anti) + '</div></div></div>' +
+        '<p style="margin:12px 0 0;font-size:14.5px;color:var(--tinta-2)">' + nombre + ' cambia en ' + d(Math.abs(anti - ven)) +
+        '. ' + porque + '</p></div>';
+    } catch (e) { /* si la otra modalidad no tiene solución, no se muestra */ }
+
+    // puente hacia el simulador de compuesto
+    if (r.n <= 60) {
+      h += '<div class="puente"><span>Comprueba que es interés compuesto: lleva estas ' + r.n + ' cuotas como flujos ' +
+        'sueltos al simulador del primer corte y verás el mismo resultado.</span>' +
+        '<button class="btn btn-secundario" type="button" data-puente-an="sim">Ver como flujos en interés compuesto</button></div>';
+    }
+
+    h += '<div class="significado"><h4>¿Qué significa este resultado?</h4><p>' + Anu.significado(r, l) + '</p></div>';
+    return h;
+  },
+
+  significado: function (r, l) {
+    var E = Anu.estado, mon = E.moneda, credito = E.operacion === 'credito';
+    var d = function (v) { return '<strong>' + Fmt.dinero(v, mon) + '</strong>'; };
+    var cada = 'cada ' + l.info.uno;
+    var cuando = r.modalidad === 'anticipada' ? 'al inicio de cada período' : 'al final de cada período';
+    if (r.calcular === 'vp') {
+      return credito
+        ? 'Pagar ' + r.n + ' cuotas de ' + d(r.cuota) + ' ' + cada + ', ' + cuando + ', equivale a recibir hoy ' + d(r.vp) +
+          '. Ese es el monto máximo de crédito que cubren esas cuotas. En total pagarías ' + d(r.totalNominal) +
+          ', así que ' + d(r.interesesCredito) + ' son intereses.'
+        : 'Recibir ' + r.n + ' pagos de ' + d(r.cuota) + ' ' + cada + ' vale hoy ' + d(r.vp) + '. Si alguien te ofrece ' +
+          'menos que eso de contado por la serie, sales perdiendo.';
+    }
+    if (r.calcular === 'vf') {
+      return credito
+        ? 'Al terminar, las cuotas y adicionales equivalen a ' + d(r.vf) + ' en el período ' + r.n + '. Es lo que de verdad ' +
+          'costó la operación medida al final, con todos sus intereses.'
+        : 'Si aportas ' + d(r.cuota) + ' ' + cada + ', ' + cuando + ', durante ' + r.n + ' períodos, al final tendrás ' + d(r.vf) +
+          '. De tu bolsillo salieron ' + d(r.totalNominal) + '; los otros ' + d(r.interesesInversion) + ' los puso el interés compuesto.';
+    }
+    if (r.calcular === 'cuota') {
+      return 'Para ' + (r.referencia === 'vp' ? (credito ? 'pagar un crédito de ' : 'cubrir hoy ') + d(r.vp)
+        : 'llegar a ' + d(r.vf) + ' al final') + ' con ' + r.n + ' cuotas ' + cuando + ', cada cuota debe ser de ' + d(r.cuota) +
+        '. Con esa cifra puedes compararla con tu ingreso ' + (l.info.adj === 'mensual' ? 'mensual' : 'del período') +
+        ' y decidir si el plan es viable.';
+    }
+    return 'Para que la operación cuadre, el pago adicional desconocido debe ser de ' + d(r.X) + (r.adicionales.filter(function (a) {
+      return a.esIncognita; }).length > 1 ? ' por cada X' : '') + '. Es el valor que hay que poner en ese momento, además de las cuotas de ' +
+      d(r.cuota) + '.';
+  },
+
+  /* ---------- ejemplos de los talleres ---------- */
+  EJEMPLOS: [
+    { nombre: 'Marta: crédito, cuota a partir del VF con dos abonos extra',
+      e: { operacion: 'credito', modalidad: 'vencida', incognita: 'cuota', referencia: 'vf', periodoCuota: 'mensual',
+        n: '96', objetivo: '280.000.000',
+        tasa: { valor: '17,51', tipo: 'nominal', periodo: 'quintumestral', modalidad: 'anticipada' },
+        adicionales: [{ valor: '10.000.000', ubicacion: 'periodo', posicion: '57', sentido: 'mismo' },
+                      { valor: '12.000.000', ubicacion: 'periodo', posicion: '68', sentido: 'mismo' }] } },
+    { nombre: 'Juan Pablo: gimnasio, VF de cuotas anticipadas',
+      e: { operacion: 'credito', modalidad: 'anticipada', incognita: 'vf', periodoCuota: 'mensual', n: '21', cuota: '445.000',
+        tasa: { valor: '26,82', tipo: 'nominal', periodo: 'cuatrimestral', modalidad: 'anticipada' }, adicionales: [] } },
+    { nombre: 'Lázaro: inversión, segundo adicional que vale el doble del primero',
+      e: { operacion: 'inversion', modalidad: 'vencida', incognita: 'adicional', referencia: 'vp', periodoCuota: 'cuatrimestral',
+        n: '42', cuota: '850.000', objetivo: '44.500.000',
+        tasa: { valor: '12,44', tipo: 'efectiva', periodo: 'anual', modalidad: 'vencida' },
+        adicionales: [{ ubicacion: 'periodo', posicion: '13', sentido: 'mismo', esX: true, coeficiente: '1' },
+                      { ubicacion: 'periodo', posicion: '27', sentido: 'mismo', esX: true, coeficiente: '2' }] } },
+    { nombre: 'Juan: computador, VF anticipado con un pago junto con la primera cuota',
+      e: { operacion: 'credito', modalidad: 'anticipada', incognita: 'vf', periodoCuota: 'bimestral', n: '24', cuota: '230.000',
+        tasa: { valor: '29,10', tipo: 'nominal', periodo: 'trimestral', modalidad: 'vencida' },
+        adicionales: [{ valor: '1.100.000', ubicacion: 'cuota', posicion: '1', sentido: 'mismo' }] } },
+    { nombre: 'Samuel: apartamento, cuotas cada 7 meses y cuota inicial',
+      e: { operacion: 'credito', modalidad: 'vencida', incognita: 'vf', periodoCuota: 'cadaNMeses', mesesNCuota: '7', n: '27',
+        cuota: '14.250.000', tasa: { valor: '12,02', tipo: 'nominal', periodo: 'quintumestral', modalidad: 'vencida' },
+        adicionales: [{ valor: '39.000.000', ubicacion: 'periodo', posicion: '0', sentido: 'mismo' }] } }
+  ],
+
+  cargarEjemplo: function () {
+    var ej = Anu.EJEMPLOS[Anu.iEjemplo % Anu.EJEMPLOS.length];
+    Anu.iEjemplo++;
+    var E = Anu.inicial();
+    for (var k in ej.e) {
+      if (k === 'tasa') E.tasa = TasaUI.nueva(ej.e.tasa);
+      else if (k === 'adicionales') E.adicionales = ej.e.adicionales.map(function (a) {
+        var b = Anu.adicionalNuevo(); for (var p in a) b[p] = a[p]; return b;
+      });
+      else E[k] = ej.e[k];
+    }
+    Anu.estado = E;
+    Anu.pintarTodo();
+    Anu.calcular();
+  },
+
+  /** La calculadora de tasas le pasa una tasa. */
+  recibirTasa: function (t) {
+    Anu.estado.tasa = TasaUI.copiar(t);
+    Nav.ir('anualidades');
+    Anu.pintarTodo();
+  },
+
+  iniciar: function () {
+    Anu.estado = Anu.inicial();
+    Anu.pintarTodo();
+    $('#an-calcular').addEventListener('click', Anu.calcular);
+    $('#an-ejemplo').addEventListener('click', Anu.cargarEjemplo);
+    $('#an-limpiar').addEventListener('click', function () {
+      Anu.estado = Anu.inicial(); Anu.pintarTodo(); $('#an-resultado').innerHTML = '';
+    });
+    $$('[data-modalidad][data-ir="anualidades"]').forEach(function (b) {
+      b.addEventListener('click', function () { Anu.estado.modalidad = b.dataset.modalidad; Anu.pintarTodo(); });
+    });
+  }
+};
+
 /* ==================================================================
    ARRANQUE
    Tolera que el script se evalúe antes o después de DOMContentLoaded,
@@ -3863,7 +6487,7 @@ var arrancado = false;
 function arrancar() {
   if (arrancado) return;
   arrancado = true;
-  Nav.iniciar(); Edu.iniciar(); Sim.iniciar(); Inter.iniciar(); IA.iniciar();
+  Nav.iniciar(); Edu.iniciar(); Sim.iniciar(); Calc.iniciar(); Anu.iniciar(); Inter.iniciar(); IA.iniciar();
 }
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', arrancar);
